@@ -1,0 +1,33 @@
+# Convota - Git Ignore Rules
+
+# SQLite databases & logs
+/data/*.sqlite
+/data/*.sqlite-wal
+/data/*.sqlite-shm
+/data/*.db
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+
+# Configuration & environment overrides
+config/config.local.php
+.env
+.env.local
+
+# Web server & IDE
+.vscode/
+.idea/
+*.log
+/logs/*
+!/logs/.gitkeep
+
+# Backups & exports
+/backups/*
+!/backups/.gitkeep
+/exports/*
+!/exports/.gitkeep
+
+# Temporary files
+/tmp/*
+!/tmp/.gitkeep
