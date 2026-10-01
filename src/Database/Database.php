@@ -47,16 +47,19 @@ class Database
 
     public static function getInstance(?string $customPath = null): self
     {
-        if ($customPath !== null) {
-            return new self($customPath);
+        if (self::$instance !== null) {
+            return self::$instance;
         }
 
-        if (self::$instance === null) {
-            $config = require __DIR__ . '/../../config/config.php';
-            $path = $config['database']['path'];
-            $timeout = $config['database']['timeout'] ?? 5000;
-            self::$instance = new self($path, $timeout);
+        if ($customPath !== null) {
+            self::$instance = new self($customPath);
+            return self::$instance;
         }
+
+        $config = require __DIR__ . '/../../config/config.php';
+        $path = $config['database']['path'];
+        $timeout = $config['database']['timeout'] ?? 5000;
+        self::$instance = new self($path, $timeout);
 
         return self::$instance;
     }

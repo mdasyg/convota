@@ -1,0 +1,119 @@
+/* Convota Assembly Hall Projector Display */
+:root {
+  --proj-bg: #090d16;
+  --proj-card: #131b2e;
+  --proj-border: #1e293b;
+  --proj-text: #f8fafc;
+  --proj-muted: #94a3b8;
+  --proj-accent: #38bdf8;
+  --proj-success: #22c55e;
+  --proj-warning: #f59e0b;
+  --proj-danger: #ef4444;
+}
+
+body.projector-body {
+  background-color: var(--proj-bg);
+  color: var(--proj-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 2rem;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.projector-header {
+  border-bottom: 2px solid var(--proj-border);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.projector-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--proj-accent);
+}
+
+.projector-badge {
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 0.5rem 1.5rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+.projector-badge.open { background: var(--proj-success); color: black; }
+.projector-badge.closed { background: var(--proj-danger); color: white; }
+
+.projector-card {
+  background: var(--proj-card);
+  border: 2px solid var(--proj-border);
+  border-radius: 16px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.projector-counter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.projector-counter-box {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid var(--proj-border);
+}
+
+.projector-counter-number {
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--proj-accent);
+  line-height: 1;
+}
+
+.projector-counter-label {
+  font-size: 1.25rem;
+  color: var(--proj-muted);
+  text-transform: uppercase;
+  margin-top: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.projector-voter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.projector-voter-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--proj-border);
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.projector-voter-card.voted {
+  border-color: var(--proj-success);
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--proj-success);
+}
+.projector-voter-card.pending {
+  color: var(--proj-muted);
+}
+
+.projector-clock {
+  font-size: 1.5rem;
+  color: var(--proj-muted);
+  font-family: monospace;
+}

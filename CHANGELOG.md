@@ -9,6 +9,26 @@ and this project adheres to Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-01
+### Added
+- Complete Web Application Router & Front Controller (`App.php`, `public/index.php`).
+- Controllers:
+  - `AuthController.php`: Dual-tabbed login (Member vs Shared Key), password reset token flow, session management.
+  - `DashboardController.php`: Role-based views for collective administrators, presidium, and member delegates.
+  - `OrganizationController.php`: CRUD, delegation roster management, primary/substitute delegates, shared key controls (email, rotate, toggle).
+  - `MeetingController.php`: Assembly scheduling, presence tracking, dynamic quorum monitoring, roll-call check-in, attendance CSV export.
+  - `ProposalController.php`: Proposal creation with calendar datetime picker, state machine transitions (`draft` -> `open` <-> `paused` -> `closed` -> `archived`), live monitor, sealed results, and assembly hall projector view.
+  - `VoteController.php`: Ballot casting with anti-replay, single-use idempotency keys, receipt hash generation, intra-org alerts, and receipt verification tool.
+  - `CsvController.php`: CSV roster upload, interactive conflict detection preview (red warnings for different org, checkboxes for same org), and export tools.
+  - `AuditController.php`: Tamper-evident audit trail viewer with live SHA-256 chain verification badge.
+  - `ApiController.php`: REST JSON endpoints for live quorum (`/api/quorum`), voting status (`/api/voting-status`), and authenticated idempotent voting (`/api/vote`).
+- Views & Responsive Design:
+  - Modern responsive design system in `public/assets/css/app.css`.
+  - Big-screen high-contrast assembly hall styling in `public/assets/css/projector.css`.
+  - Client-side AJAX polling & live clock in `public/assets/js/app.js` and `public/assets/js/projector.js`.
+- Security configurations: `public/.htaccess` and `data/.htaccess`.
+- Automated Phase 5 test suite (`tests/test_phase5.php`) and Master Test Runner (`tests/run_all_tests.php`) executing all 120 unit, integration, and security tests.
+
 ## [0.5.0] - 2026-10-01
 ### Added
 - Proposal Model (`Proposal.php`) implementing a deterministic finite state machine (`draft` -> `open` <-> `paused` -> `closed` -> `archived`).
