@@ -9,6 +9,19 @@ and this project adheres to Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-01
+### Added
+- Proposal Model (`Proposal.php`) implementing a deterministic finite state machine (`draft` -> `open` <-> `paused` -> `closed` -> `archived`).
+- Dual-Mode Voting Engine (`VotingService.php`):
+  - Idempotent Voting API & Anti-Replay: Idempotency keys/nonces, `BEGIN IMMEDIATE TRANSACTION`, and duplicate vote rejection.
+  - Secret Decoupled Ballot Box: Complete architectural decoupling in `anonymous_ballots` (zero foreign keys or relational linkage to voters or organizations).
+  - Cryptographic voter receipt generation (`receipt_hash`) and self-verification tool.
+  - Open Roll-Call Ballot Box: Preserves voter name and organization in public records.
+  - Intra-Organization Transparency: Automated email notifications dispatched to all registered members when their organization's vote is cast.
+  - Real-time participation monitor (AJAX/Fetch polling) that strictly hides vote selections during active voting.
+  - Sealed Results Engine: Reveals mathematical tallies and majority/quorum percentages exclusively after closing.
+- Automated Phase 4 test suite (`tests/test_phase4.php`) with 27 passing tests.
+
 ## [0.4.0] - 2026-10-01
 ### Added
 - Meeting Model (`Meeting.php`) managing the full General Assembly lifecycle (`draft`, `registration`, `in_session`, `concluded`).
