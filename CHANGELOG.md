@@ -9,6 +9,18 @@ and this project adheres to Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-02
+### Added
+- **Frontend Nginx Reverse Proxy Configuration (`convota.conf` & `config/convota.conf`)**:
+  - Templated from production-tested `rtl2schematic.conf` and `chronos.conf`.
+  - Configures modular location `/convota/` for deployment in frontend web servers (FreeBSD `/usr/local/etc/nginx/locations/` or Linux `/etc/nginx/locations/`).
+  - Canonical trailing slash enforcement (`/convota` -> 301 to `https://$host/convota/`).
+  - Regex priority shielding with `location ^~ /convota/` ensuring parent regex blocks (`~ \.php$`) do not intercept subpath API endpoints.
+  - Proxy header propagation: `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto $scheme`, and `X-Forwarded-Prefix /convota`.
+  - Buffer tuning, HTTP/1.1 persistent connections, and 50MB payload limit for CSV roster processing and real-time live displays.
+  - Validated syntax with `nginx -t`.
+  - Documented deployment instructions in `README.md`.
+
 ## [1.2.0] - 2026-10-01
 ### Changed
 - **Default Superadmin Email**:

@@ -87,13 +87,35 @@ Then navigate to: `http://localhost:8000` (or `https://` if behind a reverse pro
 
 Convota is fully portable and operates out-of-the-box in two distinct topologies without manual code adjustments:
 
-1. **Subfolder / Subpath Mode** (e.g. `http://your-server.com/convota`):
-   - Fully supported via Nginx alias or Apache `Alias`.
-   - The application dynamically detects `/convota` as the base path via `App::detectBasePath()` and `$_SERVER['REQUEST_URI']` or `X-Forwarded-Prefix`.
+1. **Subfolder / Subpath Mode** (e.g. `https://arch.ece.uowm.gr/convota/`):
+   - Fully supported via frontend reverse proxy or local Nginx alias.
+   - The application dynamically detects `/convota` as the base path via `App::detectBasePath()`, `$_SERVER['REQUEST_URI']`, or `X-Forwarded-Prefix`.
    - All internal links, stylesheets, scripts, forms, and AJAX API requests are generated using `url('/relative-path')`.
 2. **Root / Subdomain Mode** (e.g. `http://convota.domain.com/` or `http://localhost:8000/`):
    - Operates cleanly at document root with an empty base path (`""`).
    - Both web server configurations support clean routing to `index.php`.
+
+### Frontend Web Server Reverse Proxy (`convota.conf`)
+
+For public deployment behind a forward-facing Nginx reverse proxy (e.g., FreeBSD `/usr/local/etc/nginx/locations/` or Linux `/etc/nginx/locations/`), use the included [`convota.conf`](file:///projects/convota/convota.conf):
+
+```bash
+# Copy to frontend server locations directory:
+# FreeBSD:
+cp convota.conf /usr/local/etc/nginx/locations/convota.conf
+# Linux:
+cp convota.conf /etc/nginx/locations/convota.conf
+
+# Verify and reload frontend Nginx:
+nginx -t && nginx -s reload
+```
+
+**Key features of `convota.conf`:**
+- Enforces canonical trailing slash (`/convota` -> `/convota/`).
+- Uses `location ^~ /convota/` modifier to prevent outer regex locations (e.g. `~ \.php$`) from hijacking subpath requests.
+- Passes `X-Forwarded-Prefix /convota` and `X-Forwarded-Proto $scheme` for flawless subpath and HTTPS link generation.
+- Configures 50MB file size limit for CSV roster imports.
+- Sets HTTP/1.1 persistent connections and optimized buffering for real-time assembly hall displays.
 
 ---
 
@@ -123,8 +145,10 @@ You can also run individual test suites:
 ├── CHANGELOG.md               <-- Detailed version and phase changelog
 ├── README.md                  <-- Project overview and quickstart guide
 ├── SPECIFICATIONS.md          <-- Complete technical and security specifications
+├── convota.conf               <-- Frontend Nginx reverse proxy configuration
 ├── config/
-│   └── config.php             <-- Application constants, mail, and security settings
+│   ├── config.php             <-- Application constants, mail, and security settings
+│   └── convota.conf           <-- Modular frontend Nginx reverse proxy template
 ├── data/
 │   ├── .htaccess              <-- Deny all direct web access
 │   ├── convota.sqlite         <-- SQLite production database (WAL mode)
