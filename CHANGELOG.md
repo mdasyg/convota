@@ -9,6 +9,19 @@ and this project adheres to Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-01
+### Added
+- Meeting Model (`Meeting.php`) managing the full General Assembly lifecycle (`draft`, `registration`, `in_session`, `concluded`).
+- Presence and Designated Representative Engine:
+  - Supports self-login, common hash, and presidium roll-call check-in methods.
+  - Active representative switching per assembly with immediate roster propagation.
+- Dynamic Quorum Engine (`QuorumService.php`):
+  - Dynamic attendance percentage calculation based exclusively on eligible voting organizations (preventing observer skew).
+  - Configurable quorum threshold checks and human-readable status banners.
+  - Full attendance roster with participant details and check-in metadata.
+  - Attendance CSV export engine.
+- Automated Phase 3 test suite (`tests/test_phase3.php`) with 24 passing tests.
+
 ## [0.3.0] - 2026-10-01
 ### Added
 - Organization Model (`Organization.php`) with full metadata attributes, observer flags, voting weights, and president assignment.
