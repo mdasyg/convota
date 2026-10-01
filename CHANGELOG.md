@@ -9,6 +9,19 @@ and this project adheres to Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-01
+### Added
+- Organization Model (`Organization.php`) with full metadata attributes, observer flags, voting weights, and president assignment.
+- User / Member Model (`User.php`) with primary delegate assignment, substitute management, and member removal capability.
+- Historical accountability logging: Recording who added/removed members, IP address, user-agent, and timestamps in tamper-evident logs.
+- Smart CSV Service (`CsvService.php`) with conflict detection:
+  - Detection of new members and new organizations.
+  - Detection of existing members under the same organization (with update/skip option).
+  - Prominent red warning and automated conflict prevention when an email is already registered under a different organization.
+  - CSV exports for organizations and members roster.
+- Nested transaction and SQLite savepoint engine in `Database.php`.
+- Automated Phase 2 test suite (`tests/test_phase2.php`) with 26 passing tests.
+
 ## [0.2.0] - 2026-10-01
 ### Added
 - Core database layer (`Database.php`) with SQLite WAL mode, foreign keys, busy timeout, and `BEGIN IMMEDIATE TRANSACTION`.

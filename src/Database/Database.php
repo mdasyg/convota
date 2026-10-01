@@ -71,12 +71,22 @@ class Database
         return $this->pdo;
     }
 
+    private int $transactionLevel = 0;
+
     /**
-     * Standard transaction begin
+     * Standard transaction begin with savepoint support
      */
     public function beginTransaction(): bool
     {
-        return $this->pdo->beginTransaction();
+        if ($this->transactionLevel === 0) {
+            $res = $this->pdo->beginTransaction();
+            $this->transactionLevel = 1;
+            return $res;
+        }
+
+        $this->transactionLevel++;
+        $this->pdo->exec("SAVEPOINT TRANS_LEVEL_{$this->transactionLevel};");
+        return true;
     }
 
     /**
@@ -85,25 +95,53 @@ class Database
      */
     public function beginTransactionImmediate(): void
     {
-        $this->pdo->exec("BEGIN IMMEDIATE TRANSACTION;");
+        if ($this->transactionLevel === 0) {
+            $this->pdo->exec("BEGIN IMMEDIATE TRANSACTION;");
+            $this->transactionLevel = 1;
+            return;
+        }
+
+        $this->transactionLevel++;
+        $this->pdo->exec("SAVEPOINT TRANS_LEVEL_{$this->transactionLevel};");
     }
 
     public function commit(): bool
     {
-        return $this->pdo->commit();
+        if ($this->transactionLevel <= 0) {
+            return false;
+        }
+
+        if ($this->transactionLevel === 1) {
+            $res = $this->pdo->commit();
+            $this->transactionLevel = 0;
+            return $res;
+        }
+
+        $this->pdo->exec("RELEASE SAVEPOINT TRANS_LEVEL_{$this->transactionLevel};");
+        $this->transactionLevel--;
+        return true;
     }
 
     public function rollBack(): bool
     {
-        if ($this->pdo->inTransaction()) {
-            return $this->pdo->rollBack();
+        if ($this->transactionLevel <= 0) {
+            return false;
         }
-        return false;
+
+        if ($this->transactionLevel === 1) {
+            $res = $this->pdo->rollBack();
+            $this->transactionLevel = 0;
+            return $res;
+        }
+
+        $this->pdo->exec("ROLLBACK TO SAVEPOINT TRANS_LEVEL_{$this->transactionLevel};");
+        $this->transactionLevel--;
+        return true;
     }
 
     public function inTransaction(): bool
     {
-        return $this->pdo->inTransaction();
+        return $this->transactionLevel > 0 || $this->pdo->inTransaction();
     }
 
     public function query(string $sql, array $params = []): \PDOStatement

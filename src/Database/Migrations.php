@@ -91,7 +91,7 @@ class Migrations
                     reset_token TEXT,
                     reset_token_expires_at DATETIME,
                     is_active INTEGER NOT NULL DEFAULT 1,
-                    created_by INTEGER REFERENCES users(id),
+                    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
                     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
                 )
