@@ -6,8 +6,9 @@ use Convota\Security\Csrf;
     Please enter and confirm your new secure password below (minimum 8 characters).
 </p>
 
-<form action="/auth/reset-password" method="POST">
+<form action="<?= url('/auth/reset-password') ?>" method="POST">
     <?= Csrf::field() ?>
+
     <input type="hidden" name="token" value="<?= htmlspecialchars($token ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
     <div class="form-group">

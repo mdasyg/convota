@@ -32,8 +32,9 @@ use Convota\Security\Csrf;
                 <strong>Select Participating Member:</strong> The vote belongs to the organization, while the representative is the authenticated person exercising that organization's voting right during this assembly.
             </p>
 
-            <form action="/meetings/set-presence" method="POST" style="display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap;">
+            <form action="<?= url('/meetings/set-presence') ?>" method="POST" style="display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap;">
                 <?= Csrf::field() ?>
+
                 <input type="hidden" name="meeting_id" value="<?= $activeMeeting['id'] ?>">
                 <input type="hidden" name="organization_id" value="<?= $org['id'] ?>">
 
@@ -110,7 +111,7 @@ use Convota\Security\Csrf;
                             <td style="text-align: right;">
                                 <div style="display: inline-flex; gap: 0.35rem;">
                                     <?php if (!$m['is_primary']): ?>
-                                        <form action="/organizations/set-primary" method="POST" style="display: inline;">
+                                        <form action="<?= url('/organizations/set-primary') ?>" method="POST" style="display: inline;">
                                             <?= Csrf::field() ?>
                                             <input type="hidden" name="organization_id" value="<?= $org['id'] ?>">
                                             <input type="hidden" name="user_id" value="<?= $m['id'] ?>">
@@ -118,7 +119,7 @@ use Convota\Security\Csrf;
                                         </form>
                                     <?php endif; ?>
 
-                                    <form action="/organizations/remove-member" method="POST" style="display: inline;" onsubmit="return confirm('Remove <?= htmlspecialchars($m['name']) ?> from the delegation roster? This action is recorded in the audit trail.');">
+                                    <form action="<?= url('/organizations/remove-member') ?>" method="POST" style="display: inline;" onsubmit="return confirm('Remove <?= htmlspecialchars($m['name']) ?> from the delegation roster? This action is recorded in the audit trail.');">
                                         <?= Csrf::field() ?>
                                         <input type="hidden" name="organization_id" value="<?= $org['id'] ?>">
                                         <input type="hidden" name="user_id" value="<?= $m['id'] ?>">
@@ -135,7 +136,8 @@ use Convota\Security\Csrf;
         <!-- Add Substitute Member Form -->
         <div style="margin-top: 1.5rem; background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem;">
             <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;">➕ Add Substitute Member</h4>
-            <form action="/organizations/add-member" method="POST">
+            <form action="<?= url('/organizations/add-member') ?>" method="POST">
+
                 <?= Csrf::field() ?>
                 <input type="hidden" name="organization_id" value="<?= $org['id'] ?>">
 
@@ -194,7 +196,7 @@ use Convota\Security\Csrf;
         <!-- Security Action Buttons -->
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem;">
             <!-- Email Key to Members -->
-            <form action="/organizations/email-hash" method="POST" style="display: inline;">
+            <form action="<?= url('/organizations/email-hash') ?>" method="POST" style="display: inline;">
                 <?= Csrf::field() ?>
                 <input type="hidden" name="organization_id" value="<?= $org['id'] ?>">
                 <button type="submit" class="btn btn-secondary">
@@ -203,7 +205,7 @@ use Convota\Security\Csrf;
             </form>
 
             <!-- Reinitialize / Rotate Key -->
-            <form action="/organizations/rotate-hash" method="POST" style="display: inline;" onsubmit="return confirm('Rotate access key? The old key will be instantly invalidated and the new key emailed to all members.');">
+            <form action="<?= url('/organizations/rotate-hash') ?>" method="POST" style="display: inline;" onsubmit="return confirm('Rotate access key? The old key will be instantly invalidated and the new key emailed to all members.');">
                 <?= Csrf::field() ?>
                 <input type="hidden" name="organization_id" value="<?= $org['id'] ?>">
                 <button type="submit" class="btn btn-warning">
@@ -212,7 +214,7 @@ use Convota\Security\Csrf;
             </form>
 
             <!-- Toggle Hash Auth -->
-            <form action="/organizations/toggle-hash" method="POST" style="display: inline;">
+            <form action="<?= url('/organizations/toggle-hash') ?>" method="POST" style="display: inline;">
                 <?= Csrf::field() ?>
                 <input type="hidden" name="organization_id" value="<?= $org['id'] ?>">
                 <input type="hidden" name="enabled" value="<?= $org['hash_auth_enabled'] ? '0' : '1' ?>">
@@ -222,7 +224,7 @@ use Convota\Security\Csrf;
             </form>
 
             <!-- Toggle Email Alert on Key Use -->
-            <form action="/organizations/toggle-email-alert" method="POST" style="display: inline;">
+            <form action="<?= url('/organizations/toggle-email-alert') ?>" method="POST" style="display: inline;">
                 <?= Csrf::field() ?>
                 <input type="hidden" name="organization_id" value="<?= $org['id'] ?>">
                 <input type="hidden" name="enabled" value="<?= $org['email_on_hash_login'] ? '0' : '1' ?>">
@@ -231,5 +233,6 @@ use Convota\Security\Csrf;
                 </button>
             </form>
         </div>
+
     </div>
 </div>

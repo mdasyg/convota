@@ -6,7 +6,7 @@ use Convota\Security\Csrf;
     Enter your registered member email and we will send you a secure link to reset your password.
 </p>
 
-<form action="/auth/forgot-password" method="POST">
+<form action="<?= url('/auth/forgot-password') ?>" method="POST">
     <?= Csrf::field() ?>
 
     <div class="form-group">
@@ -19,6 +19,7 @@ use Convota\Security\Csrf;
     </button>
 
     <div style="text-align: center; margin-top: 1.25rem;">
-        <a href="/login" style="font-size: 0.85rem;">← Back to Sign In</a>
+        <a href="<?= url('/login') ?>" style="font-size: 0.85rem;">← Back to Sign In</a>
     </div>
 </form>
+

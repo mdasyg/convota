@@ -59,8 +59,7 @@ class MeetingController
 
                 $id = $this->meetingModel->create($data, $creatorId, $ip);
                 $this->app->setFlash('success', 'General Assembly meeting scheduled.');
-                header("Location: /meetings/presence?id={$id}");
-                exit;
+                redirect("/meetings/presence?id={$id}");
             } catch (\Throwable $e) {
                 $this->app->setFlash('danger', $e->getMessage());
             }
@@ -83,9 +82,9 @@ class MeetingController
 
         $this->meetingModel->updateStatus($id, $status, $actorId, $ip);
         $this->app->setFlash('info', "Meeting status transitioned to '{$status}'.");
-        header("Location: /meetings/presence?id={$id}");
-        exit;
+        redirect("/meetings/presence?id={$id}");
     }
+
 
     /**
      * Live Presence & Dynamic Quorum Screen
@@ -158,9 +157,9 @@ class MeetingController
 
         // Return to referrer or presence screen
         $referrer = $_SERVER['HTTP_REFERER'] ?? "/meetings/presence?id={$meetingId}";
-        header("Location: {$referrer}");
-        exit;
+        redirect($referrer);
     }
+
 
     /**
      * Export attendance CSV

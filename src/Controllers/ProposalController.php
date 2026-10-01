@@ -85,8 +85,7 @@ class ProposalController
                 $proposalId = $this->proposalModel->create($data, $rawOptions, $creatorId, $ip);
 
                 $this->app->setFlash('success', 'Proposal / Election created successfully.');
-                header("Location: /proposals/monitor?id={$proposalId}");
-                exit;
+                redirect("/proposals/monitor?id={$proposalId}");
             } catch (\Throwable $e) {
                 $this->app->setFlash('danger', $e->getMessage());
             }
@@ -117,9 +116,9 @@ class ProposalController
             $this->app->setFlash('danger', $e->getMessage());
         }
 
-        header("Location: /proposals/monitor?id={$id}");
-        exit;
+        redirect("/proposals/monitor?id={$id}");
     }
+
 
     /**
      * Real-time Asynchronous Status Screen for President / Supervisors

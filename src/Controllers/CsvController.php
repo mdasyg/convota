@@ -50,8 +50,7 @@ class CsvController
 
         if (empty(trim($csvContent))) {
             $this->app->setFlash('danger', 'Please provide CSV content via file upload or paste in text area.');
-            header('Location: /csv/import');
-            exit;
+            redirect('/csv/import');
         }
 
         try {
@@ -62,8 +61,7 @@ class CsvController
             ]);
         } catch (\Throwable $e) {
             $this->app->setFlash('danger', $e->getMessage());
-            header('Location: /csv/import');
-            exit;
+            redirect('/csv/import');
         }
     }
 
@@ -78,8 +76,7 @@ class CsvController
         $rows = json_decode($rawJson, true);
         if (!is_array($rows)) {
             $this->app->setFlash('danger', 'Invalid preview payload.');
-            header('Location: /csv/import');
-            exit;
+            redirect('/csv/import');
         }
 
         $updateEmails = $_POST['update_emails'] ?? [];
@@ -98,14 +95,13 @@ class CsvController
                 $res['skipped']
             );
             $this->app->setFlash('success', $msg);
-            header('Location: /organizations');
-            exit;
+            redirect('/organizations');
         } catch (\Throwable $e) {
             $this->app->setFlash('danger', $e->getMessage());
-            header('Location: /csv/import');
-            exit;
+            redirect('/csv/import');
         }
     }
+
 
     public function exportOrganizations(): void
     {

@@ -5,7 +5,8 @@
         <?= nl2br(htmlspecialchars($message ?? 'An unexpected error occurred.')) ?>
     </p>
     <div>
-        <a href="/dashboard" class="btn btn-primary">Return to Dashboard</a>
-        <a href="/login" class="btn btn-secondary">Sign In</a>
+        <a href="<?= url('/dashboard') ?>" class="btn btn-primary">Return to Dashboard</a>
+        <a href="<?= url('/login') ?>" class="btn btn-secondary">Sign In</a>
     </div>
+
 </div>

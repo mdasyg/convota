@@ -3,6 +3,9 @@
  */
 
 document.addEventListener('DOMContentLoaded', function () {
+    const metaBase = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+    const basePath = (metaBase !== undefined && metaBase !== null ? metaBase : (window.location.pathname.startsWith('/convota') ? '/convota' : '')).replace(/\/$/, '');
+
     const clockEl = document.getElementById('projector-live-clock');
     if (clockEl) {
         setInterval(() => {
@@ -16,7 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (proposalEl) {
         const propId = proposalEl.getAttribute('data-proposal-id');
         setInterval(() => {
-            fetch(`/api/voting-status?proposal_id=${propId}`)
+            fetch(`${basePath}/api/voting-status?proposal_id=${propId}`)
+
                 .then(r => r.json())
                 .then(d => {
                     if (d.success && d.monitor) {

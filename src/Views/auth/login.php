@@ -12,7 +12,7 @@ use Convota\Security\Csrf;
 
 <!-- Tab 1: Member Email & Password -->
 <div id="tab-member" class="tab-content" style="<?= ($activeTab ?? 'member') === 'member' ? 'display: block;' : 'display: none;' ?>">
-    <form action="/auth/login" method="POST">
+    <form action="<?= url('/auth/login') ?>" method="POST">
         <?= Csrf::field() ?>
 
         <div class="form-group">
@@ -23,7 +23,7 @@ use Convota\Security\Csrf;
         <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <label class="form-label" for="password">Password</label>
-                <a href="/auth/forgot-password" style="font-size: 0.8rem;">Forgot password?</a>
+                <a href="<?= url('/auth/forgot-password') ?>" style="font-size: 0.8rem;">Forgot password?</a>
             </div>
             <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
         </div>
@@ -36,7 +36,8 @@ use Convota\Security\Csrf;
 
 <!-- Tab 2: Organization Common Access Hash -->
 <div id="tab-hash" class="tab-content" style="<?= ($activeTab ?? '') === 'hash' ? 'display: block;' : 'display: none;' ?>">
-    <form action="/auth/hash-login" method="POST">
+    <form action="<?= url('/auth/hash-login') ?>" method="POST">
+
         <?= Csrf::field() ?>
 
         <div class="form-group">

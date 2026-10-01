@@ -9,10 +9,11 @@ use Convota\Security\Csrf;
                 Update managerial metadata and voting power for <?= htmlspecialchars($org['name']) ?>.
             </p>
         </div>
-        <a href="/organizations" class="btn btn-secondary btn-sm">← Back</a>
+        <a href="<?= url('/organizations') ?>" class="btn btn-secondary btn-sm">← Back</a>
     </div>
 
-    <form action="/organizations/edit" method="POST">
+    <form action="<?= url('/organizations/edit') ?>" method="POST">
+
         <?= Csrf::field() ?>
         <input type="hidden" name="id" value="<?= $org['id'] ?>">
 

@@ -15,8 +15,10 @@ $testFiles = [
     'Phase 2 (Organizations, Roster, CSV Conflict Engine)' => __DIR__ . '/test_phase2.php',
     'Phase 3 (Assembly Meetings, Presence, Dynamic Quorum)' => __DIR__ . '/test_phase3.php',
     'Phase 4 (Voting Engine, Decoupled Ballots, Idempotency)' => __DIR__ . '/test_phase4.php',
-    'Phase 5 (REST APIs, Web Dispatcher, CSRF & Headers)' => __DIR__ . '/test_phase5.php'
+    'Phase 5 (REST APIs, Web Dispatcher, CSRF & Headers)' => __DIR__ . '/test_phase5.php',
+    'Phase 6 (Nginx Subpath & URL Helper Routing)' => __DIR__ . '/test_nginx_routing.php'
 ];
+
 
 $allPassed = true;
 

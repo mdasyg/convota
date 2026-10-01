@@ -4,9 +4,13 @@
  */
 
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. Setup CSRF Token for all fetch calls
+    // 1. Setup Base Path and CSRF Token
+    const metaBase = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+    const basePath = (metaBase !== undefined && metaBase !== null ? metaBase : (window.location.pathname.startsWith('/convota') ? '/convota' : '')).replace(/\/$/, '');
+
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+
 
     // 2. Tab Switching (Login Page)
     const tabButtons = document.querySelectorAll('[data-tab-target]');
@@ -43,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const pollInterval = 3000; // 3 seconds
 
         function pollVotingStatus() {
-            fetch(`/api/voting-status?proposal_id=${proposalId}`, {
+            fetch(`${basePath}/api/voting-status?proposal_id=${proposalId}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(res => res.json())
@@ -90,9 +94,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const pollInterval = 4000;
 
         function pollQuorumStatus() {
-            fetch(`/api/quorum?meeting_id=${meetingId}`, {
+            fetch(`${basePath}/api/quorum?meeting_id=${meetingId}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
+
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.quorum) {

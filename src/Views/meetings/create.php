@@ -9,10 +9,11 @@ use Convota\Security\Csrf;
                 Set up a new meeting session for presence verification and voting.
             </p>
         </div>
-        <a href="/meetings" class="btn btn-secondary btn-sm">← Back</a>
+        <a href="<?= url('/meetings') ?>" class="btn btn-secondary btn-sm">← Back</a>
     </div>
 
-    <form action="/meetings/create" method="POST">
+    <form action="<?= url('/meetings/create') ?>" method="POST">
+
         <?= Csrf::field() ?>
 
         <div class="card">
@@ -54,8 +55,9 @@ use Convota\Security\Csrf;
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-            <a href="/meetings" class="btn btn-secondary">Cancel</a>
+            <a href="<?= url('/meetings') ?>" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn btn-primary">Schedule Meeting</button>
         </div>
+
     </form>
 </div>

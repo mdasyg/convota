@@ -37,8 +37,9 @@ $rows = $preview['rows'];
     </div>
 <?php endif; ?>
 
-<form action="/csv/commit" method="POST">
+<form action="<?= url('/csv/commit') ?>" method="POST">
     <?= Csrf::field() ?>
+
     <input type="hidden" name="rows_json" value="<?= htmlspecialchars(json_encode($rows), ENT_QUOTES, 'UTF-8') ?>">
 
     <div class="card">
@@ -100,8 +101,9 @@ $rows = $preview['rows'];
     </div>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
-        <a href="/csv/import" class="btn btn-secondary">← Cancel & Re-upload</a>
+        <a href="<?= url('/csv/import') ?>" class="btn btn-secondary">← Cancel & Re-upload</a>
         <button type="submit" class="btn btn-primary btn-lg" onclick="return confirm('Commit validated rows to the database?');">
+
             ✓ Commit Validated Import
         </button>
     </div>

@@ -7,8 +7,9 @@ use Convota\Security\Csrf;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?= htmlspecialchars(Csrf::getToken(), ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="base-url" content="<?= htmlspecialchars(url('/'), ENT_QUOTES, 'UTF-8') ?>">
     <title><?= isset($title) ? htmlspecialchars($title) . ' — ' : '' ?>Convota Access</title>
-    <link rel="stylesheet" href="/assets/css/app.css">
+    <link rel="stylesheet" href="<?= url('/assets/css/app.css') ?>">
     <style>
         body {
             display: flex;
@@ -75,6 +76,7 @@ use Convota\Security\Csrf;
             <?= $content ?>
         </div>
     </div>
-    <script src="/assets/js/app.js"></script>
+    <script src="<?= url('/assets/js/app.js') ?>"></script>
 </body>
+
 </html>

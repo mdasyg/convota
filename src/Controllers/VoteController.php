@@ -129,10 +129,10 @@ class VoteController
             ]);
         } catch (\Throwable $e) {
             $this->app->setFlash('danger', $e->getMessage());
-            header("Location: /proposals/vote?id={$proposalId}");
-            exit;
+            redirect("/proposals/vote?id={$proposalId}");
         }
     }
+
 
     /**
      * Voter Self-Verification Tool (Receipt Hash lookup)

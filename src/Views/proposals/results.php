@@ -10,9 +10,10 @@
     </div>
 
     <div style="display: flex; gap: 0.5rem;">
-        <a href="/proposals" class="btn btn-secondary btn-sm">← Back to Proposals</a>
+        <a href="<?= url('/proposals') ?>" class="btn btn-secondary btn-sm">← Back to Proposals</a>
         <button type="button" class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ Print Protocol</button>
     </div>
+
 </div>
 
 <!-- Quorum & Majority Benchmark Card -->

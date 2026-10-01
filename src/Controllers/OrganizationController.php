@@ -86,8 +86,7 @@ class OrganizationController
                 $res = $this->orgModel->createWithFirstMember($orgData, $memberData, $adminId, $ip, $ua, $baseUrl);
 
                 $this->app->setFlash('success', "Organization '{$orgData['name']}' created successfully. Welcome email dispatched to first delegate.");
-                header('Location: /organizations');
-                exit;
+                redirect('/organizations');
             } catch (\Throwable $e) {
                 $this->app->setFlash('danger', $e->getMessage());
             }
@@ -132,8 +131,7 @@ class OrganizationController
                 $this->orgModel->update($id, $data, $adminId, $ip);
 
                 $this->app->setFlash('success', 'Organization updated successfully.');
-                header('Location: /organizations');
-                exit;
+                redirect('/organizations');
             } catch (\Throwable $e) {
                 $this->app->setFlash('danger', $e->getMessage());
             }
@@ -158,9 +156,9 @@ class OrganizationController
 
         $this->orgModel->setPresident($id, $adminId, $ip);
         $this->app->setFlash('success', 'President Organization designation updated.');
-        header('Location: /organizations');
-        exit;
+        redirect('/organizations');
     }
+
 
     /**
      * Self-Management Organization Portal
@@ -239,8 +237,7 @@ class OrganizationController
             $this->app->setFlash('danger', $e->getMessage());
         }
 
-        header('Location: /organizations/portal');
-        exit;
+        redirect('/organizations/portal');
     }
 
     /**
@@ -264,8 +261,7 @@ class OrganizationController
             $this->app->setFlash('danger', 'Failed to remove member.');
         }
 
-        header('Location: /organizations/portal');
-        exit;
+        redirect('/organizations/portal');
     }
 
     /**
@@ -284,8 +280,7 @@ class OrganizationController
         $this->userModel->setPrimary($userId, $orgId, $actorId, $ip);
         $this->app->setFlash('success', 'Primary delegate updated.');
 
-        header('Location: /organizations/portal');
-        exit;
+        redirect('/organizations/portal');
     }
 
     /**
@@ -308,8 +303,7 @@ class OrganizationController
             $_SESSION['convota_org_auth']['common_hash'] = $newHash;
         }
 
-        header('Location: /organizations/portal');
-        exit;
+        redirect('/organizations/portal');
     }
 
     /**
@@ -331,8 +325,7 @@ class OrganizationController
             $this->app->setFlash('warning', 'No registered active members found to receive the email.');
         }
 
-        header('Location: /organizations/portal');
-        exit;
+        redirect('/organizations/portal');
     }
 
     /**
@@ -351,8 +344,7 @@ class OrganizationController
         $statusStr = $enabled ? 'enabled' : 'disabled';
         $this->app->setFlash('info', "Organization Key authorization has been {$statusStr}.");
 
-        header('Location: /organizations/portal');
-        exit;
+        redirect('/organizations/portal');
     }
 
     /**
@@ -371,8 +363,7 @@ class OrganizationController
         $statusStr = $enabled ? 'enabled' : 'disabled';
         $this->app->setFlash('info', "Member email notifications on key usage {$statusStr}.");
 
-        header('Location: /organizations/portal');
-        exit;
+        redirect('/organizations/portal');
     }
 
     /**
@@ -391,9 +382,9 @@ class OrganizationController
 
         $this->orgModel->delete($id, $adminId, $ip);
         $this->app->setFlash('success', 'Organization deleted.');
-        header('Location: /organizations');
-        exit;
+        redirect('/organizations');
     }
+
 
     /**
      * Strict Authorization guard: Ensure caller has permission for this specific organization

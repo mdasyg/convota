@@ -6,8 +6,9 @@
         </p>
     </div>
     <?php if (!empty($isAdmin) || !empty($isPresident)): ?>
-        <a href="/proposals/create" class="btn btn-success btn-sm">➕ Create Proposal / Election</a>
+        <a href="<?= url('/proposals/create') ?>" class="btn btn-success btn-sm">➕ Create Proposal / Election</a>
     <?php endif; ?>
+
 </div>
 
 <div class="card">
@@ -66,17 +67,18 @@
                             <td style="text-align: right;">
                                 <div style="display: inline-flex; gap: 0.35rem;">
                                     <?php if ($p['status'] === 'open'): ?>
-                                        <a href="/proposals/vote?id=<?= $p['id'] ?>" class="btn btn-success btn-sm">Vote</a>
+                                        <a href="<?= url('/proposals/vote?id=' . $p['id']) ?>" class="btn btn-success btn-sm">Vote</a>
                                     <?php endif; ?>
 
-                                    <a href="/proposals/monitor?id=<?= $p['id'] ?>" class="btn btn-secondary btn-sm">Monitor</a>
+                                    <a href="<?= url('/proposals/monitor?id=' . $p['id']) ?>" class="btn btn-secondary btn-sm">Monitor</a>
 
                                     <?php if (in_array($p['status'], ['closed', 'archived'], true)): ?>
-                                        <a href="/proposals/results?id=<?= $p['id'] ?>" class="btn btn-primary btn-sm">Results</a>
+                                        <a href="<?= url('/proposals/results?id=' . $p['id']) ?>" class="btn btn-primary btn-sm">Results</a>
                                     <?php endif; ?>
 
-                                    <a href="/proposals/projector?id=<?= $p['id'] ?>" target="_blank" class="btn btn-secondary btn-sm" title="Open Hall Projector View">📽️ Projector</a>
+                                    <a href="<?= url('/proposals/projector?id=' . $p['id']) ?>" target="_blank" class="btn btn-secondary btn-sm" title="Open Hall Projector View">📽️ Projector</a>
                                 </div>
+
                             </td>
                         </tr>
                     <?php endforeach; ?>

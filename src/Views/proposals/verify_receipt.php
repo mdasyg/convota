@@ -8,8 +8,9 @@
 
     <div class="card">
         <div class="card-body">
-            <form action="/proposals/verify-receipt" method="GET">
+            <form action="<?= url('/proposals/verify-receipt') ?>" method="GET">
                 <div class="form-group">
+
                     <label class="form-label" for="proposal_id">Select Proposal</label>
                     <select id="proposal_id" name="proposal_id" class="form-control" required>
                         <option value="">-- Choose Proposal --</option>

@@ -12,9 +12,9 @@ use Convota\Security\Validator;
 
         <?php if (!empty($isAdmin) || !empty($isPresident)): ?>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <a href="/meetings/create" class="btn btn-primary btn-sm">➕ Schedule Meeting</a>
-                <a href="/proposals/create" class="btn btn-success btn-sm">🗳️ New Proposal</a>
-                <a href="/csv/import" class="btn btn-secondary btn-sm">📄 Import CSV</a>
+                <a href="<?= url('/meetings/create') ?>" class="btn btn-primary btn-sm">➕ Schedule Meeting</a>
+                <a href="<?= url('/proposals/create') ?>" class="btn btn-success btn-sm">🗳️ New Proposal</a>
+                <a href="<?= url('/csv/import') ?>" class="btn btn-secondary btn-sm">📄 Import CSV</a>
             </div>
         <?php endif; ?>
     </div>
@@ -31,9 +31,10 @@ use Convota\Security\Validator;
                 <strong>Active Meeting:</strong> <?= htmlspecialchars($activeMeeting['title']) ?>
             </div>
             <div>
-                <a href="/meetings/presence?id=<?= (int)$activeMeeting['id'] ?>" class="btn btn-secondary btn-sm">Live Presence & Roll-Call →</a>
+                <a href="<?= url('/meetings/presence?id=' . (int)$activeMeeting['id']) ?>" class="btn btn-secondary btn-sm">Live Presence & Roll-Call →</a>
             </div>
         </div>
+
 
         <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-top: 0.25rem;">
             <span id="quorum-banner-message"><?= htmlspecialchars($quorumData['status_message']) ?></span>
@@ -65,7 +66,7 @@ use Convota\Security\Validator;
                 The vote belongs to the organization; the designated representative exercises that vote during assembly sessions.
             </p>
             <div style="display: flex; gap: 0.75rem; align-items: center;">
-                <a href="/organizations/portal" class="btn btn-primary btn-sm">Manage Delegation Roster & Shared Key →</a>
+                <a href="<?= url('/organizations/portal') ?>" class="btn btn-primary btn-sm">Manage Delegation Roster & Shared Key →</a>
             </div>
         </div>
     </div>
@@ -128,13 +129,13 @@ use Convota\Security\Validator;
                                 </td>
                                 <td style="text-align: right;">
                                     <?php if ($p['has_voted']): ?>
-                                        <a href="/proposals/monitor?id=<?= $p['id'] ?>" class="btn btn-secondary btn-sm">Monitor</a>
+                                        <a href="<?= url('/proposals/monitor?id=' . $p['id']) ?>" class="btn btn-secondary btn-sm">Monitor</a>
                                     <?php else: ?>
-                                        <a href="/proposals/vote?id=<?= $p['id'] ?>" class="btn btn-success btn-sm">Cast Vote →</a>
+                                        <a href="<?= url('/proposals/vote?id=' . $p['id']) ?>" class="btn btn-success btn-sm">Cast Vote →</a>
                                     <?php endif; ?>
 
                                     <?php if (!empty($isAdmin) || !empty($isPresident)): ?>
-                                        <a href="/proposals/monitor?id=<?= $p['id'] ?>" class="btn btn-secondary btn-sm">Presidium Console</a>
+                                        <a href="<?= url('/proposals/monitor?id=' . $p['id']) ?>" class="btn btn-secondary btn-sm">Presidium Console</a>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -145,6 +146,7 @@ use Convota\Security\Validator;
         <?php endif; ?>
     </div>
 </div>
+
 
 <!-- Collective Overview Stats (Admin & President) -->
 <?php if (!empty($isAdmin) || !empty($isPresident)): ?>

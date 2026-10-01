@@ -9,10 +9,11 @@ use Convota\Security\Csrf;
                 Configure the motion wording, voting format, timing window, and quorum benchmarks.
             </p>
         </div>
-        <a href="/proposals" class="btn btn-secondary btn-sm">← Back</a>
+        <a href="<?= url('/proposals') ?>" class="btn btn-secondary btn-sm">← Back</a>
     </div>
 
-    <form action="/proposals/create" method="POST">
+    <form action="<?= url('/proposals/create') ?>" method="POST">
+
         <?= Csrf::field() ?>
 
         <div class="card">
@@ -141,9 +142,10 @@ use Convota\Security\Csrf;
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-            <a href="/proposals" class="btn btn-secondary">Cancel</a>
+            <a href="<?= url('/proposals') ?>" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn btn-success">Create Proposal</button>
         </div>
+
     </form>
 </div>
 

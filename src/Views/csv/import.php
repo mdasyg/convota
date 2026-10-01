@@ -9,8 +9,9 @@ use Convota\Security\Csrf;
         </p>
     </div>
 
-    <form action="/csv/preview" method="POST" enctype="multipart/form-data">
+    <form action="<?= url('/csv/preview') ?>" method="POST" enctype="multipart/form-data">
         <?= Csrf::field() ?>
+
 
         <div class="card">
             <div class="card-header">
@@ -41,8 +42,9 @@ use Convota\Security\Csrf;
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-            <a href="/organizations" class="btn btn-secondary">Cancel</a>
+            <a href="<?= url('/organizations') ?>" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn btn-primary">
+
                 Preview & Validate Conflicts →
             </button>
         </div>

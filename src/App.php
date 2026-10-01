@@ -53,12 +53,91 @@ class App
         self::$instance = $instance;
     }
 
+    private static ?string $cachedBasePath = null;
+
+    public static function setBasePath(?string $basePath): void
+    {
+        self::$cachedBasePath = $basePath;
+    }
+
+    public static function detectBasePath(): string
+    {
+        if (self::$cachedBasePath !== null) {
+            return self::$cachedBasePath;
+        }
+
+        $config = require __DIR__ . '/../config/config.php';
+        if (!empty($config['app']['base_url'])) {
+            return self::$cachedBasePath = rtrim($config['app']['base_url'], '/');
+        }
+
+        if (!empty($_SERVER['HTTP_X_FORWARDED_PREFIX'])) {
+            $prefix = '/' . trim((string)$_SERVER['HTTP_X_FORWARDED_PREFIX'], '/');
+            if ($prefix !== '/') {
+                return self::$cachedBasePath = $prefix;
+            }
+        }
+
+        $uri = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
+        if (str_starts_with($uri, '/convota/') || $uri === '/convota') {
+            return self::$cachedBasePath = '/convota';
+        }
+
+        $script = $_SERVER['SCRIPT_NAME'] ?? '';
+        if (str_starts_with($script, '/convota/') || $script === '/convota') {
+            return self::$cachedBasePath = '/convota';
+        }
+
+        return self::$cachedBasePath = '';
+    }
+
+    public static function baseUrl(string $path = ''): string
+    {
+        $base = self::detectBasePath();
+        if ($base === '') {
+            if ($path === '') return '/';
+            return str_starts_with($path, '/') ? $path : '/' . $path;
+        }
+
+        if ($path === '' || $path === '/') {
+            return $base . '/';
+        }
+
+        if (str_starts_with($path, $base . '/') || $path === $base) {
+            return $path;
+        }
+
+        $path = '/' . ltrim($path, '/');
+        return $base . $path;
+    }
+
+    public static function redirectUrl(string $path): void
+    {
+        if (preg_match('#^https?://#i', $path)) {
+            header('Location: ' . $path);
+        } else {
+            header('Location: ' . self::baseUrl($path));
+        }
+        exit;
+    }
+
+    public function redirect(string $path): void
+    {
+        self::redirectUrl($path);
+    }
+
+    public function url(string $path = ''): string
+    {
+        return self::baseUrl($path);
+    }
+
     public function getDb(): Database { return $this->db; }
     public function getAuth(): AuthService { return $this->auth; }
     public function getHashAuth(): HashAuth { return $this->hashAuth; }
     public function getAudit(): AuditService { return $this->audit; }
     public function getMailer(): MailerService { return $this->mailer; }
     public function getConfig(): array { return $this->config; }
+
 
     /**
      * Dispatch HTTP request
@@ -83,9 +162,19 @@ class App
         $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
         $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 
+        // Detect Base Path
+        $basePath = self::detectBasePath();
+
         // Normalize URI
-        $path = '/' . trim($uri, '/');
+        $path = '/' . trim($uri ?? '/', '/');
         if ($path === '//') $path = '/';
+
+        // Strip Base Path from URI for internal routing
+        if ($basePath !== '' && (str_starts_with($path, $basePath . '/') || $path === $basePath)) {
+            $path = substr($path, strlen($basePath));
+            $path = '/' . trim($path, '/');
+            if ($path === '//') $path = '/';
+        }
 
         // 5. CSRF Defense for mutating requests
         if (in_array($method, ['POST', 'PUT', 'DELETE'], true)) {
@@ -156,9 +245,9 @@ class App
         $orgAuth = $_SESSION['convota_org_auth'] ?? null;
 
         if (!$user && !$orgAuth) {
-            header('Location: /login');
-            exit;
+            self::redirectUrl('/login');
         }
+
 
         // Organization Portal (Accessible via User or Common Hash)
         if ($path === '/organizations/portal') { $orgController->portal(); return; }
@@ -247,6 +336,8 @@ class App
         $orgAuth = $_SESSION['convota_org_auth'] ?? null;
         $flash = $this->getFlash();
         $appName = $this->config['app']['name'] ?? 'Convota';
+        $basePath = self::detectBasePath();
+        $app = $this;
 
         $templateFile = __DIR__ . '/Views/' . $template . '.php';
         if (!file_exists($templateFile)) {

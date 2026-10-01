@@ -44,14 +44,14 @@ use Convota\Security\Csrf;
                     Recorded on <?= htmlspecialchars($participation['voted_at'] ?? 'now') ?> UTC
                 </p>
                 <div style="margin-top: 1.5rem;">
-                    <a href="/proposals/monitor?id=<?= $proposal['id'] ?>" class="btn btn-secondary">View Live Monitor</a>
-                    <a href="/dashboard" class="btn btn-primary">Return to Dashboard</a>
+                    <a href="<?= url('/proposals/monitor?id=' . $proposal['id']) ?>" class="btn btn-secondary">View Live Monitor</a>
+                    <a href="<?= url('/dashboard') ?>" class="btn btn-primary">Return to Dashboard</a>
                 </div>
             </div>
         </div>
     <?php else: ?>
         <!-- Ballot Casting Form -->
-        <form action="/proposals/cast-vote" method="POST">
+        <form action="<?= url('/proposals/cast-vote') ?>" method="POST">
             <?= Csrf::field() ?>
             <input type="hidden" name="proposal_id" value="<?= $proposal['id'] ?>">
             <input type="hidden" name="organization_id" value="<?= $org['id'] ?>">
@@ -81,7 +81,8 @@ use Convota\Security\Csrf;
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
-                <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+                <a href="<?= url('/dashboard') ?>" class="btn btn-secondary">Cancel</a>
+
                 <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Confirm vote submission for <?= htmlspecialchars($org['name']) ?>?');">
                     🔒 Cast Official Vote
                 </button>

@@ -36,9 +36,10 @@
         <?php endif; ?>
 
         <div style="display: flex; justify-content: center; gap: 0.75rem; margin-top: 1rem;">
-            <a href="/proposals/verify-receipt" class="btn btn-secondary">Test Receipt Verification</a>
-            <a href="/proposals/monitor?id=<?= $proposal['id'] ?>" class="btn btn-secondary">Live Monitor</a>
-            <a href="/dashboard" class="btn btn-primary">Return to Dashboard</a>
+            <a href="<?= url('/proposals/verify-receipt') ?>" class="btn btn-secondary">Test Receipt Verification</a>
+            <a href="<?= url('/proposals/monitor?id=' . $proposal['id']) ?>" class="btn btn-secondary">Live Monitor</a>
+            <a href="<?= url('/dashboard') ?>" class="btn btn-primary">Return to Dashboard</a>
         </div>
+
     </div>
 </div>

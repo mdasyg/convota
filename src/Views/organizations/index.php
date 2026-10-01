@@ -9,9 +9,9 @@ use Convota\Security\Csrf;
         </p>
     </div>
     <div style="display: flex; gap: 0.5rem;">
-        <a href="/csv/export-organizations" class="btn btn-secondary btn-sm">Export CSV</a>
+        <a href="<?= url('/csv/export-organizations') ?>" class="btn btn-secondary btn-sm">Export CSV</a>
         <?php if (!empty($isAdmin)): ?>
-            <a href="/organizations/create" class="btn btn-primary btn-sm">➕ Add Organization</a>
+            <a href="<?= url('/organizations/create') ?>" class="btn btn-primary btn-sm">➕ Add Organization</a>
         <?php endif; ?>
     </div>
 </div>
@@ -66,13 +66,13 @@ use Convota\Security\Csrf;
                         </td>
                         <td style="text-align: right;">
                             <div style="display: inline-flex; gap: 0.25rem;">
-                                <a href="/organizations/portal?id=<?= $org['id'] ?>" class="btn btn-secondary btn-sm" title="Delegation Portal">Portal</a>
+                                <a href="<?= url('/organizations/portal?id=' . $org['id']) ?>" class="btn btn-secondary btn-sm" title="Delegation Portal">Portal</a>
 
                                 <?php if (!empty($isAdmin)): ?>
-                                    <a href="/organizations/edit?id=<?= $org['id'] ?>" class="btn btn-secondary btn-sm">Edit</a>
+                                    <a href="<?= url('/organizations/edit?id=' . $org['id']) ?>" class="btn btn-secondary btn-sm">Edit</a>
 
                                     <?php if (!$org['is_president'] && !$org['is_observer']): ?>
-                                        <form action="/organizations/set-president" method="POST" style="display: inline;" onsubmit="return confirm('Designate <?= htmlspecialchars($org['name']) ?> as the President Organization?');">
+                                        <form action="<?= url('/organizations/set-president') ?>" method="POST" style="display: inline;" onsubmit="return confirm('Designate <?= htmlspecialchars($org['name']) ?> as the President Organization?');">
                                             <?= Csrf::field() ?>
                                             <input type="hidden" name="organization_id" value="<?= $org['id'] ?>">
                                             <button type="submit" class="btn btn-secondary btn-sm" title="Set as President Organization">Set President</button>
@@ -83,6 +83,7 @@ use Convota\Security\Csrf;
                         </td>
                     </tr>
                 <?php endforeach; ?>
+
             </tbody>
         </table>
     </div>

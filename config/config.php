@@ -13,7 +13,7 @@ return [
         'env' => getenv('APP_ENV') ?: 'production', // 'production', 'development', 'testing'
         'debug' => (bool)(getenv('APP_DEBUG') ?: false),
         'base_url' => getenv('APP_BASE_URL') ?: '',
-        'force_https' => (bool)(getenv('APP_FORCE_HTTPS') ?? true),
+        'force_https' => (bool)(getenv('APP_FORCE_HTTPS') ?: false),
     ],
 
     'security' => [

@@ -10,12 +10,13 @@ use Convota\Security\Csrf;
     </div>
 
     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-        <a href="/meetings/export-csv?id=<?= $meeting['id'] ?>" class="btn btn-secondary btn-sm">📥 Export Attendance CSV</a>
+        <a href="<?= url('/meetings/export-csv?id=' . $meeting['id']) ?>" class="btn btn-secondary btn-sm">📥 Export Attendance CSV</a>
 
         <!-- State Machine Actions for Presidium / Admin -->
         <?php if (!empty($isAdmin) || !empty($isPresident)): ?>
-            <form action="/meetings/status" method="POST" style="display: inline;">
+            <form action="<?= url('/meetings/status') ?>" method="POST" style="display: inline;">
                 <?= Csrf::field() ?>
+
                 <input type="hidden" name="id" value="<?= $meeting['id'] ?>">
 
                 <?php if ($meeting['status'] === 'draft'): ?>
@@ -60,8 +61,9 @@ use Convota\Security\Csrf;
             <h3>Presidium Roll-Call / Manual Check-In</h3>
         </div>
         <div class="card-body">
-            <form action="/meetings/set-presence" method="POST" style="display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap;">
+            <form action="<?= url('/meetings/set-presence') ?>" method="POST" style="display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap;">
                 <?= Csrf::field() ?>
+
                 <input type="hidden" name="meeting_id" value="<?= $meeting['id'] ?>">
 
                 <div style="flex: 1; min-width: 220px;">
@@ -173,7 +175,7 @@ use Convota\Security\Csrf;
                             <?php if (!empty($isAdmin) || !empty($isPresident)): ?>
                                 <td style="text-align: right;">
                                     <?php if ($r['is_present']): ?>
-                                        <form action="/meetings/set-presence" method="POST" style="display: inline;">
+                                        <form action="<?= url('/meetings/set-presence') ?>" method="POST" style="display: inline;">
                                             <?= Csrf::field() ?>
                                             <input type="hidden" name="meeting_id" value="<?= $meeting['id'] ?>">
                                             <input type="hidden" name="organization_id" value="<?= $r['organization_id'] ?>">
@@ -181,7 +183,7 @@ use Convota\Security\Csrf;
                                             <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Mark absent?');">Mark Absent</button>
                                         </form>
                                     <?php else: ?>
-                                        <form action="/meetings/set-presence" method="POST" style="display: inline;">
+                                        <form action="<?= url('/meetings/set-presence') ?>" method="POST" style="display: inline;">
                                             <?= Csrf::field() ?>
                                             <input type="hidden" name="meeting_id" value="<?= $meeting['id'] ?>">
                                             <input type="hidden" name="organization_id" value="<?= $r['organization_id'] ?>">
@@ -190,6 +192,7 @@ use Convota\Security\Csrf;
                                     <?php endif; ?>
                                 </td>
                             <?php endif; ?>
+
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

@@ -24,8 +24,7 @@ class AuthController
     public function login(): void
     {
         if ($this->app->getAuth()->check()) {
-            header('Location: /dashboard');
-            exit;
+            redirect('/dashboard');
         }
 
         $activeTab = $_GET['tab'] ?? 'member';
@@ -46,13 +45,11 @@ class AuthController
 
         if (!$res['success']) {
             $this->app->setFlash('danger', $res['error']);
-            header('Location: /login?tab=member');
-            exit;
+            redirect('/login?tab=member');
         }
 
         $this->app->setFlash('success', "Welcome back, {$res['user']['name']}!");
-        header('Location: /dashboard');
-        exit;
+        redirect('/dashboard');
     }
 
     /**
@@ -66,15 +63,14 @@ class AuthController
 
         if (!$res['success']) {
             $this->app->setFlash('danger', $res['error']);
-            header('Location: /login?tab=hash');
-            exit;
+            redirect('/login?tab=hash');
         }
 
         $orgName = $res['organization']['organization_name'];
         $this->app->setFlash('success', "Authenticated as delegation for '{$orgName}'.");
-        header('Location: /organizations/portal');
-        exit;
+        redirect('/organizations/portal');
     }
+
 
     /**
      * Password reset request (Forgot Password)
@@ -93,8 +89,7 @@ class AuthController
             }
             // Always show friendly message to prevent email enumeration
             $this->app->setFlash('info', 'If an active account exists for that email, a password reset link has been dispatched.');
-            header('Location: /login');
-            exit;
+            redirect('/login');
         }
 
         $this->app->render('auth/forgot_password', [], 'auth_layout');
@@ -108,8 +103,7 @@ class AuthController
         $token = $_GET['token'] ?? ($_POST['token'] ?? '');
         if (empty($token)) {
             $this->app->setFlash('danger', 'Invalid or missing password reset token.');
-            header('Location: /login');
-            exit;
+            redirect('/login');
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -131,13 +125,11 @@ class AuthController
             $success = $this->app->getAuth()->resetPasswordWithToken($token, $password);
             if (!$success) {
                 $this->app->setFlash('danger', 'This password reset link has expired or is invalid.');
-                header('Location: /login');
-                exit;
+                redirect('/login');
             }
 
             $this->app->setFlash('success', 'Your password has been successfully updated. You may now sign in.');
-            header('Location: /login');
-            exit;
+            redirect('/login');
         }
 
         $this->app->render('auth/reset_password', ['token' => $token], 'auth_layout');
@@ -151,7 +143,7 @@ class AuthController
         $this->app->getAuth()->logout();
         unset($_SESSION['convota_org_auth']);
         $this->app->setFlash('info', 'You have been safely signed out.');
-        header('Location: /login');
-        exit;
+        redirect('/login');
     }
 }
+

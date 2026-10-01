@@ -6,8 +6,9 @@
         </p>
     </div>
     <?php if (!empty($isAdmin) || !empty($isPresident)): ?>
-        <a href="/meetings/create" class="btn btn-primary btn-sm">➕ Schedule Assembly Meeting</a>
+        <a href="<?= url('/meetings/create') ?>" class="btn btn-primary btn-sm">➕ Schedule Assembly Meeting</a>
     <?php endif; ?>
+
 </div>
 
 <div class="card">
@@ -50,10 +51,11 @@
                                 <strong><?= $m['attendee_count'] ?></strong> organization(s)
                             </td>
                             <td style="text-align: right;">
-                                <a href="/meetings/presence?id=<?= $m['id'] ?>" class="btn btn-secondary btn-sm">
+                                <a href="<?= url('/meetings/presence?id=' . $m['id']) ?>" class="btn btn-secondary btn-sm">
                                     Presence & Quorum →
                                 </a>
                             </td>
+
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>

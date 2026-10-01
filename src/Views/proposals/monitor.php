@@ -16,9 +16,9 @@ use Convota\Security\Csrf;
 
     <!-- State Machine Transition Controls -->
     <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-        <a href="/proposals/projector?id=<?= $proposal['id'] ?>" target="_blank" class="btn btn-secondary btn-sm">📽️ Open Projector</a>
+        <a href="<?= url('/proposals/projector?id=' . $proposal['id']) ?>" target="_blank" class="btn btn-secondary btn-sm">📽️ Open Projector</a>
 
-        <form action="/proposals/status" method="POST" style="display: inline;">
+        <form action="<?= url('/proposals/status') ?>" method="POST" style="display: inline;">
             <?= Csrf::field() ?>
             <input type="hidden" name="id" value="<?= $proposal['id'] ?>">
 
@@ -31,13 +31,14 @@ use Convota\Security\Csrf;
                 <button type="submit" name="status" value="open" class="btn btn-success btn-sm">▶ Resume Voting</button>
                 <button type="submit" name="status" value="closed" class="btn btn-danger btn-sm" onclick="return confirm('Close voting?');">⏹ Close Vote & Seal</button>
             <?php elseif ($proposal['status'] === 'closed'): ?>
-                <a href="/proposals/results?id=<?= $proposal['id'] ?>" class="btn btn-primary btn-sm">📊 View Certified Results</a>
+                <a href="<?= url('/proposals/results?id=' . $proposal['id']) ?>" class="btn btn-primary btn-sm">📊 View Certified Results</a>
                 <button type="submit" name="status" value="archived" class="btn btn-secondary btn-sm" onclick="return confirm('Archive permanently?');">📁 Archive</button>
             <?php elseif ($proposal['status'] === 'archived'): ?>
-                <a href="/proposals/results?id=<?= $proposal['id'] ?>" class="btn btn-primary btn-sm">📊 View Certified Results</a>
+                <a href="<?= url('/proposals/results?id=' . $proposal['id']) ?>" class="btn btn-primary btn-sm">📊 View Certified Results</a>
             <?php endif; ?>
         </form>
     </div>
+
 </div>
 
 <!-- Asynchronous Real-Time Monitor Box -->

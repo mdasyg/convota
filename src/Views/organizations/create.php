@@ -9,10 +9,11 @@ use Convota\Security\Csrf;
                 Only the organization name and first member details are required. All other managerial fields are optional.
             </p>
         </div>
-        <a href="/organizations" class="btn btn-secondary btn-sm">← Back to Organizations</a>
+        <a href="<?= url('/organizations') ?>" class="btn btn-secondary btn-sm">← Back to Organizations</a>
     </div>
 
-    <form action="/organizations/create" method="POST">
+    <form action="<?= url('/organizations/create') ?>" method="POST">
+
         <?= Csrf::field() ?>
 
         <div class="card">
@@ -96,8 +97,9 @@ use Convota\Security\Csrf;
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-            <a href="/organizations" class="btn btn-secondary">Cancel</a>
+            <a href="<?= url('/organizations') ?>" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn btn-primary">Create Organization & Send Welcome Email</button>
         </div>
+
     </form>
 </div>

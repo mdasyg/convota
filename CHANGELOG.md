@@ -9,7 +9,28 @@ and this project adheres to Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-01
+### Added
+- Nginx Web Server integration in `/etc/nginx/sites-available/rtl2schematic`:
+  - 301 Redirect for `/convota` to `/convota/` (preserving query parameters).
+  - Aliased prefix routing `location ^~ /convota/` pointing to `/projects/convota/public/`.
+  - FastCGI integration with PHP-FPM 8.4 socket (`unix:/run/php/php8.4-fpm.sock`).
+  - Fallback named rewrite location `@convota` routing requests through `/convota/index.php`.
+  - Static asset cache rules for `.css`, `.js`, `.png`, `.svg`, etc. with 7-day expiration.
+  - Strict security location blocks preventing direct access to `data/`, `src/`, `config/`, `tests/`, `.git/`, and `.sqlite/.log` files (returns HTTP 404).
+  - Reverse proxy prefix and referer detection for seamless `/convota` routing.
+- Subpath-Aware Routing & Dynamic URL Helper:
+  - Added `App::detectBasePath()`, `App::baseUrl()`, and `App::redirectUrl()` in `src/App.php`.
+  - Added global helper functions `url()` and `redirect()` in `src/helpers.php` (included via `src/Autoload.php`).
+  - Dynamic route URI normalization stripping `/convota` prefix for router dispatch while preserving dual-environment portability (works standalone at `/` or under `/convota`).
+  - Updated all controllers to use `redirect()`.
+  - Updated all view templates, layouts, form actions, asset links, and navigation tags to use `url(...)`.
+  - Updated AJAX fetch calls in `app.js` and `projector.js` to dynamically prefix requests with `<meta name="base-url">`.
+- Phase 6 Test Suite:
+  - Added `tests/test_nginx_routing.php` (10 passing tests) and updated master runner to execute 130 tests across all 6 phases.
+
 ## [1.0.0] - 2026-10-01
+
 ### Added
 - Complete Web Application Router & Front Controller (`App.php`, `public/index.php`).
 - Controllers:
