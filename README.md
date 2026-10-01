@@ -63,36 +63,55 @@ Then navigate to: `http://localhost:8000` (or `https://` if behind a reverse pro
 
 ### 2. Default Seeded Credentials
 
+> **Safety Notice:** All sample delegate and admin email addresses strictly use the domain `@email.vlsi.gr` to ensure no live emails are dispatched to external organizations or unintended recipients.
+
 #### Super Administrator:
-- **Email:** `admin@convota.local`
+- **Email:** `adminconvota@email.vlsi.gr`
 - **Password:** `AdminConvota2026!`
 
 #### Sample Member Organizations:
 - **University of Western Macedonia** (President Organization, 1 Vote)
-  - Delegate: `mdasyg@vlsi.gr` / `MemberPassword2026!`
+  - Primary Delegate: `mdasyg@email.vlsi.gr` / `MemberPassword2026!`
+  - Substitute: `kstergiou@email.vlsi.gr`
 - **European Open Research Network** (1 Vote)
-  - Delegate: `elena.rostova@eorn.org` / `MemberPassword2026!`
+  - Primary Delegate: `elena.rostova@email.vlsi.gr` / `MemberPassword2026!`
+  - Substitute: `marcus.vogel@email.vlsi.gr`
 - **International Standards Collective** (2 Votes)
-  - Delegate: `sophie@standards-collective.org` / `MemberPassword2026!`
+  - Primary Delegate: `sophie@email.vlsi.gr` / `MemberPassword2026!`
 - **Global NGO Environmental Council** (Observer, 0 Votes)
-  - Delegate: `astrid@gec-council.ngo` / `MemberPassword2026!`
+  - Delegate: `astrid@email.vlsi.gr` / `MemberPassword2026!`
+
+---
+
+## Deployment & Path Portability
+
+Convota is fully portable and operates out-of-the-box in two distinct topologies without manual code adjustments:
+
+1. **Subfolder / Subpath Mode** (e.g. `http://your-server.com/convota`):
+   - Fully supported via Nginx alias or Apache `Alias`.
+   - The application dynamically detects `/convota` as the base path via `App::detectBasePath()` and `$_SERVER['REQUEST_URI']` or `X-Forwarded-Prefix`.
+   - All internal links, stylesheets, scripts, forms, and AJAX API requests are generated using `url('/relative-path')`.
+2. **Root / Subdomain Mode** (e.g. `http://convota.domain.com/` or `http://localhost:8000/`):
+   - Operates cleanly at document root with an empty base path (`""`).
+   - Both web server configurations support clean routing to `index.php`.
 
 ---
 
 ## Automated Test Suite
 
-Convota includes a comprehensive test suite covering all 5 phases:
+Convota includes an automated test suite covering all 6 phases (130 automated tests):
 
 ```bash
 php /projects/convota/tests/run_all_tests.php
 ```
 
 You can also run individual test suites:
-- `php tests/test_phase1.php` — Database WAL mode, Migrations, Seeder, Audit hash-chaining, Auth, CSRF
-- `php tests/test_phase2.php` — Organizations, Member Roster, CSV Conflict Engine, CSV Exports
-- `php tests/test_phase3.php` — Meetings, Presence Tracking, Designated Representative, Dynamic Quorum
-- `php tests/test_phase4.php` — Voting Engine, Secret Decoupled Ballots, Idempotency, Anti-Replay, Notifications
-- `php tests/test_phase5.php` — REST APIs (`/api/quorum`, `/api/voting-status`, `/api/vote`), Web Dispatcher, Security Headers
+- `php tests/test_phase1.php` — Database WAL mode, Migrations, Seeder, Audit hash-chaining, Auth, CSRF (31 tests)
+- `php tests/test_phase2.php` — Organizations, Member Roster, CSV Conflict Engine, CSV Exports (26 tests)
+- `php tests/test_phase3.php` — Meetings, Presence Tracking, Designated Representative, Dynamic Quorum (24 tests)
+- `php tests/test_phase4.php` — Voting Engine, Secret Decoupled Ballots, Idempotency, Anti-Replay, Notifications (27 tests)
+- `php tests/test_phase5.php` — REST APIs (`/api/quorum`, `/api/voting-status`, `/api/vote`), Web Dispatcher, Security Headers (12 tests)
+- `php tests/test_phase6.php` — Subpath & Subdomain Portability, Base Path Auto-Detection, URL Helpers (10 tests)
 
 ---
 

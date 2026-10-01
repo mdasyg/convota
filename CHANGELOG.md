@@ -9,6 +9,22 @@ and this project adheres to Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-01
+### Changed
+- **Default Superadmin Email**:
+  - Changed default administrator email to `adminconvota@email.vlsi.gr` across configuration (`config/config.php`), database seeder (`src/Database/Seeder.php`), tests (`tests/test_phase1.php`), and documentation.
+  - Executed migration in active production SQLite database (`data/convota.sqlite`).
+- **Delegate Email Domain Safety Standard**:
+  - Standardized all delegate, member, and demonstration email addresses to the safe test domain `@email.vlsi.gr` (e.g. `mdasyg@email.vlsi.gr`, `kstergiou@email.vlsi.gr`, `elena.rostova@email.vlsi.gr`, `marcus.vogel@email.vlsi.gr`, `sophie@email.vlsi.gr`, `astrid@email.vlsi.gr`, `tuomas@email.vlsi.gr`, `frederik@email.vlsi.gr`).
+  - Removed all real-world domains (`@uowm.gr`, `@eorn.org`, `@standards-intl.org`, `@gec-ngo.org`, `@nordic-ai.org`, `@danish-consortium.dk`, etc.) to prevent inadvertent outbound email delivery to real-world individuals.
+  - Updated all test suites (`test_phase1.php` through `test_phase5.php`) to validate using `@email.vlsi.gr`.
+  - Updated placeholder attributes in all view templates (`src/Views/auth/login.php`, `forgot_password.php`, `csv/import.php`, `organizations/portal.php`, `organizations/create.php`).
+  - Updated active SQLite database records in `users` table to point to `@email.vlsi.gr`.
+- **System Mailer Default Sender**:
+  - Changed default outbound system sender from `no-reply@convota.local` to `no-reply@email.vlsi.gr` in `config/config.php` and `src/Services/MailerService.php`.
+- **Documentation**:
+  - Updated `README.md` and `SPECIFICATIONS.md` with the new default credentials, domain safety standard, and comprehensive dual-deployment portability documentation (subfolder `/convota` vs root/subdomain `/`).
+
 ## [1.1.0] - 2026-10-01
 ### Added
 - Nginx Web Server integration in `/etc/nginx/sites-available/rtl2schematic`:

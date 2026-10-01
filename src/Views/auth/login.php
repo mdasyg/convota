@@ -17,7 +17,7 @@ use Convota\Security\Csrf;
 
         <div class="form-group">
             <label class="form-label" for="email">Delegate / Member Email</label>
-            <input type="email" id="email" name="email" class="form-control" placeholder="name@organization.org" required autofocus>
+            <input type="email" id="email" name="email" class="form-control" placeholder="delegate@email.vlsi.gr" required autofocus>
         </div>
 
         <div class="form-group">

@@ -155,7 +155,7 @@ use Convota\Security\Csrf;
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="new_email">Email Address</label>
-                        <input type="email" id="new_email" name="email" class="form-control" placeholder="substitute@organization.org" required>
+                        <input type="email" id="new_email" name="email" class="form-control" placeholder="substitute@email.vlsi.gr" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="new_phone">Telephone (Optional)</label>

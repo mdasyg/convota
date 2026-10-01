@@ -467,5 +467,26 @@ CREATE TABLE audit_logs (
 │   │   └── CsvService.php     <-- Conflict-detecting CSV importer & exporter
 │   └── Views/                 <-- Modular templates with strict HTML escaping
 └── tests/
-    └── test_suite.php         <-- Automated tests for voting, quorum & security
+    ├── run_all_tests.php      <-- Master runner (all 130 tests across 6 phases)
+    ├── test_phase1.php        <-- Database, Cryptography & Auth
+    ├── test_phase2.php        <-- Organizations & CSV Conflict Engine
+    ├── test_phase3.php        <-- Meetings & Dynamic Quorum
+    ├── test_phase4.php        <-- Voting Engine & Secret Decoupling
+    ├── test_phase5.php        <-- REST APIs & Security Headers
+    └── test_phase6.php        <-- Subfolder / Subdomain Portability & Routing
 ```
+
+---
+
+## 11. Dual Deployment Architecture & Safe Domain Standards
+
+### 11.1 Path Portability: Subfolder vs Subdomain
+Convota is engineered for zero-configuration portability across two hosting environments:
+- **Subfolder Deployment (`http://host/convota`)**: In shared environments or behind reverse proxy paths, the application automatically extracts the base subpath (`/convota`) from `REQUEST_URI` or `X-Forwarded-Prefix`. The router strips the base path for matching routes, and all generated links/assets dynamically prepend this base path via `url($path)`.
+- **Subdomain or Root Deployment (`http://convota.domain.org/` or `http://localhost:8000/`)**: When hosted at root, the base path evaluates to `""`. The application routes requests cleanly directly from `/`.
+- **Client-Side Relative Resolution**: Views inject `<meta name="base-url" content="...">` allowing client JavaScript fetch requests to automatically resolve backend REST API endpoints regardless of deployment path.
+
+### 11.2 Safe Email Domain Standard
+- All default, demonstration, and seeded email addresses are restricted to the test domain `@email.vlsi.gr` (e.g. `adminconvota@email.vlsi.gr`, `mdasyg@email.vlsi.gr`).
+- Real-world institutional or corporate email addresses are forbidden in default seeds and demonstration data to eliminate the risk of accidental spam or inadvertent outbound notification delivery during testing, auditing, and demonstrations.
+

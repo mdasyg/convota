@@ -66,7 +66,7 @@ try {
     $seeder = new Seeder($db);
     $seeder->seed();
 
-    $admin = $db->fetch("SELECT * FROM users WHERE email = 'admin@convota.local'");
+    $admin = $db->fetch("SELECT * FROM users WHERE email = 'adminconvota@email.vlsi.gr'");
     assertTest("Super Admin seeded successfully", $admin !== null && $admin['system_role'] === 'admin');
 
     $orgCount = (int)$db->fetchColumn("SELECT COUNT(*) FROM organizations");
@@ -92,28 +92,28 @@ try {
 
     // 5. Auth Service & Passwords
     $auth = new AuthService($db, $audit);
-    $loginRes = $auth->login('admin@convota.local', 'AdminConvota2026!');
+    $loginRes = $auth->login('adminconvota@email.vlsi.gr', 'AdminConvota2026!');
     assertTest("Admin login with valid password succeeds", $loginRes['success'] === true && $auth->isAdmin());
 
-    $badLogin = $auth->login('admin@convota.local', 'WrongPassword!');
+    $badLogin = $auth->login('adminconvota@email.vlsi.gr', 'WrongPassword!');
     assertTest("Login with invalid password fails", $badLogin['success'] === false);
 
     // Test Rate Limiting
     for ($i = 0; $i < 5; $i++) {
-        $auth->login('admin@convota.local', 'WrongPasswordAgain!');
+        $auth->login('adminconvota@email.vlsi.gr', 'WrongPasswordAgain!');
     }
-    $lockedLogin = $auth->login('admin@convota.local', 'AdminConvota2026!');
+    $lockedLogin = $auth->login('adminconvota@email.vlsi.gr', 'AdminConvota2026!');
     assertTest("Rate limiting triggers lockout after consecutive failures", $lockedLogin['success'] === false && str_contains($lockedLogin['error'], 'Too many'));
 
     // Clear lockout to test password reset
     $db->execute("DELETE FROM rate_limits");
 
-    $resetToken = $auth->generateResetToken('admin@convota.local');
+    $resetToken = $auth->generateResetToken('adminconvota@email.vlsi.gr');
     assertTest("Password reset token generated", !empty($resetToken));
     $resetOk = $auth->resetPasswordWithToken($resetToken, 'NewSecurePassword2026!');
     assertTest("Password reset with valid token succeeds", $resetOk === true);
 
-    $loginNewPass = $auth->login('admin@convota.local', 'NewSecurePassword2026!');
+    $loginNewPass = $auth->login('adminconvota@email.vlsi.gr', 'NewSecurePassword2026!');
     assertTest("Login with new password succeeds", $loginNewPass['success'] === true);
 
     // 6. Organization Common Access Hash Auth
@@ -145,7 +145,7 @@ try {
 
     $escaped = Validator::escape("<script>alert('xss')</script>&");
     assertTest("XSS filter escapes HTML characters", $escaped === "&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;&amp;");
-    assertTest("Validator validates valid email", Validator::isValidEmail('test@uowm.gr') === true);
+    assertTest("Validator validates valid email", Validator::isValidEmail('test@email.vlsi.gr') === true);
     assertTest("Validator rejects invalid email", Validator::isValidEmail('not-an-email') === false);
 
 } catch (\Throwable $e) {

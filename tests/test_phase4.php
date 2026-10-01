@@ -51,16 +51,16 @@ try {
 
     // Fetch sample seeded entities
     $uowm = $db->fetch("SELECT id, name FROM organizations WHERE short_name = 'UOWM'");
-    $uowmMember = $db->fetch("SELECT id, name, surname FROM users WHERE email = 'mdasyg@vlsi.gr'");
+    $uowmMember = $db->fetch("SELECT id, name, surname FROM users WHERE email = 'mdasyg@email.vlsi.gr'");
 
     $eorn = $db->fetch("SELECT id, name FROM organizations WHERE short_name = 'EORN'");
-    $eornMember = $db->fetch("SELECT id, name, surname FROM users WHERE email = 'elena.rostova@eorn.org'");
+    $eornMember = $db->fetch("SELECT id, name, surname FROM users WHERE email = 'elena.rostova@email.vlsi.gr'");
 
     $isc = $db->fetch("SELECT id, name, voting_weight FROM organizations WHERE short_name = 'ISC'"); // 2.0 votes
-    $iscMember = $db->fetch("SELECT id, name, surname FROM users WHERE email = 'sophie@standards-collective.org'");
+    $iscMember = $db->fetch("SELECT id, name, surname FROM users WHERE email = 'sophie@email.vlsi.gr'");
 
     $gecObserver = $db->fetch("SELECT id, name FROM organizations WHERE short_name = 'GEC'"); // 0 votes, observer
-    $gecMember = $db->fetch("SELECT id, name, surname FROM users WHERE email = 'astrid@gec-council.ngo'");
+    $gecMember = $db->fetch("SELECT id, name, surname FROM users WHERE email = 'astrid@email.vlsi.gr'");
 
     // 1. Create Secret Ballot Proposal (Yes / No / Abstain)
     $propId = $proposalModel->create([

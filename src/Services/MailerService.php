@@ -26,7 +26,7 @@ class MailerService
     public function send(string|array $to, string $subject, string $bodyText): bool
     {
         $recipients = is_array($to) ? $to : [$to];
-        $from = $this->config['from_address'] ?? 'no-reply@convota.local';
+        $from = $this->config['from_address'] ?? 'no-reply@email.vlsi.gr';
         $fromName = $this->config['from_name'] ?? 'Convota Assembly System';
         $driver = $this->config['driver'] ?? 'log';
         $logFile = $this->config['log_file'] ?? (__DIR__ . '/../../data/mail.log');

@@ -77,7 +77,7 @@ try {
 
     // 4. Organization 1 Check-In (President Org: UOWM)
     $uowm = $db->fetch("SELECT id FROM organizations WHERE short_name = 'UOWM'");
-    $uowmMember = $db->fetch("SELECT id FROM users WHERE email = 'mdasyg@vlsi.gr'");
+    $uowmMember = $db->fetch("SELECT id FROM users WHERE email = 'mdasyg@email.vlsi.gr'");
 
     $meetingModel->setPresence(
         $meetingId,
@@ -95,7 +95,7 @@ try {
 
     // 5. Observer Org Check-In (GEC - 0 votes, observer)
     $gec = $db->fetch("SELECT id FROM organizations WHERE short_name = 'GEC'");
-    $gecMember = $db->fetch("SELECT id FROM users WHERE email = 'astrid@gec-council.ngo'");
+    $gecMember = $db->fetch("SELECT id FROM users WHERE email = 'astrid@email.vlsi.gr'");
 
     $meetingModel->setPresence(
         $meetingId,
@@ -113,7 +113,7 @@ try {
 
     // 6. Organization 2 Check-In (EORN) via Common Access Hash with substitute member
     $eorn = $db->fetch("SELECT id FROM organizations WHERE short_name = 'EORN'");
-    $eornSub = $db->fetch("SELECT id FROM users WHERE email = 'marcus.vogel@eorn.org'"); // Substitute member
+    $eornSub = $db->fetch("SELECT id FROM users WHERE email = 'marcus.vogel@email.vlsi.gr'"); // Substitute member
 
     $meetingModel->setPresence(
         $meetingId,
@@ -132,7 +132,7 @@ try {
 
     // 7. Switching Designated Representative
     // EORN switches representative to Elena Rostova (primary)
-    $eornPrimary = $db->fetch("SELECT id FROM users WHERE email = 'elena.rostova@eorn.org'");
+    $eornPrimary = $db->fetch("SELECT id FROM users WHERE email = 'elena.rostova@email.vlsi.gr'");
     $meetingModel->setPresence(
         $meetingId,
         (int)$eorn['id'],
