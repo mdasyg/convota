@@ -182,23 +182,81 @@ To ensure that an administrator with raw SQLite database access cannot determine
 
 ## 6. Security Architecture & Threat Model
 
-1. **Database & Storage:**
-   - SQLite3 with `PRAGMA journal_mode = WAL;`, `PRAGMA foreign_keys = ON;`, `PRAGMA busy_timeout = 5000;`.
-   - Database stored in `/projects/convota/data/convota.sqlite` with strict web server access restriction (`Deny from all`).
-2. **Authentication & Session Hardening:**
-   - `PASSWORD_ARGON2ID` password hashing.
-   - Secure session cookies: `HttpOnly`, `SameSite=Strict`, `Secure`.
-   - Session regeneration upon login and privilege escalation.
-   - Rate limiting on login and common hash endpoints to prevent brute-force attacks.
-3. **Defense-in-Depth:**
-   - 100% Parameterized PDO queries (zero SQL string interpolation).
-   - Strict CSRF token validation on all mutating `POST`/`PUT`/`DELETE` endpoints.
-   - HTML context escaping (`htmlspecialchars(..., ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')`).
-   - Content-Security-Policy (CSP) headers.
-4. **Tamper-Evident Audit Logging:**
-   - Every sensitive event (member added/removed, organization modified, common hash rotated/used, vote opened/closed) is recorded in `audit_logs` with actor, IP, timestamp, and SHA-256 integrity hash chaining (`prev_hash` -> `entry_hash`).
-5. **REST API Support:**
-   - JSON API endpoints for voting status, active quorum, and vote submission to enable external displays or automation.
+### 6.1 Transport & Header Security
+1. **Canonical HTTPS Enforcement:**
+   - Any request arriving via plain `http://` is automatically redirected with HTTP 301/302 to `https://`.
+   - Handled at both `.htaccess` web server level and application middleware layer (checking `HTTPS`, `HTTP_X_FORWARDED_PROTO`, and `SERVER_PORT`).
+2. **Hardened HTTP Security Headers:**
+   - `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+   - `X-Frame-Options: DENY` (prevents clickjacking)
+   - `X-Content-Type-Options: nosniff` (prevents MIME-type sniffing)
+   - `Referrer-Policy: strict-origin-when-cross-origin`
+   - `Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=()`
+   - `Content-Security-Policy (CSP): default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';`
+
+### 6.2 Authentication, Sessions & CSRF
+1. **Session & Cookie Hardening:**
+   - Cookies configured with `HttpOnly`, `SameSite=Strict`, and `Secure=true`.
+   - Explicit session regeneration (`session_regenerate_id(true)`) upon authentication, privilege change, and role assumption.
+   - Idle session expiration (e.g., 30 minutes).
+2. **CSRF Protection:**
+   - Cryptographically random CSRF tokens generated per session and bound to form submissions.
+   - Strict CSRF token validation enforced on all state-mutating requests (`POST`, `PUT`, `DELETE`).
+   - Dual support for header-based CSRF (`X-CSRF-Token`) for AJAX/API requests and hidden form input for standard forms.
+3. **Strict Authorization on Every API Endpoint:**
+   - Every API endpoint executes an explicit access check:
+     - Authentication verification (logged in user session or verified common organization hash).
+     - Organization boundary check (members can only view/mutate their own organization's records; admins can access all).
+     - Voting authorization (caller must be the designated representative of a voting-eligible organization for that specific proposal).
+     - Election committee boundaries (only committee members or admins can view sealed election panels).
+
+### 6.3 Anti-Replay & Idempotent Voting API
+1. **Protection Against Duplicate Vote Submission:**
+   - Database constraint: `UNIQUE(proposal_id, organization_id)` in `vote_participation`.
+   - Concurrency control: SQLite `BEGIN IMMEDIATE TRANSACTION` ensures atomic check-and-insert, eliminating race conditions or double-click races.
+2. **Idempotency Key & Single-Use Ballot Nonce:**
+   - When a designated representative loads the ballot interface, an **Idempotency-Key / Ballot Nonce** is issued for that voting session.
+   - If a network retry, client timeout, or duplicate submission occurs with the same idempotency key:
+     - The system detects the duplicate request.
+     - Instead of creating duplicate ballots or throwing an unhandled exception, it safely returns the existing confirmed receipt status.
+   - Nonces cannot be replayed across different proposals or re-used after transaction settlement.
+
+### 6.4 Explicit Voting-Session State Machine
+The proposal voting process is governed by a strict, deterministic state machine:
+
+```
+                  ┌───────────────────────────────┐
+                  │             DRAFT             │
+                  └───────────────┬───────────────┘
+                                  │ Start (Manual or Scheduled Time reached)
+                                  ▼
+┌──────────────┐  Pause           ┌───────────────────────────────┐
+│    PAUSED    │ ◄──────────────  │             OPEN              │
+│ (Ballots Off)│  ──────────────► │    (Accepting Ballots)        │
+└──────────────┘  Resume          └───────────────┬───────────────┘
+                                                  │ Close (Manual or Scheduled End reached)
+                                                  ▼
+                                  ┌───────────────────────────────┐
+                                  │            CLOSED             │
+                                  │ (Results Tallied & Revealed)  │
+                                  └───────────────┬───────────────┘
+                                                  │ Archive
+                                                  ▼
+                                  ┌───────────────────────────────┐
+                                  │           ARCHIVED            │
+                                  │    (Immutable Historical)     │
+                                  └───────────────────────────────┘
+```
+
+**State Transition Guards & Invariants:**
+1. **`DRAFT -> OPEN`:** Permitted only by Admin/Chair/Committee; requires at least 2 options defined and quorum/majority rules configured. If scheduled, transitions automatically when `CURRENT_TIMESTAMP >= start_time`.
+2. **`OPEN` State Invariant:** Ballots can ONLY be cast when status is strictly `OPEN`. If `timing_mode = 'scheduled'`, the request timestamp must strictly satisfy: `start_time <= NOW <= end_time`.
+3. **`OPEN -> CLOSED`:** Seals the ballot box. Once `CLOSED`, no further votes can ever be accepted. The tally is computed and revealed.
+4. **`CLOSED -> ARCHIVED`:** Locks the proposal permanently into certified historical records.
+5. **No Invalid Transitions:** Direct transitions such as `DRAFT -> CLOSED` or `CLOSED -> OPEN` without an explicit, audited admin override are strictly forbidden.
+
+### 6.5 Tamper-Evident Audit Logging
+- Every sensitive event (member added/removed, organization modified, common hash rotated/used, vote opened/closed, ballot cast) is recorded in `audit_logs` with actor, IP, timestamp, and SHA-256 integrity hash chaining (`prev_hash` -> `entry_hash`).
 
 ---
 
@@ -282,7 +340,7 @@ CREATE TABLE proposals (
     timing_mode TEXT NOT NULL DEFAULT 'manual' CHECK (timing_mode IN ('manual', 'scheduled')),
     start_time DATETIME,
     end_time DATETIME,
-    status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'open', 'closed', 'archived')),
+    status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'open', 'paused', 'closed', 'archived')),
     require_quorum INTEGER NOT NULL DEFAULT 1,
     quorum_percentage REAL NOT NULL DEFAULT 50.0,
     majority_percentage REAL NOT NULL DEFAULT 50.0,
@@ -318,6 +376,7 @@ CREATE TABLE vote_participation (
     cast_by_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
     voter_name_snapshot TEXT NOT NULL,
     voter_ip TEXT,
+    idempotency_key TEXT UNIQUE,
     voted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(proposal_id, organization_id)
 );

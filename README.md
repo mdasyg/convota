@@ -37,8 +37,12 @@ Convota manages a single **Collective** composed of multiple member **Organizati
    - Visual conflict detection: Flags existing emails belonging to another organization with a prominent red warning, and offers checkbox resolution for existing members.
 
 5. **Security & Auditing:**
-   - Argon2id password hashing, secure session management, strict CSRF tokens, and full PDO prepared statements.
-   - Tamper-evident audit trail with SHA-256 hash chaining.
+   - **HTTPS Enforcement:** Automatic 301/302 redirection from `http://` to `https://` with HSTS and hardened security headers (CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff).
+   - **Strict Authorization:** Granular authorization checks on every web route and API endpoint (organization isolation, designated voter verification, electoral committee boundaries).
+   - **Anti-Replay & Idempotent Voting API:** Protection against duplicate vote submission via SQLite atomic immediate transactions, unique constraints, and single-use ballot nonces / idempotency keys.
+   - **Deterministic State Machine:** Explicit proposal lifecycle (`DRAFT` -> `OPEN` / `PAUSED` -> `CLOSED` -> `ARCHIVED`) preventing invalid or retroactive ballot manipulation.
+   - **Hardened Sessions & Auth:** Argon2id password hashing, secure session management (`SameSite=Strict`, `HttpOnly`, `Secure`), and per-request CSRF tokens.
+   - **Tamper-Evident Audit Trail:** SHA-256 hash chaining of every system mutation and ballot event.
    - Zero bulky dependencies, fast, self-contained, and easy to audit.
 
 ---
