@@ -191,11 +191,18 @@ CSV;
     assertTest("Commit reports 1 new line inserted", $commitIdentical['new_lines'] === 1 && $commitIdentical['created_members'] === 1);
     assertTest("Commit reports 2 identical lines matched with database", $commitIdentical['identical_lines'] === 2);
 
-    // 10. Audit Log for Email Sent Events
+    // 10. Audit Log for Email Sent Events & Failure Tracking
     $emailLog = $db->fetch("SELECT * FROM audit_logs WHERE action = 'email_sent'");
     assertTest("Audit trail recorded email_sent events", $emailLog !== null && !empty($emailLog['details']));
     $emailDetails = json_decode($emailLog['details'], true);
     assertTest("Email audit log captures event_type and recipient", is_array($emailDetails) && !empty($emailDetails['event_type']) && !empty($emailDetails['recipient']));
+
+    // Test email_failed audit recording with failure reason
+    $mailer->send('invalid-recipient-address', 'Failure Test', 'Body text');
+    $failLog = $db->fetch("SELECT * FROM audit_logs WHERE action = 'email_failed' ORDER BY id DESC LIMIT 1");
+    assertTest("Audit trail recorded email_failed event", $failLog !== null);
+    $failDetails = json_decode($failLog['details'], true);
+    assertTest("email_failed captures status=FAILED and failure reason", ($failDetails['status'] ?? '') === 'FAILED' && !empty($failDetails['reason']));
 
 } catch (\Throwable $e) {
     echo "EXCEPTION: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n";

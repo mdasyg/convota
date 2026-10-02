@@ -42,7 +42,7 @@ class MailerService
         $recipients = is_array($to) ? $to : [$to];
         $from = $this->config['from_address'] ?? 'no-reply@email.vlsi.gr';
         $fromName = $this->config['from_name'] ?? 'Convota Assembly System';
-        $driver = $this->config['driver'] ?? 'log';
+        $driver = $this->config['driver'] ?? 'mail';
         $logFile = $this->config['log_file'] ?? (__DIR__ . '/../../data/mail.log');
 
         $headers = [
@@ -53,7 +53,7 @@ class MailerService
             'Content-Type' => 'text/plain; charset=UTF-8'
         ];
 
-        $success = true;
+        $overallSuccess = true;
 
         foreach ($recipients as $recipient) {
             $recipient = trim($recipient);
@@ -61,44 +61,80 @@ class MailerService
                 continue;
             }
 
-            if ($driver === 'mail' && function_exists('mail')) {
-                $headerStr = '';
-                foreach ($headers as $k => $v) {
-                    $headerStr .= "{$k}: {$v}\r\n";
-                }
-                $sent = @mail($recipient, $subject, $bodyText, $headerStr);
-                if (!$sent) {
-                    $success = false;
+            $sent = false;
+            $failReason = null;
+
+            if (!filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+                $sent = false;
+                $failReason = "Invalid recipient email address format: '{$recipient}'";
+            } elseif ($driver === 'mail') {
+                if (!function_exists('mail')) {
+                    $sent = false;
+                    $failReason = "PHP mail() function is not available or disabled in php.ini";
+                } else {
+                    $headerStr = '';
+                    foreach ($headers as $k => $v) {
+                        $headerStr .= "{$k}: {$v}\r\n";
+                    }
+
+                    error_clear_last();
+                    // Attempt mail delivery with envelope sender (-f)
+                    $sent = @mail($recipient, $subject, $bodyText, $headerStr, "-f " . escapeshellarg($from));
+                    if (!$sent) {
+                        $lastErr = error_get_last();
+                        // Fallback attempt without additional parameters in case MTA restricts -f
+                        $sent = @mail($recipient, $subject, $bodyText, $headerStr);
+                        if (!$sent) {
+                            $err = error_get_last() ?? $lastErr;
+                            $failReason = !empty($err['message']) 
+                                ? $err['message'] 
+                                : 'PHP mail() returned false (MTA delivery rejected or sendmail error)';
+                        }
+                    }
                 }
             } else {
-                // Log driver (default for reliability, tests, and audit trail)
-                $dir = dirname($logFile);
-                if (!is_dir($dir)) {
-                    @mkdir($dir, 0750, true);
-                }
-                $entry = sprintf(
-                    "[%s] TO: %s | SUBJECT: %s\n%s\n%s\n\n",
-                    gmdate('Y-m-d H:i:s'),
-                    $recipient,
-                    $subject,
-                    str_repeat('-', 40),
-                    $bodyText
-                );
-                @file_put_contents($logFile, $entry, FILE_APPEND | LOCK_EX);
+                // Driver is 'log'
+                $sent = true;
             }
 
-            // Cryptographic audit log for email sent events
+            // Always record in data/mail.log for traceability and debugging
+            $dir = dirname($logFile);
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0750, true);
+            }
+            $statusLabel = $sent ? 'SUCCESS' : 'FAILED';
+            $logEntry = sprintf(
+                "[%s] STATUS: %s (driver: %s%s) | TO: %s | SUBJECT: %s\n%s\n%s\n\n",
+                gmdate('Y-m-d H:i:s'),
+                $statusLabel,
+                $driver,
+                $failReason ? " | REASON: {$failReason}" : "",
+                $recipient,
+                $subject,
+                str_repeat('-', 40),
+                $bodyText
+            );
+            @file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX);
+
+            if (!$sent) {
+                $overallSuccess = false;
+            }
+
+            // Cryptographic audit log for email events (recording SUCCESS or FAILED with reason)
             if ($this->audit !== null) {
-                $this->audit->log('email_sent', $actorUserId, $orgId, [
+                $action = $sent ? 'email_sent' : 'email_failed';
+                $this->audit->log($action, $actorUserId, $orgId, [
+                    'status' => $sent ? 'SUCCESS' : 'FAILED',
                     'event_type' => $eventType,
                     'recipient' => $recipient,
                     'subject' => $subject,
-                    'driver' => $driver
+                    'driver' => $driver,
+                    'reason' => $failReason
                 ]);
             }
         }
 
-        return $success;
+        return $overallSuccess;
     }
 
     /**

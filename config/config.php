@@ -36,7 +36,7 @@ return [
     ],
 
     'mail' => [
-        'driver' => getenv('MAIL_DRIVER') ?: 'log', // 'log', 'mail', 'smtp'
+        'driver' => getenv('MAIL_DRIVER') ?: 'mail', // 'mail', 'log', 'smtp'
         'from_address' => getenv('MAIL_FROM_ADDRESS') ?: 'no-reply@email.vlsi.gr',
         'from_name' => getenv('MAIL_FROM_NAME') ?: 'Convota Assembly System',
         'log_file' => __DIR__ . '/../data/mail.log',

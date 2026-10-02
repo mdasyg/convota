@@ -44,18 +44,24 @@
                             <td>#<?= $l['id'] ?></td>
                             <td>
                                 <?php if ($l['action'] === 'email_sent'): ?>
-                                    <strong style="font-size: 0.85rem; color: #2563eb;">✉️ email_sent</strong>
+                                    <strong style="font-size: 0.85rem; color: #16a34a;">✉️ email send : SUCCESS</strong>
+                                <?php elseif ($l['action'] === 'email_failed'): ?>
+                                    <strong style="font-size: 0.85rem; color: #dc2626;">⚠️ email send : FAILED</strong>
                                 <?php else: ?>
                                     <strong style="font-size: 0.85rem; color: var(--primary);"><?= htmlspecialchars($l['action']) ?></strong>
                                 <?php endif; ?>
                                 <?php if ($l['details']): ?>
                                     <?php 
                                         $detailData = json_decode($l['details'], true);
-                                        $displayDetail = is_array($detailData) && isset($detailData['event_type']) 
-                                            ? "Type: {$detailData['event_type']} | To: " . ($detailData['recipient'] ?? '') . " | Subj: " . ($detailData['subject'] ?? '')
-                                            : $l['details'];
+                                        if (is_array($detailData) && isset($detailData['event_type'])) {
+                                            $statusBadge = ($detailData['status'] ?? '') === 'FAILED' ? ' [FAILED]' : ' [SUCCESS]';
+                                            $reasonText = !empty($detailData['reason']) ? " | Reason: " . $detailData['reason'] : '';
+                                            $displayDetail = "Type: {$detailData['event_type']}{$statusBadge} | To: " . ($detailData['recipient'] ?? '') . " | Subj: " . ($detailData['subject'] ?? '') . $reasonText;
+                                        } else {
+                                            $displayDetail = $l['details'];
+                                        }
                                     ?>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= htmlspecialchars($l['details']) ?>">
+                                    <div style="font-size: 0.75rem; color: <?= $l['action'] === 'email_failed' ? '#dc2626' : 'var(--text-muted)' ?>; font-family: monospace; max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= htmlspecialchars($l['details']) ?>">
                                         <?= htmlspecialchars($displayDetail) ?>
                                     </div>
                                 <?php endif; ?>

@@ -9,6 +9,25 @@ and this project adheres to Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-02
+### Fixed
+- **Email Delivery via Postfix Relay**:
+  - Configured default `MAIL_DRIVER` in `config/config.php` to `'mail'` (with environment override `MAIL_DRIVER`), ensuring outbound emails invoke PHP's native `mail()` rather than defaulting strictly to internal file logging.
+  - Resolved Postfix `SMTPUTF8` relay rejection (`SMTPUTF8 is required, but was not offered by host 10.100.101.10`) by disabling `smtputf8_enable` in Postfix configuration (`smtputf8_enable = no`), enabling seamless UTF-8 mail delivery to standard 8-bit clean relay servers.
+  - Specified envelope sender `-f no-reply@email.vlsi.gr` in `MailerService::send()` for compliant bounce routing and relay authorization.
+  - End-to-end verified password reset email delivery to `mdasyg@email.vlsi.gr` through relay server `10.100.101.10:25` (status `250 2.0.0 Message accepted for delivery`).
+
+### Added
+- **Explicit Email Delivery Status & Failure Reason Logging**:
+  - Audit trail records `email_sent` with `status: "SUCCESS"` on confirmed delivery, and `email_failed` with `status: "FAILED"` and diagnostic reason when delivery fails or recipient address is invalid.
+  - Detailed reason extraction via `error_get_last()` with descriptive fallbacks if MTA rejects execution.
+  - Dual persistent logging in `data/mail.log` with `STATUS: SUCCESS` or `STATUS: FAILED (reason: ...)` alongside full timestamp and envelope metadata.
+  - Enhanced audit log UI (`/audit` view) with high-visibility color-coded badges:
+    - `✉️ email send : SUCCESS` (green)
+    - `⚠️ email send : FAILED` (red) with explicit failure reason displayed in the audit trail.
+- **Expanded Test Suite (143 Tests)**:
+  - Added automated test assertions in `tests/test_phase2.php` verifying both `email_sent` (`status=SUCCESS`) and `email_failed` (`status=FAILED` with failure reason). All 143 tests pass across 6 phases.
+
 ## [1.4.0] - 2026-10-02
 ### Added
 - **Organization Member Delegation Management in Edit View**:
