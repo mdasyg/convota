@@ -205,6 +205,111 @@ class MeetingController
         exit;
     }
 
+    /**
+     * Send Attendance Reminder Email to unconfigured / absent organizations
+     */
+    public function sendPresenceReminders(): void
+    {
+        // Only Admin or President can trigger reminders
+        if (!$this->app->getAuth()->isAdmin() && !$this->app->getAuth()->isPresident()) {
+            $this->app->renderError(403, 'Unauthorized. Only the Assembly President or Administrator can dispatch attendance reminders.');
+            return;
+        }
+
+        $meetingId = (int)($_POST['meeting_id'] ?? 0);
+        $targetOrgId = !empty($_POST['organization_id']) ? (int)$_POST['organization_id'] : null;
+
+        $meeting = $this->meetingModel->getById($meetingId);
+        if (!$meeting) {
+            $this->app->renderError(404, 'Meeting session not found.');
+            return;
+        }
+
+        // Fetch active organizations that have NOT marked presence (is_present is null or 0)
+        $sql = "
+            SELECT o.id, o.name, o.common_hash, o.common_hash_enabled
+            FROM organizations o
+            LEFT JOIN meeting_presence p ON p.organization_id = o.id AND p.meeting_id = ?
+            WHERE o.status = 'active' AND (p.is_present IS NULL OR p.is_present = 0)
+        ";
+        $params = [$meetingId];
+
+        if ($targetOrgId !== null) {
+            $sql .= " AND o.id = ?";
+            $params[] = $targetOrgId;
+        }
+
+        $sql .= " ORDER BY o.name ASC";
+        $unconfiguredOrgs = $this->app->getDb()->fetchAll($sql, $params);
+
+        if (empty($unconfiguredOrgs)) {
+            $this->app->setFlash('info', 'All eligible organizations have already configured their participating representatives.');
+            redirect("/meetings/presence?id={$meetingId}");
+            return;
+        }
+
+        $totalEmailsSent = 0;
+        $orgCount = 0;
+        $actorUserId = $this->app->getAuth()->getUserId();
+
+        foreach ($unconfiguredOrgs as $org) {
+            $members = $this->app->getDb()->fetchAll("
+                SELECT id, name, surname, email FROM users
+                WHERE organization_id = ? AND is_active = 1
+            ", [$org['id']]);
+
+            if (empty($members)) {
+                continue;
+            }
+
+            $emails = array_unique(array_filter(array_column($members, 'email')));
+            if (empty($emails)) {
+                continue;
+            }
+
+            $presenceUrl = \Convota\App::fullUrl("/meetings/presence?id={$meetingId}");
+            $directKeyUrl = '';
+            if (!empty($org['common_hash']) && !empty($org['common_hash_enabled'])) {
+                $directKeyUrl = \Convota\App::fullUrl('/member_login.sh&hash=' . urlencode($org['common_hash']));
+            }
+
+            $sent = $this->app->getMailer()->sendPresenceReminder(
+                $emails,
+                $org['name'],
+                $meeting['title'],
+                $meeting['scheduled_at'],
+                $meeting['location'] ?? 'Assembly Hall / Hybrid',
+                $presenceUrl,
+                $directKeyUrl,
+                $actorUserId,
+                (int)$org['id']
+            );
+
+            if ($sent) {
+                $orgCount++;
+                $totalEmailsSent += count($emails);
+            }
+        }
+
+        $this->app->getAudit()->log('presence_reminders_dispatched', $actorUserId, $targetOrgId, [
+            'meeting_id' => $meetingId,
+            'meeting_title' => $meeting['title'],
+            'target_organization_id' => $targetOrgId,
+            'organizations_notified' => $orgCount,
+            'total_emails' => $totalEmailsSent
+        ]);
+
+        if ($targetOrgId !== null && $orgCount > 0) {
+            $targetName = $unconfiguredOrgs[0]['name'];
+            $this->app->setFlash('success', "Attendance reminder link successfully dispatched to all members of '{$targetName}' ({$totalEmailsSent} recipients).");
+        } else {
+            $this->app->setFlash('success', "Attendance reminder links successfully dispatched to {$orgCount} unconfigured organization(s) ({$totalEmailsSent} total member recipients).");
+        }
+
+        redirect("/meetings/presence?id={$meetingId}");
+    }
+
+
     private function assertCanManagePresence(int $orgId): void
     {
         if ($this->app->getAuth()->isAdmin() || $this->app->getAuth()->isPresident()) {

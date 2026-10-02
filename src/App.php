@@ -396,6 +396,7 @@ class App
         if ($path === '/meetings/status' && $method === 'POST') { $meetingController->updateStatus(); return; }
         if ($path === '/meetings/presence') { $meetingController->presence(); return; }
         if ($path === '/meetings/set-presence' && $method === 'POST') { $meetingController->setPresence(); return; }
+        if ($path === '/meetings/send-presence-reminders' && $method === 'POST') { $meetingController->sendPresenceReminders(); return; }
         if ($path === '/meetings/export-csv') { $meetingController->exportCsv(); return; }
 
         if ($path === '/proposals') { $proposalController->index(); return; }

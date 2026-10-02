@@ -165,6 +165,33 @@ try {
     $concludedMeeting = $meetingModel->getById($meetingId);
     assertTest("Meeting concluded status recorded", $concludedMeeting['status'] === 'concluded' && !empty($concludedMeeting['concluded_at']));
 
+    // 10. Presence Reminder Dispatch to Unconfigured Organizations
+    $mailer = new \Convota\Services\MailerService(['driver' => 'log'], $audit);
+    $unconfiguredOrg = $db->fetch("SELECT id, name, common_hash FROM organizations WHERE name = 'International Standards Collective'");
+    $unconfiguredMembers = $db->fetchAll("SELECT email FROM users WHERE organization_id = ?", [$unconfiguredOrg['id']]);
+    $emails = array_column($unconfiguredMembers, 'email');
+
+    $presenceReminderSent = $mailer->sendPresenceReminder(
+        $emails,
+        $unconfiguredOrg['name'],
+        $meetingModel->getById($meetingId)['title'],
+        $meetingModel->getById($meetingId)['scheduled_at'],
+        'Assembly Hall / Hybrid',
+        "/meetings/presence?id={$meetingId}",
+        "/member_login.sh&hash=" . urlencode($unconfiguredOrg['common_hash']),
+        1,
+        (int)$unconfiguredOrg['id']
+    );
+
+    assertTest("Presence reminder email successfully dispatched", $presenceReminderSent === true);
+
+    $reminderAudit = $db->fetch("SELECT * FROM audit_logs WHERE action = 'email_sent' AND details LIKE '%presence_reminder%' ORDER BY id DESC LIMIT 1");
+    assertTest("Audit log recorded presence_reminder email event", $reminderAudit !== null);
+    $reminderDetails = json_decode($reminderAudit['details'], true);
+    assertTest("Reminder audit captures presence_reminder event_type and recipient", 
+        ($reminderDetails['event_type'] ?? '') === 'presence_reminder' && in_array($reminderDetails['recipient'], $emails));
+
+
 } catch (\Throwable $e) {
     echo "EXCEPTION: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n";
     $failed++;

@@ -311,4 +311,46 @@ class MailerService
 
         return $this->send($memberEmails, $subject, $body, 'meeting_scheduled_alert', $actorUserId, $orgId);
     }
+
+    /**
+     * Send attendance reminder link to members of an organization that has not configured its attending representative
+     */
+    public function sendPresenceReminder(
+        array $memberEmails,
+        string $orgName,
+        string $meetingTitle,
+        string $scheduledAt,
+        string $location,
+        string $presenceUrl,
+        string $directAccessUrl = '',
+        ?int $actorUserId = null,
+        ?int $orgId = null
+    ): bool {
+        $pUrl = $this->buildFullUrl($presenceUrl);
+        $dUrl = !empty($directAccessUrl) ? $this->buildFullUrl($directAccessUrl) : '';
+
+        $subject = "[Action Required] Attendance Reminder: No Attending Representative Configured for {$orgName}";
+        $body = "Dear Member of {$orgName},\n\n"
+              . "This is an urgent reminder from the General Assembly Presidium regarding the following meeting session:\n\n"
+              . "Meeting Title: {$meetingTitle}\n"
+              . "Scheduled Date & Time: {$scheduledAt} (UTC)\n"
+              . "Location / Modality: {$location}\n\n"
+              . "IMPORTANT NOTICE:\n"
+              . "No participating representative has been configured or checked in for '{$orgName}' yet.\n\n"
+              . "To ensure your organization is represented and eligible to participate and vote in this assembly session, "
+              . "please configure who is online and attending immediately.\n\n"
+              . "Direct Assembly Presence & Roll-Call Link:\n"
+              . "{$pUrl}\n\n";
+
+        if (!empty($dUrl)) {
+            $body .= "Direct Organization Delegation Access Link (using shared access key):\n"
+                   . "{$dUrl}\n\n"
+                   . "Any delegation member can use the direct link above to enter the portal and select your attending voter.\n\n";
+        }
+
+        $body .= "Best regards,\nConvota Assembly Presidium";
+
+        return $this->send($memberEmails, $subject, $body, 'presence_reminder', $actorUserId, $orgId);
+    }
 }
+

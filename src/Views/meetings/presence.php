@@ -12,8 +12,27 @@ use Convota\Security\Csrf;
     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
         <a href="<?= url('/meetings/export-csv?id=' . $meeting['id']) ?>" class="btn btn-secondary btn-sm">📥 Export Attendance CSV</a>
 
-        <!-- State Machine Actions for Presidium / Admin -->
+        <!-- Reminder Actions for Presidium / Admin -->
         <?php if (!empty($isAdmin) || !empty($isPresident)): ?>
+            <?php
+                $unconfiguredCount = 0;
+                foreach ($roster as $r) {
+                    if (empty($r['is_present'])) {
+                        $unconfiguredCount++;
+                    }
+                }
+            ?>
+            <?php if ($unconfiguredCount > 0): ?>
+                <form action="<?= url('/meetings/send-presence-reminders') ?>" method="POST" style="display: inline;">
+                    <?= Csrf::field() ?>
+                    <input type="hidden" name="meeting_id" value="<?= $meeting['id'] ?>">
+                    <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Send attendance reminder links to all <?= $unconfiguredCount ?> unconfigured organization delegations?');">
+                        ✉️ Send Reminder Link to All Unconfigured (<?= $unconfiguredCount ?>)
+                    </button>
+                </form>
+            <?php endif; ?>
+
+            <!-- State Machine Actions for Presidium / Admin -->
             <form action="<?= url('/meetings/status') ?>" method="POST" style="display: inline;">
                 <?= Csrf::field() ?>
 
@@ -173,7 +192,7 @@ use Convota\Security\Csrf;
                                 <?php endif; ?>
                             </td>
                             <?php if (!empty($isAdmin) || !empty($isPresident)): ?>
-                                <td style="text-align: right;">
+                                <td style="text-align: right; white-space: nowrap;">
                                     <?php if ($r['is_present']): ?>
                                         <form action="<?= url('/meetings/set-presence') ?>" method="POST" style="display: inline;">
                                             <?= Csrf::field() ?>
@@ -183,6 +202,12 @@ use Convota\Security\Csrf;
                                             <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Mark absent?');">Mark Absent</button>
                                         </form>
                                     <?php else: ?>
+                                        <form action="<?= url('/meetings/send-presence-reminders') ?>" method="POST" style="display: inline; margin-right: 0.35rem;">
+                                            <?= Csrf::field() ?>
+                                            <input type="hidden" name="meeting_id" value="<?= $meeting['id'] ?>">
+                                            <input type="hidden" name="organization_id" value="<?= $r['organization_id'] ?>">
+                                            <button type="submit" class="btn btn-warning btn-sm" title="Email attendance reminder link to all members of this delegation" onclick="return confirm('Send attendance reminder link to all members of <?= htmlspecialchars(addslashes($r['organization_name'])) ?>?');">✉️ Remind</button>
+                                        </form>
                                         <form action="<?= url('/meetings/set-presence') ?>" method="POST" style="display: inline;">
                                             <?= Csrf::field() ?>
                                             <input type="hidden" name="meeting_id" value="<?= $meeting['id'] ?>">

@@ -54,6 +54,7 @@ Designed for international research consortia, academic senates, federations, st
    - Active representative designation per meeting (via member login, shared key, or presidium roll-call).
    - Dynamic quorum monitoring (e.g. `Participating 14 of 28 voting organizations (50.0% attendance)`).
    - Auto-refreshing presence screen (AJAX/Fetch polling).
+   - **Presidium Attendance Reminders:** President or Administrator can dispatch reminder links (with discovered absolute URLs and direct delegation keys) to every member of unconfigured organizations (batch or individual delegation).
    - Attendance export to CSV.
 
 4. **Dual-Mode Voting Engine:**
@@ -163,6 +164,13 @@ You can also run individual test suites:
 - `php tests/test_phase5.php` — REST APIs (`/api/quorum`, `/api/voting-status`, `/api/vote`), Web Dispatcher, Security Headers (12 tests)
 - `php tests/test_phase6.php` — Subpath & Subdomain Portability, Base Path Auto-Detection, URL Helpers (10 tests)
 
+## Documentation & User Guides
+
+Detailed documentation and operational manuals are available in the [`documentation/`](file:///projects/convota/documentation) directory:
+
+* 📘 **[Administrator & Presidium Guide](file:///projects/convota/documentation/ADMINISTRATOR_GUIDE.md):** Complete manual for administrators and assembly presidium officers covering collective configuration, delegation roster management, shared access key rotation, smart CSV imports/exports, dynamic quorum calculation, presidium attendance reminders, secret/open voting sessions, and cryptographic audit log verification.
+* 📗 **[Member & Delegate User Guide](file:///projects/convota/documentation/MEMBER_GUIDE.md):** Step-by-step instructions for organization delegates covering personal login, shared access key one-click URLs, delegation roster management, meeting presence registration, designating active voters, secret balloting, saving cryptographic voter receipts, and public receipt verification.
+
 ---
 
 ## Project Structure
@@ -174,6 +182,9 @@ You can also run individual test suites:
 ├── README.md                  <-- Project overview and quickstart guide
 ├── SPECIFICATIONS.md          <-- Complete technical and security specifications
 ├── convota.conf               <-- Frontend Nginx reverse proxy configuration
+├── documentation/             <-- Comprehensive user and administration guides
+│   ├── ADMINISTRATOR_GUIDE.md <-- Detailed guide for system administrators & presidium
+│   └── MEMBER_GUIDE.md        <-- Step-by-step guide for delegates and voting members
 ├── config/
 │   ├── config.php             <-- Application constants, mail, and security settings
 │   └── convota.conf           <-- Modular frontend Nginx reverse proxy template

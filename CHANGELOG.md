@@ -9,6 +9,21 @@ and this project adheres to Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-10-02
+### Added
+- **Comprehensive Administrator Guide (`documentation/ADMINISTRATOR_GUIDE.md`)**:
+  - Authored a complete manual for administrators and assembly presidium officers covering collective deployment, delegation roster management, shared access key security, smart CSV imports/exports, real-time dynamic quorum calculation, attendance reminders, secret/open voting sessions, and cryptographic audit log verification.
+- **Member & Delegate User Guide (`documentation/MEMBER_GUIDE.md`)**:
+  - Authored a step-by-step delegate guide covering personal authentication, one-click shared access key URLs, delegation management, meeting presence registration, designating active voters, secret balloting, saving cryptographic voter receipts, and public tally verification.
+- **Presidium Attendance Reminder Links for Unconfigured Organizations**:
+  - Added Presidium attendance reminder dispatching in `/meetings/presence`:
+    - Header batch action: `✉️ Send Reminder Link to All Unconfigured (X)` to notify all unconfigured delegations simultaneously.
+    - Row-level action: dedicated `✉️ Remind` button on each absent/unconfigured organization row.
+  - Implemented `MailerService::sendPresenceReminder()` dispatching customized reminder emails to every registered delegate of unconfigured organizations, incorporating discovered absolute URLs to the presence screen and direct one-click shared key login links (`/member_login.sh&hash=...`).
+  - Cryptographically logs `presence_reminders_dispatched` and `presence_reminder` email events in `audit_logs`.
+- **Expanded Test Suite (152 Tests)**:
+  - Added automated test assertions in `tests/test_phase3.php` verifying presence reminder generation, email delivery, and audit logging. All 152 tests pass across all 6 test phases.
+
 ## [1.5.1] - 2026-10-02
 ### Fixed
 - **Dynamic Origin, Domain, and Base Path Discovery in Email Links**:
