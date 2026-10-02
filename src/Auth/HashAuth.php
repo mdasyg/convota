@@ -119,6 +119,9 @@ class HashAuth
         // Notify all members with the newly rotated key
         $emails = $this->getMemberEmails($organizationId);
         if (!empty($emails)) {
+            if (empty($baseUrl)) {
+                $baseUrl = \Convota\App::discoverBaseUrl();
+            }
             $this->mailer->sendOrganizationHash($emails, $orgName, $newHash, true, $baseUrl, $actorUserId, $organizationId);
         }
 
@@ -144,6 +147,9 @@ class HashAuth
             return false;
         }
 
+        if (empty($baseUrl)) {
+            $baseUrl = \Convota\App::discoverBaseUrl();
+        }
         $success = $this->mailer->sendOrganizationHash($emails, $org['name'], $org['common_hash'], false, $baseUrl, $actorUserId, $organizationId);
 
         if ($this->audit) {

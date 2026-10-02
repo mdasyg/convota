@@ -135,6 +135,9 @@ class Organization
             $this->db->commit();
 
             // Dispatch welcome & password setup email
+            if (empty($baseUrl)) {
+                $baseUrl = \Convota\App::discoverBaseUrl();
+            }
             $this->mailer->sendPasswordSetup($memberEmail, "{$memberName} {$memberSurname}", $resetToken, $baseUrl, $creatorUserId, $orgId);
 
             return [

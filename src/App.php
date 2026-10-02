@@ -68,7 +68,9 @@ class App
 
         $config = require __DIR__ . '/../config/config.php';
         if (!empty($config['app']['base_url'])) {
-            return self::$cachedBasePath = rtrim($config['app']['base_url'], '/');
+            $parsed = parse_url($config['app']['base_url'], PHP_URL_PATH);
+            $basePath = !empty($parsed) ? rtrim($parsed, '/') : rtrim($config['app']['base_url'], '/');
+            return self::$cachedBasePath = $basePath;
         }
 
         if (!empty($_SERVER['HTTP_X_FORWARDED_PREFIX'])) {
@@ -88,7 +90,115 @@ class App
             return self::$cachedBasePath = '/convota';
         }
 
+        if (!empty($_SERVER['HTTP_REFERER'])) {
+            $refPath = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH) ?? '';
+            if (str_starts_with($refPath, '/convota/') || $refPath === '/convota') {
+                return self::$cachedBasePath = '/convota';
+            }
+        }
+
         return self::$cachedBasePath = '';
+    }
+
+    /**
+     * Discover scheme, domain/host, and port of the running environment
+     */
+    public static function discoverOrigin(): string
+    {
+        $config = require __DIR__ . '/../config/config.php';
+
+        // 1. If base_url in config already includes scheme and host, extract origin from it
+        if (!empty($config['app']['base_url']) && preg_match('#^https?://#i', $config['app']['base_url'])) {
+            $parsed = parse_url($config['app']['base_url']);
+            $scheme = $parsed['scheme'] ?? 'http';
+            $host = $parsed['host'] ?? 'localhost';
+            $port = !empty($parsed['port']) && !(($scheme === 'http' && (int)$parsed['port'] === 80) || ($scheme === 'https' && (int)$parsed['port'] === 443))
+                ? ':' . $parsed['port']
+                : '';
+            return "{$scheme}://{$host}{$port}";
+        }
+
+        // 2. Discover Scheme (Protocol)
+        $scheme = 'http';
+        if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+            $protos = explode(',', (string)$_SERVER['HTTP_X_FORWARDED_PROTO']);
+            $p = strtolower(trim($protos[0]));
+            if (in_array($p, ['http', 'https'], true)) {
+                $scheme = $p;
+            }
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_SCHEME'])) {
+            $protos = explode(',', (string)$_SERVER['HTTP_X_FORWARDED_SCHEME']);
+            $p = strtolower(trim($protos[0]));
+            if (in_array($p, ['http', 'https'], true)) {
+                $scheme = $p;
+            }
+        } elseif (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off') {
+            $scheme = 'https';
+        } elseif (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower((string)$_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off') {
+            $scheme = 'https';
+        } elseif (!empty($_SERVER['REQUEST_SCHEME'])) {
+            $scheme = strtolower((string)$_SERVER['REQUEST_SCHEME']);
+        } elseif (!empty($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443) {
+            $scheme = 'https';
+        } elseif (!empty($_SERVER['HTTP_REFERER'])) {
+            $refScheme = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_SCHEME);
+            if (!empty($refScheme)) {
+                $scheme = strtolower($refScheme);
+            }
+        } elseif (!empty($config['app']['force_https'])) {
+            $scheme = 'https';
+        }
+
+        // 3. Discover Host and non-standard Port
+        $host = '';
+        if (!empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+            $hosts = explode(',', (string)$_SERVER['HTTP_X_FORWARDED_HOST']);
+            $host = trim($hosts[0]);
+        } elseif (!empty($_SERVER['HTTP_HOST'])) {
+            $host = trim((string)$_SERVER['HTTP_HOST']);
+        } elseif (!empty($_SERVER['SERVER_NAME'])) {
+            $host = trim((string)$_SERVER['SERVER_NAME']);
+            if (!empty($_SERVER['SERVER_PORT'])) {
+                $port = (int)$_SERVER['SERVER_PORT'];
+                if (($scheme === 'http' && $port !== 80) || ($scheme === 'https' && $port !== 443)) {
+                    $host .= ':' . $port;
+                }
+            }
+        } elseif (!empty($_SERVER['HTTP_REFERER'])) {
+            $refParsed = parse_url($_SERVER['HTTP_REFERER']);
+            if (!empty($refParsed['host'])) {
+                $host = $refParsed['host'] . (!empty($refParsed['port']) ? ':' . $refParsed['port'] : '');
+            }
+        }
+
+        if (empty($host)) {
+            $host = getenv('APP_DOMAIN') ?: 'vm.dyn.vlsi.gr';
+        }
+
+        return "{$scheme}://{$host}";
+    }
+
+    /**
+     * Generate an absolute URL with discovered scheme, host, and base path
+     */
+    public static function fullUrl(string $path = ''): string
+    {
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+
+        $origin = self::discoverOrigin();
+        $relative = self::baseUrl($path);
+
+        return rtrim($origin, '/') . '/' . ltrim($relative, '/');
+    }
+
+    /**
+     * Discover full base URL (scheme + host + base path)
+     */
+    public static function discoverBaseUrl(): string
+    {
+        return rtrim(self::fullUrl('/'), '/');
     }
 
     public static function baseUrl(string $path = ''): string
@@ -129,6 +239,11 @@ class App
     public function url(string $path = ''): string
     {
         return self::baseUrl($path);
+    }
+
+    public function appUrl(string $path = ''): string
+    {
+        return self::fullUrl($path);
     }
 
     public function getDb(): Database { return $this->db; }

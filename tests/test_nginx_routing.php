@@ -52,9 +52,32 @@ try {
     $_SERVER['HTTP_X_FORWARDED_PREFIX'] = '/convota';
     assertTest("Detects base path from HTTP_X_FORWARDED_PREFIX", App::detectBasePath() === '/convota');
 
+    // 4. Reverse Proxy Origin and Full URL Discovery
+    App::setBasePath(null);
+    $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+    $_SERVER['HTTP_X_FORWARDED_HOST'] = 'arch.ece.uowm.gr';
+    $_SERVER['HTTP_X_FORWARDED_PREFIX'] = '/convota';
+    $_SERVER['REQUEST_URI'] = '/auth/forgot-password';
+
+    assertTest("Discovered origin is https://arch.ece.uowm.gr", App::discoverOrigin() === 'https://arch.ece.uowm.gr');
+    assertTest("Discovered base URL is https://arch.ece.uowm.gr/convota", App::discoverBaseUrl() === 'https://arch.ece.uowm.gr/convota');
+    assertTest("full_url('/login') generates 'https://arch.ece.uowm.gr/convota/login'", full_url('/login') === 'https://arch.ece.uowm.gr/convota/login');
+    assertTest("full_url('/auth/reset-password?token=abc') includes scheme, domain and path", 
+        full_url('/auth/reset-password?token=abc') === 'https://arch.ece.uowm.gr/convota/auth/reset-password?token=abc');
+
+    // 5. MailerService link construction with discovered domain
+    $mailer = new \Convota\Services\MailerService(['driver' => 'log']);
+    $resetFullUrl = $mailer->buildFullUrl('/auth/reset-password?token=test123token');
+    assertTest("Mailer buildFullUrl discovers full domain and subpath", 
+        $resetFullUrl === 'https://arch.ece.uowm.gr/convota/auth/reset-password?token=test123token');
+
+    $directKeyUrl = $mailer->buildFullUrl('/member_login.sh&hash=secret_org_hash');
+    assertTest("Mailer buildFullUrl handles direct delegation key link",
+        $directKeyUrl === 'https://arch.ece.uowm.gr/convota/member_login.sh&hash=secret_org_hash');
+
     // Reset environment
     App::setBasePath(null);
-    unset($_SERVER['REQUEST_URI'], $_SERVER['HTTP_X_FORWARDED_PREFIX'], $_SERVER['SCRIPT_NAME']);
+    unset($_SERVER['REQUEST_URI'], $_SERVER['HTTP_X_FORWARDED_PREFIX'], $_SERVER['SCRIPT_NAME'], $_SERVER['HTTP_X_FORWARDED_PROTO'], $_SERVER['HTTP_X_FORWARDED_HOST']);
 
 } catch (\Throwable $e) {
     echo "EXCEPTION: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n";

@@ -66,9 +66,7 @@ class MeetingController
                         WHERE u.is_active = 1 AND o.status = 'active'
                     ");
                     if (!empty($members)) {
-                        $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
-                        $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? 'localhost');
-                        $meetingUrl = $proto . '://' . $host . url("/meetings/presence?id={$id}");
+                        $meetingUrl = \Convota\App::fullUrl("/meetings/presence?id={$id}");
                         $emails = array_unique(array_filter(array_column($members, 'email')));
 
                         $this->app->getMailer()->sendMeetingScheduledAlert(

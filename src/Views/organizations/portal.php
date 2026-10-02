@@ -194,9 +194,7 @@ use Convota\Security\Csrf;
         </div>
 
         <?php
-            $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
-            $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? 'localhost');
-            $keyDirectUrl = $proto . '://' . $host . url('/member_login.sh&hash=' . urlencode($org['common_hash']));
+            $keyDirectUrl = full_url('/member_login.sh&hash=' . urlencode($org['common_hash']));
         ?>
 
         <!-- Direct Login URL Display -->

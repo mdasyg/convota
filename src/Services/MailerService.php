@@ -138,11 +138,56 @@ class MailerService
     }
 
     /**
+     * Build an absolute URL containing discovered scheme, host/domain, and base path
+     */
+    public function buildFullUrl(string $pathOrUrl, string $baseUrl = ''): string
+    {
+        // 1. If already a full URL with scheme, return as-is
+        if (preg_match('#^https?://#i', $pathOrUrl)) {
+            return $pathOrUrl;
+        }
+
+        // 2. If a full baseUrl with scheme was explicitly provided, use it
+        if (!empty($baseUrl) && preg_match('#^https?://#i', $baseUrl)) {
+            $base = rtrim($baseUrl, '/');
+            $path = '/' . ltrim($pathOrUrl, '/');
+            $parsedBase = parse_url($base);
+            $basePath = $parsedBase['path'] ?? '';
+            if ($basePath !== '' && $basePath !== '/') {
+                if (str_starts_with($path, $basePath . '/')) {
+                    $path = substr($path, strlen($basePath));
+                }
+            }
+            return $base . $path;
+        }
+
+        // 3. Delegate to App::fullUrl if available
+        if (class_exists('\\Convota\\App')) {
+            if (!empty($baseUrl) && !str_starts_with($baseUrl, 'http')) {
+                $base = '/' . trim($baseUrl, '/');
+                $path = '/' . ltrim($pathOrUrl, '/');
+                if (!str_starts_with($path, $base . '/')) {
+                    $path = $base . $path;
+                }
+                return \Convota\App::fullUrl($path);
+            }
+            return \Convota\App::fullUrl($pathOrUrl);
+        }
+
+        // 4. Standalone fallback
+        $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? 'vm.dyn.vlsi.gr');
+        $base = !empty($baseUrl) ? '/' . trim($baseUrl, '/') : '';
+        $path = '/' . ltrim($pathOrUrl, '/');
+        return $proto . '://' . $host . $base . $path;
+    }
+
+    /**
      * Send new member welcome & password setup link
      */
     public function sendPasswordSetup(string $email, string $name, string $resetToken, string $baseUrl = '', ?int $actorUserId = null, ?int $orgId = null): bool
     {
-        $link = rtrim($baseUrl, '/') . '/auth/reset-password?token=' . urlencode($resetToken);
+        $link = $this->buildFullUrl('/auth/reset-password?token=' . urlencode($resetToken), $baseUrl);
         $subject = 'Welcome to Convota — Set Your Password';
         $body = "Hello {$name},\n\n"
               . "You have been registered as an assembly representative in Convota.\n"
@@ -159,7 +204,7 @@ class MailerService
      */
     public function sendPasswordReset(string $email, string $name, string $resetToken, string $baseUrl = '', ?int $actorUserId = null, ?int $orgId = null): bool
     {
-        $link = rtrim($baseUrl, '/') . '/auth/reset-password?token=' . urlencode($resetToken);
+        $link = $this->buildFullUrl('/auth/reset-password?token=' . urlencode($resetToken), $baseUrl);
         $subject = 'Convota — Password Reset Request';
         $body = "Hello {$name},\n\n"
               . "A password reset request was received for your Convota account.\n"
@@ -174,13 +219,16 @@ class MailerService
     /**
      * Alert members when organization common hash is used to log in
      */
-    public function sendHashLoginAlert(array $memberEmails, string $orgName, string $ip, ?int $actorUserId = null, ?int $orgId = null): bool
+    public function sendHashLoginAlert(array $memberEmails, string $orgName, string $ip, ?int $actorUserId = null, ?int $orgId = null, string $baseUrl = ''): bool
     {
+        $portalUrl = $this->buildFullUrl('/organizations/portal', $baseUrl);
         $subject = "[Security Alert] Organization Access Key Used for {$orgName}";
         $body = "Dear Member,\n\n"
               . "The shared Organization Access Key for '{$orgName}' was just used to log into Convota.\n\n"
               . "Time (UTC): " . gmdate('Y-m-d H:i:s') . "\n"
               . "IP Address: {$ip}\n\n"
+              . "Organization Portal Link:\n"
+              . "{$portalUrl}\n\n"
               . "If this was an authorized action by your delegation, no action is needed.\n"
               . "If this was unexpected, please contact your organization administrator immediately to rotate the access key.\n\n"
               . "Best regards,\nConvota System";
@@ -194,7 +242,7 @@ class MailerService
     public function sendOrganizationHash(array $memberEmails, string $orgName, string $hash, bool $isRotated = false, string $baseUrl = '', ?int $actorUserId = null, ?int $orgId = null): bool
     {
         $statusText = $isRotated ? "reinitialized and rotated" : "requested";
-        $loginUrl = rtrim($baseUrl, '/') . '/auth/hash-login?hash=' . urlencode($hash);
+        $loginUrl = $this->buildFullUrl('/member_login.sh&hash=' . urlencode($hash), $baseUrl);
 
         $subject = "Organization Access Key for {$orgName}";
         $body = "Dear Members of {$orgName},\n\n"
@@ -212,13 +260,16 @@ class MailerService
     /**
      * Alert members immediately when their organization casts its vote
      */
-    public function sendVoteCastAlert(array $memberEmails, string $orgName, string $proposalTitle, string $voterName, string $timestamp, ?int $actorUserId = null, ?int $orgId = null): bool
+    public function sendVoteCastAlert(array $memberEmails, string $orgName, string $proposalTitle, string $voterName, string $timestamp, ?int $actorUserId = null, ?int $orgId = null, string $baseUrl = ''): bool
     {
+        $proposalsUrl = $this->buildFullUrl('/proposals', $baseUrl);
         $subject = "[Vote Confirmed] Your Organization Cast a Vote: '{$proposalTitle}'";
         $body = "Dear Members of {$orgName},\n\n"
               . "Your organization's vote for proposal '{$proposalTitle}' has been successfully cast by:\n\n"
               . "Representative: {$voterName}\n"
               . "Timestamp: {$timestamp} (UTC)\n\n"
+              . "Assembly Proposals & Results:\n"
+              . "{$proposalsUrl}\n\n"
               . "This notification is sent to all registered members of {$orgName} to ensure internal transparency.\n\n"
               . "Best regards,\nConvota Assembly System";
 
@@ -230,12 +281,13 @@ class MailerService
      */
     public function sendVotingStartedAlert(array $memberEmails, string $proposalTitle, string $votingLink, ?int $actorUserId = null, ?int $orgId = null): bool
     {
+        $link = $this->buildFullUrl($votingLink);
         $subject = "[Voting Open] General Assembly Proposal: '{$proposalTitle}'";
         $body = "Dear Member,\n\n"
               . "Voting has now opened for the following proposal:\n"
               . "'{$proposalTitle}'\n\n"
               . "To view the proposal and cast your vote, visit:\n"
-              . "{$votingLink}\n\n"
+              . "{$link}\n\n"
               . "Best regards,\nConvota Assembly Presidium";
 
         return $this->send($memberEmails, $subject, $body, 'voting_started_alert', $actorUserId, $orgId);
@@ -246,6 +298,7 @@ class MailerService
      */
     public function sendMeetingScheduledAlert(array $memberEmails, string $meetingTitle, string $scheduledAt, string $location, string $meetingUrl, ?int $actorUserId = null, ?int $orgId = null): bool
     {
+        $url = $this->buildFullUrl($meetingUrl);
         $subject = "[General Assembly Notice] Meeting Scheduled: '{$meetingTitle}'";
         $body = "Dear Assembly Member,\n\n"
               . "A new General Assembly meeting session has been scheduled in Convota:\n\n"
@@ -253,7 +306,7 @@ class MailerService
               . "Scheduled Date & Time: {$scheduledAt} (UTC)\n"
               . "Location / Modality: {$location}\n\n"
               . "Please visit the following link to view meeting information and register your presence:\n"
-              . "{$meetingUrl}\n\n"
+              . "{$url}\n\n"
               . "Best regards,\nConvota Assembly Presidium";
 
         return $this->send($memberEmails, $subject, $body, 'meeting_scheduled_alert', $actorUserId, $orgId);

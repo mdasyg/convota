@@ -19,7 +19,10 @@ class SecurityHeaders
 
         // 1. Automatic HTTPS Redirection
         if ($forceHttps && !self::isHttps()) {
-            $targetUrl = 'https://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . ($_SERVER['REQUEST_URI'] ?? '/');
+            $host = !empty($_SERVER['HTTP_X_FORWARDED_HOST'])
+                ? trim(explode(',', (string)$_SERVER['HTTP_X_FORWARDED_HOST'])[0])
+                : ($_SERVER['HTTP_HOST'] ?? 'localhost');
+            $targetUrl = 'https://' . $host . ($_SERVER['REQUEST_URI'] ?? '/');
             header('Location: ' . $targetUrl, true, 301);
             exit;
         }
@@ -46,7 +49,19 @@ class SecurityHeaders
         if (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off') {
             return true;
         }
-        if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') {
+        if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+            $protos = explode(',', (string)$_SERVER['HTTP_X_FORWARDED_PROTO']);
+            if (strtolower(trim($protos[0])) === 'https') {
+                return true;
+            }
+        }
+        if (!empty($_SERVER['HTTP_X_FORWARDED_SCHEME'])) {
+            $protos = explode(',', (string)$_SERVER['HTTP_X_FORWARDED_SCHEME']);
+            if (strtolower(trim($protos[0])) === 'https') {
+                return true;
+            }
+        }
+        if (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') {
             return true;
         }
         if (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower((string)$_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off') {

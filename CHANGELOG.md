@@ -9,6 +9,15 @@ and this project adheres to Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-10-02
+### Fixed
+- **Dynamic Origin, Domain, and Base Path Discovery in Email Links**:
+  - Implemented automatic protocol, domain, and subpath auto-discovery via `App::discoverOrigin()`, `App::fullUrl()`, and `App::discoverBaseUrl()`.
+  - Intelligently detects client-facing scheme (`https` vs `http`) and host across standard reverse proxy headers (`X-Forwarded-Proto`, `X-Forwarded-Scheme`, `X-Forwarded-Host`, `Host`, and `Referer`).
+  - Added `MailerService::buildFullUrl()` ensuring all links dispatched in emails (password resets, member welcome & password setup, organization access key distribution, voting open notices, meeting scheduling alerts, and access key alerts) are strictly generated as fully qualified absolute URLs (e.g. `https://arch.ece.uowm.gr/convota/auth/reset-password?token=...`).
+  - Added global helper `full_url($path)` for system-wide consistency.
+  - Added automated test assertions in `tests/test_nginx_routing.php` verifying full URL auto-discovery under reverse proxy topologies. All 149 tests pass across all test suites.
+
 ## [1.5.0] - 2026-10-02
 ### Fixed
 - **Email Delivery via Postfix Relay**:

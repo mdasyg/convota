@@ -15,6 +15,16 @@ if (!function_exists('url')) {
     }
 }
 
+if (!function_exists('full_url')) {
+    /**
+     * Generate a fully qualified URL including discovered scheme, host, and base path
+     */
+    function full_url(string $path = ''): string
+    {
+        return \Convota\App::fullUrl($path);
+    }
+}
+
 if (!function_exists('redirect')) {
     /**
      * Send HTTP redirect header and terminate execution
@@ -24,3 +34,4 @@ if (!function_exists('redirect')) {
         \Convota\App::redirectUrl($path);
     }
 }
+

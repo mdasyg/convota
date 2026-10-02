@@ -204,7 +204,9 @@ class Proposal
 
         $emails = array_column($memberEmails, 'email');
         if (!empty($emails)) {
-            $link = rtrim($baseUrl, '/') . "/proposals/vote?id={$proposalId}";
+            $link = (!empty($baseUrl) && preg_match('#^https?://#i', $baseUrl))
+                ? rtrim($baseUrl, '/') . "/proposals/vote?id={$proposalId}"
+                : \Convota\App::fullUrl("/proposals/vote?id={$proposalId}");
             $this->mailer->sendVotingStartedAlert($emails, $proposal['title'], $link, $actorUserId);
         }
     }

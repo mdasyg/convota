@@ -91,7 +91,7 @@ class AuthController
                 if ($token) {
                     $user = $this->app->getDb()->fetch("SELECT id, organization_id, name, surname FROM users WHERE LOWER(email) = ?", [strtolower($email)]);
                     $name = $user ? "{$user['name']} {$user['surname']}" : 'Member';
-                    $baseUrl = $this->app->getConfig()['app']['base_url'] ?? '';
+                    $baseUrl = \Convota\App::discoverBaseUrl();
                     $userId = $user ? (int)$user['id'] : null;
                     $orgId = ($user && $user['organization_id']) ? (int)$user['organization_id'] : null;
                     $this->app->getMailer()->sendPasswordReset($email, $name, $token, $baseUrl, $userId, $orgId);
