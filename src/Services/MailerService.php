@@ -9,8 +9,9 @@ namespace Convota\Services;
 class MailerService
 {
     private array $config;
+    private ?AuditService $audit = null;
 
-    public function __construct(?array $config = null)
+    public function __construct(?array $config = null, ?AuditService $audit = null)
     {
         if ($config === null) {
             $appConfig = require __DIR__ . '/../../config/config.php';
@@ -18,13 +19,26 @@ class MailerService
         } else {
             $this->config = $config;
         }
+
+        $this->audit = $audit;
+    }
+
+    public function setAudit(AuditService $audit): void
+    {
+        $this->audit = $audit;
     }
 
     /**
-     * Dispatch an email notification
+     * Dispatch an email notification and record in tamper-evident audit trail
      */
-    public function send(string|array $to, string $subject, string $bodyText): bool
-    {
+    public function send(
+        string|array $to,
+        string $subject,
+        string $bodyText,
+        string $eventType = 'general_alert',
+        ?int $actorUserId = null,
+        ?int $orgId = null
+    ): bool {
         $recipients = is_array($to) ? $to : [$to];
         $from = $this->config['from_address'] ?? 'no-reply@email.vlsi.gr';
         $fromName = $this->config['from_name'] ?? 'Convota Assembly System';
@@ -72,6 +86,16 @@ class MailerService
                 );
                 @file_put_contents($logFile, $entry, FILE_APPEND | LOCK_EX);
             }
+
+            // Cryptographic audit log for email sent events
+            if ($this->audit !== null) {
+                $this->audit->log('email_sent', $actorUserId, $orgId, [
+                    'event_type' => $eventType,
+                    'recipient' => $recipient,
+                    'subject' => $subject,
+                    'driver' => $driver
+                ]);
+            }
         }
 
         return $success;
@@ -80,7 +104,7 @@ class MailerService
     /**
      * Send new member welcome & password setup link
      */
-    public function sendPasswordSetup(string $email, string $name, string $resetToken, string $baseUrl = ''): bool
+    public function sendPasswordSetup(string $email, string $name, string $resetToken, string $baseUrl = '', ?int $actorUserId = null, ?int $orgId = null): bool
     {
         $link = rtrim($baseUrl, '/') . '/auth/reset-password?token=' . urlencode($resetToken);
         $subject = 'Welcome to Convota — Set Your Password';
@@ -91,13 +115,13 @@ class MailerService
               . "This setup link is valid for 24 hours.\n\n"
               . "Best regards,\nConvota Assembly Presidium";
 
-        return $this->send($email, $subject, $body);
+        return $this->send($email, $subject, $body, 'password_setup', $actorUserId, $orgId);
     }
 
     /**
      * Send password reset token email
      */
-    public function sendPasswordReset(string $email, string $name, string $resetToken, string $baseUrl = ''): bool
+    public function sendPasswordReset(string $email, string $name, string $resetToken, string $baseUrl = '', ?int $actorUserId = null, ?int $orgId = null): bool
     {
         $link = rtrim($baseUrl, '/') . '/auth/reset-password?token=' . urlencode($resetToken);
         $subject = 'Convota — Password Reset Request';
@@ -108,13 +132,13 @@ class MailerService
               . "If you did not request this, you can safely ignore this message.\n\n"
               . "Best regards,\nConvota Security Team";
 
-        return $this->send($email, $subject, $body);
+        return $this->send($email, $subject, $body, 'password_reset', $actorUserId, $orgId);
     }
 
     /**
      * Alert members when organization common hash is used to log in
      */
-    public function sendHashLoginAlert(array $memberEmails, string $orgName, string $ip): bool
+    public function sendHashLoginAlert(array $memberEmails, string $orgName, string $ip, ?int $actorUserId = null, ?int $orgId = null): bool
     {
         $subject = "[Security Alert] Organization Access Key Used for {$orgName}";
         $body = "Dear Member,\n\n"
@@ -125,13 +149,13 @@ class MailerService
               . "If this was unexpected, please contact your organization administrator immediately to rotate the access key.\n\n"
               . "Best regards,\nConvota System";
 
-        return $this->send($memberEmails, $subject, $body);
+        return $this->send($memberEmails, $subject, $body, 'hash_login_alert', $actorUserId, $orgId);
     }
 
     /**
      * Email the Organization Access Key to members
      */
-    public function sendOrganizationHash(array $memberEmails, string $orgName, string $hash, bool $isRotated = false, string $baseUrl = ''): bool
+    public function sendOrganizationHash(array $memberEmails, string $orgName, string $hash, bool $isRotated = false, string $baseUrl = '', ?int $actorUserId = null, ?int $orgId = null): bool
     {
         $statusText = $isRotated ? "reinitialized and rotated" : "requested";
         $loginUrl = rtrim($baseUrl, '/') . '/auth/hash-login?hash=' . urlencode($hash);
@@ -146,13 +170,13 @@ class MailerService
               . "This key allows managing your organization's roster and designating your active assembly voter.\n\n"
               . "Best regards,\nConvota Presidium";
 
-        return $this->send($memberEmails, $subject, $body);
+        return $this->send($memberEmails, $subject, $body, 'organization_hash_distribution', $actorUserId, $orgId);
     }
 
     /**
      * Alert members immediately when their organization casts its vote
      */
-    public function sendVoteCastAlert(array $memberEmails, string $orgName, string $proposalTitle, string $voterName, string $timestamp): bool
+    public function sendVoteCastAlert(array $memberEmails, string $orgName, string $proposalTitle, string $voterName, string $timestamp, ?int $actorUserId = null, ?int $orgId = null): bool
     {
         $subject = "[Vote Confirmed] Your Organization Cast a Vote: '{$proposalTitle}'";
         $body = "Dear Members of {$orgName},\n\n"
@@ -162,13 +186,13 @@ class MailerService
               . "This notification is sent to all registered members of {$orgName} to ensure internal transparency.\n\n"
               . "Best regards,\nConvota Assembly System";
 
-        return $this->send($memberEmails, $subject, $body);
+        return $this->send($memberEmails, $subject, $body, 'vote_cast_alert', $actorUserId, $orgId);
     }
 
     /**
      * Dispatch voting open alert
      */
-    public function sendVotingStartedAlert(array $memberEmails, string $proposalTitle, string $votingLink): bool
+    public function sendVotingStartedAlert(array $memberEmails, string $proposalTitle, string $votingLink, ?int $actorUserId = null, ?int $orgId = null): bool
     {
         $subject = "[Voting Open] General Assembly Proposal: '{$proposalTitle}'";
         $body = "Dear Member,\n\n"
@@ -178,6 +202,24 @@ class MailerService
               . "{$votingLink}\n\n"
               . "Best regards,\nConvota Assembly Presidium";
 
-        return $this->send($memberEmails, $subject, $body);
+        return $this->send($memberEmails, $subject, $body, 'voting_started_alert', $actorUserId, $orgId);
+    }
+
+    /**
+     * Alert member participants of all organizations when an assembly meeting is scheduled
+     */
+    public function sendMeetingScheduledAlert(array $memberEmails, string $meetingTitle, string $scheduledAt, string $location, string $meetingUrl, ?int $actorUserId = null, ?int $orgId = null): bool
+    {
+        $subject = "[General Assembly Notice] Meeting Scheduled: '{$meetingTitle}'";
+        $body = "Dear Assembly Member,\n\n"
+              . "A new General Assembly meeting session has been scheduled in Convota:\n\n"
+              . "Meeting Title: {$meetingTitle}\n"
+              . "Scheduled Date & Time: {$scheduledAt} (UTC)\n"
+              . "Location / Modality: {$location}\n\n"
+              . "Please visit the following link to view meeting information and register your presence:\n"
+              . "{$meetingUrl}\n\n"
+              . "Best regards,\nConvota Assembly Presidium";
+
+        return $this->send($memberEmails, $subject, $body, 'meeting_scheduled_alert', $actorUserId, $orgId);
     }
 }

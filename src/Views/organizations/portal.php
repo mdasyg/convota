@@ -193,6 +193,24 @@ use Convota\Security\Csrf;
             </div>
         </div>
 
+        <?php
+            $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+            $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? 'localhost');
+            $keyDirectUrl = $proto . '://' . $host . url('/member_login.sh&hash=' . urlencode($org['common_hash']));
+        ?>
+
+        <!-- Direct Login URL Display -->
+        <div class="form-group" style="margin-top: 1rem;">
+            <label class="form-label">Direct Delegation Access Link</label>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+                You can use this access key directly via the following link:
+            </p>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" class="form-control" value="<?= htmlspecialchars($keyDirectUrl) ?>" readonly style="font-family: monospace; background: #f8fafc; font-size: 0.85rem;">
+                <button type="button" class="btn btn-secondary" data-copy="<?= htmlspecialchars($keyDirectUrl) ?>">Copy URL</button>
+            </div>
+        </div>
+
         <!-- Security Action Buttons -->
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem;">
             <!-- Email Key to Members -->
@@ -229,7 +247,7 @@ use Convota\Security\Csrf;
                 <input type="hidden" name="organization_id" value="<?= $org['id'] ?>">
                 <input type="hidden" name="enabled" value="<?= $org['email_on_hash_login'] ? '0' : '1' ?>">
                 <button type="submit" class="btn btn-secondary">
-                    <?= $org['email_on_hash_login'] ? '🔔 Email on Key Use: ON' : '🔕 Email on Key Use: OFF' ?>
+                    <?= $org['email_on_hash_login'] ? '🔔 Notify all members by email on login via key: ON' : '🔕 Notify all members by email on login via key: OFF' ?>
                 </button>
             </form>
         </div>

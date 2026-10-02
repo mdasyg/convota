@@ -58,6 +58,13 @@ class AuthController
     public function processHashLogin(): void
     {
         $hash = $_GET['hash'] ?? ($_POST['hash'] ?? '');
+        if (empty($hash) && !empty($_SERVER['REQUEST_URI'])) {
+            if (preg_match('#[?&]hash=([a-zA-Z0-9_-]+)#i', $_SERVER['REQUEST_URI'], $m)) {
+                $hash = $m[1];
+            } elseif (preg_match('#member_login\.sh&hash=([a-zA-Z0-9_-]+)#i', $_SERVER['REQUEST_URI'], $m)) {
+                $hash = $m[1];
+            }
+        }
 
         $res = $this->app->getHashAuth()->loginWithHash($hash);
 
@@ -82,9 +89,12 @@ class AuthController
             if (Validator::isValidEmail($email)) {
                 $token = $this->app->getAuth()->generateResetToken($email);
                 if ($token) {
-                    $user = $this->app->getDb()->fetch("SELECT name, surname FROM users WHERE LOWER(email) = ?", [strtolower($email)]);
+                    $user = $this->app->getDb()->fetch("SELECT id, organization_id, name, surname FROM users WHERE LOWER(email) = ?", [strtolower($email)]);
                     $name = $user ? "{$user['name']} {$user['surname']}" : 'Member';
-                    $this->app->getMailer()->sendPasswordReset($email, $name, $token);
+                    $baseUrl = $this->app->getConfig()['app']['base_url'] ?? '';
+                    $userId = $user ? (int)$user['id'] : null;
+                    $orgId = ($user && $user['organization_id']) ? (int)$user['organization_id'] : null;
+                    $this->app->getMailer()->sendPasswordReset($email, $name, $token, $baseUrl, $userId, $orgId);
                 }
             }
             // Always show friendly message to prevent email enumeration

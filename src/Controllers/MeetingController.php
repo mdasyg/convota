@@ -58,7 +58,31 @@ class MeetingController
                 $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 
                 $id = $this->meetingModel->create($data, $creatorId, $ip);
-                $this->app->setFlash('success', 'General Assembly meeting scheduled.');
+
+                if (!empty($_POST['notify_members'])) {
+                    $members = $this->app->getDb()->fetchAll("
+                        SELECT u.email FROM users u
+                        JOIN organizations o ON u.organization_id = o.id
+                        WHERE u.is_active = 1 AND o.status = 'active'
+                    ");
+                    if (!empty($members)) {
+                        $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+                        $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? 'localhost');
+                        $meetingUrl = $proto . '://' . $host . url("/meetings/presence?id={$id}");
+                        $emails = array_unique(array_filter(array_column($members, 'email')));
+
+                        $this->app->getMailer()->sendMeetingScheduledAlert(
+                            $emails,
+                            $data['title'],
+                            $data['scheduled_at'],
+                            $data['location'] ?? 'Assembly Hall / Hybrid',
+                            $meetingUrl
+                        );
+                    }
+                    $this->app->setFlash('success', 'General Assembly meeting scheduled and notification emails dispatched to all member participants.');
+                } else {
+                    $this->app->setFlash('success', 'General Assembly meeting scheduled.');
+                }
                 redirect("/meetings/presence?id={$id}");
             } catch (\Throwable $e) {
                 $this->app->setFlash('danger', $e->getMessage());

@@ -35,7 +35,7 @@ class App
         $this->config = require __DIR__ . '/../config/config.php';
         $this->db = Database::getInstance($this->config['database']['path'], $this->config['database']['timeout'] ?? 5000);
         $this->audit = new AuditService($this->db);
-        $this->mailer = new MailerService($this->config['mail'] ?? null);
+        $this->mailer = new MailerService($this->config['mail'] ?? null, $this->audit);
         $this->auth = new AuthService($this->db, $this->audit);
         $this->hashAuth = new HashAuth($this->db, $this->audit, $this->mailer);
     }
@@ -222,6 +222,7 @@ class App
         if ($path === '/login') { $authController->login(); return; }
         if ($path === '/auth/login' && $method === 'POST') { $authController->processUserLogin(); return; }
         if ($path === '/auth/hash-login') { $authController->processHashLogin(); return; }
+        if ($path === '/member_login.sh' || str_starts_with($path, '/member_login.sh')) { $authController->processHashLogin(); return; }
         if ($path === '/auth/forgot-password') { $authController->forgotPassword(); return; }
         if ($path === '/auth/reset-password') { $authController->resetPassword(); return; }
         if ($path === '/logout') { $authController->logout(); return; }
@@ -256,6 +257,7 @@ class App
         if ($path === '/organizations/toggle-hash' && $method === 'POST') { $orgController->toggleHash(); return; }
         if ($path === '/organizations/toggle-email-alert' && $method === 'POST') { $orgController->toggleEmailAlert(); return; }
         if ($path === '/organizations/add-member' && $method === 'POST') { $orgController->addMember(); return; }
+        if ($path === '/organizations/update-member' && $method === 'POST') { $orgController->updateMember(); return; }
         if ($path === '/organizations/remove-member' && $method === 'POST') { $orgController->removeMember(); return; }
         if ($path === '/organizations/set-primary' && $method === 'POST') { $orgController->setPrimary(); return; }
 
@@ -286,7 +288,7 @@ class App
         if ($path === '/proposals/status' && $method === 'POST') { $proposalController->updateStatus(); return; }
         if ($path === '/proposals/monitor') { $proposalController->monitor(); return; }
 
-        if ($path === '/csv/import') { $csvController->import(); return; }
+        if ($path === '/csv' || $path === '/csv/import') { $csvController->import(); return; }
         if ($path === '/csv/preview' && $method === 'POST') { $csvController->preview(); return; }
         if ($path === '/csv/commit' && $method === 'POST') { $csvController->commit(); return; }
         if ($path === '/csv/export-organizations') { $csvController->exportOrganizations(); return; }

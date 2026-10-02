@@ -23,7 +23,10 @@ class User
     {
         $this->db = $db;
         $this->audit = $audit ?? new AuditService($db);
-        $this->mailer = $mailer ?? new MailerService();
+        $this->mailer = $mailer ?? new MailerService(null, $this->audit);
+        if ($this->audit !== null) {
+            $this->mailer->setAudit($this->audit);
+        }
     }
 
     /**
@@ -98,7 +101,7 @@ class User
             $this->db->commit();
 
             // Dispatch welcome password setup email
-            $this->mailer->sendPasswordSetup($email, "{$name} {$surname}", $resetToken, $baseUrl);
+            $this->mailer->sendPasswordSetup($email, "{$name} {$surname}", $resetToken, $baseUrl, $actorUserId, $organizationId);
 
             return [
                 'id' => $newUserId,
@@ -240,5 +243,72 @@ class User
 
         $this->audit->log('profile_updated', $actorUserId ?? $id, null, ['user_id' => $id, 'name' => "{$name} {$surname}"], $ip);
         return true;
+    }
+
+    /**
+     * Update an existing organization member's details and optionally primary status
+     */
+    public function updateMember(
+        int $userId,
+        int $organizationId,
+        array $data,
+        ?int $actorUserId = null,
+        ?string $ip = null,
+        ?string $ua = null
+    ): bool {
+        $existing = $this->db->fetch("SELECT * FROM users WHERE id = ? AND organization_id = ?", [$userId, $organizationId]);
+        if (!$existing) {
+            throw new RuntimeException("Member not found in this organization.");
+        }
+
+        $name = Validator::cleanString($data['name'] ?? '');
+        $surname = Validator::cleanString($data['surname'] ?? '');
+        $email = strtolower(trim($data['email'] ?? ''));
+        $phone = Validator::cleanString($data['telephone'] ?? null);
+        $setPrimary = !empty($data['is_primary']);
+
+        if (empty($name) || empty($surname)) {
+            throw new InvalidArgumentException("Member name and surname are required.");
+        }
+
+        if (!Validator::isValidEmail($email)) {
+            throw new InvalidArgumentException("A valid email address is required.");
+        }
+
+        // If email was modified, ensure it's not already in use by another user
+        if ($email !== strtolower((string)$existing['email'])) {
+            $duplicate = $this->db->fetch("SELECT id FROM users WHERE LOWER(email) = ? AND id != ?", [$email, $userId]);
+            if ($duplicate) {
+                throw new InvalidArgumentException("Email '{$email}' is already registered to another account.");
+            }
+        }
+
+        $this->db->beginTransactionImmediate();
+
+        try {
+            $this->db->execute("
+                UPDATE users
+                SET name = ?, surname = ?, email = ?, telephone = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ? AND organization_id = ?
+            ", [$name, $surname, $email, $phone, $userId, $organizationId]);
+
+            if ($setPrimary) {
+                $this->db->execute("UPDATE users SET is_primary = 0 WHERE organization_id = ?", [$organizationId]);
+                $this->db->execute("UPDATE users SET is_primary = 1 WHERE id = ? AND organization_id = ?", [$userId, $organizationId]);
+            }
+
+            $this->audit->log('member_updated', $actorUserId, $organizationId, [
+                'user_id' => $userId,
+                'name' => "{$name} {$surname}",
+                'email' => $email,
+                'is_primary' => $setPrimary || (bool)$existing['is_primary']
+            ], $ip, $ua);
+
+            $this->db->commit();
+            return true;
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
     }
 }

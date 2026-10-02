@@ -43,10 +43,20 @@
                         <tr>
                             <td>#<?= $l['id'] ?></td>
                             <td>
-                                <strong style="font-size: 0.85rem; color: var(--primary);"><?= htmlspecialchars($l['action']) ?></strong>
+                                <?php if ($l['action'] === 'email_sent'): ?>
+                                    <strong style="font-size: 0.85rem; color: #2563eb;">✉️ email_sent</strong>
+                                <?php else: ?>
+                                    <strong style="font-size: 0.85rem; color: var(--primary);"><?= htmlspecialchars($l['action']) ?></strong>
+                                <?php endif; ?>
                                 <?php if ($l['details']): ?>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                        <?= htmlspecialchars($l['details']) ?>
+                                    <?php 
+                                        $detailData = json_decode($l['details'], true);
+                                        $displayDetail = is_array($detailData) && isset($detailData['event_type']) 
+                                            ? "Type: {$detailData['event_type']} | To: " . ($detailData['recipient'] ?? '') . " | Subj: " . ($detailData['subject'] ?? '')
+                                            : $l['details'];
+                                    ?>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= htmlspecialchars($l['details']) ?>">
+                                        <?= htmlspecialchars($displayDetail) ?>
                                     </div>
                                 <?php endif; ?>
                             </td>

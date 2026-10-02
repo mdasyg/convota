@@ -166,15 +166,22 @@ To ensure that an administrator with raw SQLite database access cannot determine
 - Import format:
   `A/a, name, surname, email, organization, [telephone], [vote_weight]`
 - **Smart Duplicate & Conflict Resolution Engine:**
-  1. *New Member & New Organization:* Both created automatically.
-  2. *Existing Member with Same Organization:* Detected and flagged. A checkbox allows updating or skipping without creating duplicates.
-  3. *Conflict Detection (Existing Member with Different Organization):*
+  1. *Identical Lines (Exact Database Matches):*
+     - If an incoming row has identical `name`, `surname`, `email`, and `organization` to an existing database record, the preview explicitly summarizes: *"XX lines were identical with the database"*.
+     - Identical lines are omitted from the detailed comparison table so administrators review only different and new lines.
+     - On commit, the system confirms: *"XX new lines were inserted. YY lines were identical with the database."*
+  2. *New Member & New Organization:* Both created automatically.
+  3. *Existing Member with Different Details in Same Organization:* Flagged for optional in-place update via checkbox.
+  4. *Conflict Detection (Existing Member with Different Organization):*
      - Flagged with a **Prominent Red Warning**:
        `"Conflict: Member [email] is already registered under organization [Org X], but CSV specifies [Org Y]."`
-     - Requires explicit administrator intervention before any data mutation occurs.
-- **Preview Step:** The administrator views a parsed summary table with colored badges (New, Existing, Conflict) before executing the database commit.
+     - Conflicting records are automatically protected and skipped from accidental cross-organization reassignment.
+- **Preview Step:** The administrator reviews a parsed summary table showing only different lines before executing the database commit.
 
 ### 5.2 CSV Exports
+- **Members Roster Export:** `A/a, Name, Surname, Email, Organization, Telephone, Is Primary Delegate, System Role, Org Voting Weight, [Authorization Hash]`.
+  - Includes an optional checkbox toggle (default: **OFF**) to export the shared Organization Access Key (`Authorization Hash`) for external tooling integration and batch distribution.
+- **Organizations Export:** `ID, Name, Short Name, Country, Website, Status, Voting Weight, Is President, Is Observer, Member Count, Created At`.
 - **Attendance Export:** `organization_name, representative_name, representative_email, checkin_status, checkin_time, checkin_ip`.
 - **Election Results Export:** Full breakdown of options, weights, percentages, and (for open votes) roll-call records.
 
@@ -256,7 +263,8 @@ The proposal voting process is governed by a strict, deterministic state machine
 5. **No Invalid Transitions:** Direct transitions such as `DRAFT -> CLOSED` or `CLOSED -> OPEN` without an explicit, audited admin override are strictly forbidden.
 
 ### 6.5 Tamper-Evident Audit Logging
-- Every sensitive event (member added/removed, organization modified, common hash rotated/used, vote opened/closed, ballot cast) is recorded in `audit_logs` with actor, IP, timestamp, and SHA-256 integrity hash chaining (`prev_hash` -> `entry_hash`).
+- Every sensitive event (member added/removed, organization modified, common hash rotated/used, vote opened/closed, ballot cast, email dispatches such as password resets and vote alerts) is recorded in `audit_logs` with actor, IP, timestamp, and SHA-256 integrity hash chaining (`prev_hash` -> `entry_hash`).
+- Action `email_sent` captures cryptographic evidence of outbound notifications (password resets, invitation links, access key rotation notices, intra-organization vote alerts, meeting scheduled notifications).
 
 ---
 

@@ -51,6 +51,13 @@ use Convota\Security\Csrf;
                         <input type="number" id="quorum_percentage" name="quorum_percentage" class="form-control" value="50.0" step="0.5" min="1" max="100">
                     </div>
                 </div>
+
+                <div class="form-row" style="margin-top: 1.25rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" name="notify_members" value="1">
+                        <span><strong>Notify by email all member participants of all organizations</strong></span>
+                    </label>
+                </div>
             </div>
         </div>
 

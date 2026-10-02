@@ -237,7 +237,41 @@ class OrganizationController
             $this->app->setFlash('danger', $e->getMessage());
         }
 
-        redirect('/organizations/portal');
+        $redirectTo = !empty($_POST['redirect_to']) ? $_POST['redirect_to'] : '/organizations/portal';
+        redirect($redirectTo);
+    }
+
+    /**
+     * Update an existing member's profile and delegation status
+     */
+    public function updateMember(): void
+    {
+        $orgId = (int)($_POST['organization_id'] ?? 0);
+        $userId = (int)($_POST['user_id'] ?? 0);
+        $this->assertOrgAccess($orgId);
+
+        try {
+            $user = $this->app->getAuth()->user();
+            $actorId = $user ? (int)$user['id'] : null;
+            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $ua = $_SERVER['HTTP_USER_AGENT'] ?? 'Web';
+
+            $data = [
+                'name' => $_POST['name'] ?? '',
+                'surname' => $_POST['surname'] ?? '',
+                'email' => $_POST['email'] ?? '',
+                'telephone' => $_POST['telephone'] ?? null,
+                'is_primary' => !empty($_POST['is_primary']) ? 1 : 0
+            ];
+
+            $this->userModel->updateMember($userId, $orgId, $data, $actorId, $ip, $ua);
+            $this->app->setFlash('success', "Member '{$data['name']} {$data['surname']}' updated successfully.");
+        } catch (\Throwable $e) {
+            $this->app->setFlash('danger', $e->getMessage());
+        }
+
+        $redirectTo = !empty($_POST['redirect_to']) ? $_POST['redirect_to'] : '/organizations/portal';
+        redirect($redirectTo);
     }
 
     /**
@@ -261,7 +295,8 @@ class OrganizationController
             $this->app->setFlash('danger', 'Failed to remove member.');
         }
 
-        redirect('/organizations/portal');
+        $redirectTo = !empty($_POST['redirect_to']) ? $_POST['redirect_to'] : '/organizations/portal';
+        redirect($redirectTo);
     }
 
     /**
@@ -278,9 +313,10 @@ class OrganizationController
         $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 
         $this->userModel->setPrimary($userId, $orgId, $actorId, $ip);
-        $this->app->setFlash('success', 'Primary delegate updated.');
+        $this->app->setFlash('success', 'Primary delegate designation updated. Other members set to substitutes.');
 
-        redirect('/organizations/portal');
+        $redirectTo = !empty($_POST['redirect_to']) ? $_POST['redirect_to'] : '/organizations/portal';
+        redirect($redirectTo);
     }
 
     /**

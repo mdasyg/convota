@@ -20,7 +20,10 @@ class HashAuth
     {
         $this->db = $db;
         $this->audit = $audit;
-        $this->mailer = $mailer ?? new MailerService();
+        $this->mailer = $mailer ?? new MailerService(null, $audit);
+        if ($this->audit !== null) {
+            $this->mailer->setAudit($this->audit);
+        }
     }
 
     /**
@@ -77,7 +80,7 @@ class HashAuth
         if ((int)$org['email_on_hash_login']) {
             $memberEmails = $this->getMemberEmails((int)$org['id']);
             if (!empty($memberEmails)) {
-                $this->mailer->sendHashLoginAlert($memberEmails, $org['name'], $ip);
+                $this->mailer->sendHashLoginAlert($memberEmails, $org['name'], $ip, null, (int)$org['id']);
             }
         }
 
@@ -116,7 +119,7 @@ class HashAuth
         // Notify all members with the newly rotated key
         $emails = $this->getMemberEmails($organizationId);
         if (!empty($emails)) {
-            $this->mailer->sendOrganizationHash($emails, $orgName, $newHash, true, $baseUrl);
+            $this->mailer->sendOrganizationHash($emails, $orgName, $newHash, true, $baseUrl, $actorUserId, $organizationId);
         }
 
         if ($this->audit) {
@@ -141,7 +144,7 @@ class HashAuth
             return false;
         }
 
-        $success = $this->mailer->sendOrganizationHash($emails, $org['name'], $org['common_hash'], false, $baseUrl);
+        $success = $this->mailer->sendOrganizationHash($emails, $org['name'], $org['common_hash'], false, $baseUrl, $actorUserId, $organizationId);
 
         if ($this->audit) {
             $this->audit->log('hash_emailed_to_members', $actorUserId, $organizationId, [

@@ -24,7 +24,10 @@ class Proposal
     {
         $this->db = $db;
         $this->audit = $audit ?? new AuditService($db);
-        $this->mailer = $mailer ?? new MailerService();
+        $this->mailer = $mailer ?? new MailerService(null, $this->audit);
+        if ($this->audit !== null) {
+            $this->mailer->setAudit($this->audit);
+        }
     }
 
     /**
@@ -177,7 +180,7 @@ class Proposal
 
         // If transitioning to open and notify_members_on_start is enabled
         if ($newStatus === 'open' && (int)$proposal['notify_members_on_start']) {
-            $this->notifyVotingStarted($proposalId, $baseUrl);
+            $this->notifyVotingStarted($proposalId, $baseUrl, $actorUserId);
         }
 
         return true;
@@ -186,7 +189,7 @@ class Proposal
     /**
      * Notify members that voting has opened
      */
-    private function notifyVotingStarted(int $proposalId, string $baseUrl): void
+    private function notifyVotingStarted(int $proposalId, string $baseUrl, ?int $actorUserId = null): void
     {
         $proposal = $this->getById($proposalId);
         if (!$proposal) {
@@ -202,7 +205,7 @@ class Proposal
         $emails = array_column($memberEmails, 'email');
         if (!empty($emails)) {
             $link = rtrim($baseUrl, '/') . "/proposals/vote?id={$proposalId}";
-            $this->mailer->sendVotingStartedAlert($emails, $proposal['title'], $link);
+            $this->mailer->sendVotingStartedAlert($emails, $proposal['title'], $link, $actorUserId);
         }
     }
 

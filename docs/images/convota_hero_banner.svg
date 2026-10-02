@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 280" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="280" rx="16" fill="url(#bgGrad)" stroke="#334155" stroke-width="2"/>
+
+  <!-- Decorative Grid Pattern -->
+  <g opacity="0.07" stroke="#94a3b8" stroke-width="1">
+    <line x1="100" y1="0" x2="100" y2="280" />
+    <line x1="200" y1="0" x2="200" y2="280" />
+    <line x1="300" y1="0" x2="300" y2="280" />
+    <line x1="400" y1="0" x2="400" y2="280" />
+    <line x1="500" y1="0" x2="500" y2="280" />
+    <line x1="600" y1="0" x2="600" y2="280" />
+    <line x1="700" y1="0" x2="700" y2="280" />
+    <line x1="800" y1="0" x2="800" y2="280" />
+    <line x1="900" y1="0" x2="900" y2="280" />
+    <line x1="0" y1="70" x2="1000" y2="70" />
+    <line x1="0" y1="140" x2="1000" y2="140" />
+    <line x1="0" y1="210" x2="1000" y2="210" />
+  </g>
+
+  <!-- Logo Emblem Box -->
+  <g transform="translate(60, 50)" filter="url(#shadow)">
+    <rect width="100" height="100" rx="20" fill="url(#primaryGrad)" stroke="#60a5fa" stroke-width="2"/>
+    <!-- Ballot Box & Check Icon -->
+    <path d="M 28 42 L 72 42 L 68 76 L 32 76 Z" fill="#1e3a8a" opacity="0.6"/>
+    <path d="M 24 38 L 76 38 L 76 46 L 24 46 Z" fill="#93c5fd"/>
+    <rect x="38" y="24" width="24" height="6" rx="2" fill="#ffffff"/>
+    <!-- Ballot Paper Entering Slot -->
+    <rect x="36" y="16" width="28" height="20" rx="2" fill="#ffffff" filter="url(#shadow)"/>
+    <polyline points="42,26 48,32 58,22" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Typography -->
+  <text x="180" y="95" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif" font-size="44" font-weight="900" fill="#ffffff" letter-spacing="1.5">
+    CONVOTA
+  </text>
+  <text x="405" y="92" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif" font-size="20" font-weight="500" fill="url(#accentGrad)" font-style="italic">
+    "Voting Together" · Latin: con + vota
+  </text>
+
+  <text x="180" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif" font-size="18" font-weight="400" fill="#cbd5e1">
+    General Assembly Presence, Dynamic Quorum &amp; Dual-Mode Voting Information System
+  </text>
+
+  <!-- Feature Badges -->
+  <g transform="translate(180, 160)">
+    <!-- Badge 1: PHP 8.4 & SQLite WAL -->
+    <rect x="0" y="0" width="180" height="34" rx="17" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="90" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" fill="#93c5fd" text-anchor="middle">
+      🐘 PHP 8.4 + SQLite WAL
+    </text>
+
+    <!-- Badge 2: Dual Mode Secret & Open -->
+    <rect x="195" y="0" width="220" height="34" rx="17" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+    <text x="305" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" fill="#6ee7b7" text-anchor="middle">
+      🗳️ Decoupled Secret &amp; Roll-Call
+    </text>
+
+    <!-- Badge 3: SHA-256 Audit Chain -->
+    <rect x="430" y="0" width="200" height="34" rx="17" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="530" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" fill="#fde68a" text-anchor="middle">
+      🛡️ SHA-256 Chained Audit
+    </text>
+
+    <!-- Badge 4: Dynamic Quorum -->
+    <rect x="645" y="0" width="135" height="34" rx="17" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="712" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" fill="#c4b5fd" text-anchor="middle">
+      📊 Live Quorum
+    </text>
+  </g>
+
+  <!-- Dedication Subtle Watermark -->
+  <text x="950" y="255" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="500" fill="#64748b" text-anchor="end">
+    Architecture &amp; Implementation by Minas Dasygenis for Aris Repoulias · Release 20261002
+  </text>
+</svg>

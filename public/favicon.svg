@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="ballot" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+  </defs>
+  <!-- Background circle with smooth rounded corners -->
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <!-- Ballot Box base -->
+  <path d="M12 28 L52 28 L47 52 L17 52 Z" fill="#1e40af" stroke="#60a5fa" stroke-width="1.5"/>
+  <!-- Box front flap -->
+  <path d="M15 32 L49 32 L45 50 L19 50 Z" fill="#1d4ed8"/>
+  <!-- Ballot Slot -->
+  <rect x="22" y="26" width="20" height="3" rx="1.5" fill="#0f172a"/>
+  <!-- Ballot paper sliding in -->
+  <rect x="24" y="10" width="16" height="20" rx="2" fill="url(#ballot)" stroke="#94a3b8" stroke-width="1" transform="rotate(-4 32 20)"/>
+  <!-- Checkmark on ballot -->
+  <path d="M28 20 L31 23 L37 17" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" transform="rotate(-4 32 20)"/>
+</svg>

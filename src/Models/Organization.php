@@ -25,7 +25,10 @@ class Organization
     {
         $this->db = $db;
         $this->audit = $audit ?? new AuditService($db);
-        $this->mailer = $mailer ?? new MailerService();
+        $this->mailer = $mailer ?? new MailerService(null, $this->audit);
+        if ($this->audit !== null) {
+            $this->mailer->setAudit($this->audit);
+        }
     }
 
     /**
@@ -132,7 +135,7 @@ class Organization
             $this->db->commit();
 
             // Dispatch welcome & password setup email
-            $this->mailer->sendPasswordSetup($memberEmail, "{$memberName} {$memberSurname}", $resetToken, $baseUrl);
+            $this->mailer->sendPasswordSetup($memberEmail, "{$memberName} {$memberSurname}", $resetToken, $baseUrl, $creatorUserId, $orgId);
 
             return [
                 'organization_id' => $orgId,

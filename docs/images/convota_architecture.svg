@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgArch" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="blueCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+    <linearGradient id="greenCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="amberCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78350f" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <linearGradient id="purpleCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4c1d95" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+    <filter id="glow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="540" rx="16" fill="url(#bgArch)" stroke="#334155" stroke-width="2"/>
+
+  <!-- Title -->
+  <text x="480" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="800" fill="#f8fafc" text-anchor="middle" letter-spacing="0.5">
+    CONVOTA SYSTEM ARCHITECTURE &amp; DATA FLOW
+  </text>
+  <text x="480" y="64" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="400" fill="#94a3b8" text-anchor="middle">
+    Axiom: Vote belongs to the Organization; Designated Representative exercises the voting power.
+  </text>
+
+  <!-- LAYER 1: COLLECTIVE & ORGANIZATIONS -->
+  <g transform="translate(40, 85)" filter="url(#glow)">
+    <rect width="880" height="100" rx="12" fill="url(#cardGrad)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6,4"/>
+    <text x="20" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#38bdf8" letter-spacing="1">
+      COLLECTIVE CORE &amp; MEMBER ORGANIZATIONS
+    </text>
+
+    <!-- Org 1: President -->
+    <g transform="translate(30, 36)">
+      <rect width="250" height="52" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <circle cx="22" cy="26" r="10" fill="#d97706"/>
+      <text x="22" y="30" font-family="sans-serif" font-size="10" fill="#ffffff" text-anchor="middle">👑</text>
+      <text x="42" y="22" font-family="sans-serif" font-size="12" font-weight="700" fill="#fef3c7">President Organization</text>
+      <text x="42" y="40" font-family="sans-serif" font-size="10" fill="#cbd5e1">Weight: 1-N Votes · Presidium Role</text>
+    </g>
+
+    <!-- Org 2: Regular Member -->
+    <g transform="translate(315, 36)">
+      <rect width="250" height="52" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5"/>
+      <circle cx="22" cy="26" r="10" fill="#2563eb"/>
+      <text x="22" y="30" font-family="sans-serif" font-size="10" fill="#ffffff" text-anchor="middle">🏛️</text>
+      <text x="42" y="22" font-family="sans-serif" font-size="12" font-weight="700" fill="#dbeafe">Voting Member Org</text>
+      <text x="42" y="40" font-family="sans-serif" font-size="10" fill="#cbd5e1">Weight: 1.0 (Configurable Shares)</text>
+    </g>
+
+    <!-- Org 3: Observer -->
+    <g transform="translate(600, 36)">
+      <rect width="250" height="52" rx="8" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
+      <circle cx="22" cy="26" r="10" fill="#475569"/>
+      <text x="22" y="30" font-family="sans-serif" font-size="10" fill="#ffffff" text-anchor="middle">👁️</text>
+      <text x="42" y="22" font-family="sans-serif" font-size="12" font-weight="700" fill="#94a3b8">Observer Organization</text>
+      <text x="42" y="40" font-family="sans-serif" font-size="10" fill="#64748b">Weight: 0.0 · Read-Only Assembly</text>
+    </g>
+  </g>
+
+  <!-- Connectors Layer 1 to 2 -->
+  <line x1="280" y1="185" x2="280" y2="215" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+  <polygon points="280,215 276,207 284,207" fill="#38bdf8"/>
+  <line x1="680" y1="185" x2="680" y2="215" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+  <polygon points="680,215 676,207 684,207" fill="#38bdf8"/>
+
+  <!-- LAYER 2: AUTHENTICATION & DELEGATION ROSTER -->
+  <g transform="translate(40, 215)" filter="url(#glow)">
+    <rect width="425" height="115" rx="12" fill="url(#cardGrad)" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="20" y="25" font-family="sans-serif" font-size="12" font-weight="700" fill="#818cf8" letter-spacing="0.5">
+      DELEGATION ROSTER &amp; AUTHENTICATION
+    </text>
+
+    <!-- Sub-box 1: Member Credentials -->
+    <rect x="20" y="38" width="185" height="62" rx="6" fill="#1e293b" stroke="#4f46e5" stroke-width="1"/>
+    <text x="30" y="56" font-family="sans-serif" font-size="11" font-weight="700" fill="#e0e7ff">Individual Member Login</text>
+    <text x="30" y="72" font-family="sans-serif" font-size="9.5" fill="#94a3b8">Email + Argon2id Password</text>
+    <text x="30" y="88" font-family="sans-serif" font-size="9.5" fill="#a5b4fc">Primary &amp; Substitute Roster</text>
+
+    <!-- Sub-box 2: Shared Organization Key -->
+    <rect x="220" y="38" width="185" height="62" rx="6" fill="#1e293b" stroke="#ec4899" stroke-width="1"/>
+    <text x="230" y="56" font-family="sans-serif" font-size="11" font-weight="700" fill="#fce7f3">Shared Organization Key</text>
+    <text x="230" y="72" font-family="sans-serif" font-size="9.5" fill="#94a3b8">Shared 256-bit Token</text>
+    <text x="230" y="88" font-family="sans-serif" font-size="9.5" fill="#f472b6">Auto-Alerts + Instant Rotation</text>
+  </g>
+
+  <!-- LAYER 2 (RIGHT): DYNAMIC QUORUM & PRESENCE -->
+  <g transform="translate(495, 215)" filter="url(#glow)">
+    <rect width="425" height="115" rx="12" fill="url(#cardGrad)" stroke="#10b981" stroke-width="1.5"/>
+    <text x="20" y="25" font-family="sans-serif" font-size="12" font-weight="700" fill="#34d399" letter-spacing="0.5">
+      DYNAMIC QUORUM &amp; PRESENCE ENGINE
+    </text>
+
+    <!-- Quorum Details -->
+    <g transform="translate(20, 38)">
+      <rect width="385" height="62" rx="6" fill="#064e3b" stroke="#059669" stroke-width="1"/>
+      <text x="15" y="24" font-family="sans-serif" font-size="13" font-weight="800" fill="#a7f3d0">
+        Participating 14 of 28 Member Orgs (50.0%)
+      </text>
+      <text x="15" y="44" font-family="sans-serif" font-size="10" fill="#6ee7b7">
+        ✓ Quorum Reached · Active Representative Binding per Meeting · Live Ajax Polling
+      </text>
+    </g>
+  </g>
+
+  <!-- Connectors Layer 2 to 3 -->
+  <line x1="250" y1="330" x2="250" y2="360" stroke="#6366f1" stroke-width="2" stroke-linecap="round"/>
+  <polygon points="250,360 246,352 254,352" fill="#6366f1"/>
+  <line x1="710" y1="330" x2="710" y2="360" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+  <polygon points="710,360 706,352 714,352" fill="#10b981"/>
+
+  <!-- LAYER 3: DUAL-MODE VOTING ENGINE -->
+  <g transform="translate(40, 360)" filter="url(#glow)">
+    <rect width="570" height="145" rx="12" fill="url(#cardGrad)" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="20" y="25" font-family="sans-serif" font-size="12" font-weight="700" fill="#fbbf24" letter-spacing="0.5">
+      DUAL-MODE VOTING ENGINE (ATOMIC &amp; IDEMPOTENT)
+    </text>
+
+    <!-- Secret Decoupled Mode -->
+    <g transform="translate(20, 38)">
+      <rect width="255" height="92" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="15" y="22" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#a7f3d0">
+        🛡️ Secret Decoupled Ballot
+      </text>
+      <text x="15" y="40" font-family="sans-serif" font-size="9.5" fill="#94a3b8">• Zero foreign keys to org or voter</text>
+      <text x="15" y="56" font-family="sans-serif" font-size="9.5" fill="#94a3b8">• SQLite BEGIN IMMEDIATE</text>
+      <text x="15" y="72" font-family="sans-serif" font-size="9.5" fill="#34d399">• Cryptographic SHA-256 Receipt</text>
+      <text x="15" y="86" font-family="sans-serif" font-size="9" fill="#6ee7b7">Independent Tally Verification</text>
+    </g>
+
+    <!-- Open Roll-Call Mode -->
+    <g transform="translate(295, 38)">
+      <rect width="255" height="92" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="15" y="22" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#bfdbfe">
+        📢 Open Roll-Call Ballot
+      </text>
+      <text x="15" y="40" font-family="sans-serif" font-size="9.5" fill="#94a3b8">• Recorded in public minutes</text>
+      <text x="15" y="56" font-family="sans-serif" font-size="9.5" fill="#94a3b8">• Org + Representative Name linked</text>
+      <text x="15" y="72" font-family="sans-serif" font-size="9.5" fill="#60a5fa">• Immutable snapshot at vote time</text>
+      <text x="15" y="86" font-family="sans-serif" font-size="9" fill="#93c5fd">Transparent federation audit</text>
+    </g>
+  </g>
+
+  <!-- LAYER 3 (RIGHT): AUDIT TRAIL & NOTIFICATIONS -->
+  <g transform="translate(630, 360)" filter="url(#glow)">
+    <rect width="290" height="145" rx="12" fill="url(#cardGrad)" stroke="#ec4899" stroke-width="1.5"/>
+    <text x="16" y="25" font-family="sans-serif" font-size="12" font-weight="700" fill="#f472b6" letter-spacing="0.5">
+      AUDIT &amp; TRANSPARENCY
+    </text>
+
+    <g transform="translate(15, 38)">
+      <rect width="260" height="92" rx="8" fill="#1e293b" stroke="#db2777" stroke-width="1"/>
+      <text x="12" y="22" font-family="sans-serif" font-size="11" font-weight="700" fill="#fbcfe8">
+        ⛓️ SHA-256 Hash Chain
+      </text>
+      <text x="12" y="38" font-family="sans-serif" font-size="9" fill="#cbd5e1">Blockchain-style tamper evidence</text>
+      <text x="12" y="56" font-family="sans-serif" font-size="11" font-weight="700" fill="#fbcfe8">
+        ✉️ Intra-Org Vote Alerts
+      </text>
+      <text x="12" y="72" font-family="sans-serif" font-size="9" fill="#cbd5e1">Instant notification to all members</text>
+      <text x="12" y="86" font-family="sans-serif" font-size="9" fill="#f472b6">when organization's ballot is cast</text>
+    </g>
+  </g>
+</svg>

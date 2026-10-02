@@ -9,7 +9,48 @@ and this project adheres to Semantic Versioning.
 
 ## [Unreleased]
 
-## [1.3.0] - 2026-10-02
+## [1.4.0] - 2026-10-02
+### Added
+- **Organization Member Delegation Management in Edit View**:
+  - Full delegation roster table in `/organizations/edit` allowing administrators to add, edit, and remove delegation members directly.
+  - Dedicated "Set Primary" action that sets the designated member as primary delegate and automatically updates all other delegation members as substitutes.
+  - In-place modal dialogs for editing member first name, surname, and phone number.
+- **Convota Interactive About Modal**:
+  - Triggered by clicking the "Convota" brand in the footer of all application layouts (`layout.php`, `auth_layout.php`).
+  - Details system purpose, architecture, Latin etymology (*con* + *vota* = "Voting Together").
+  - Includes exact credit and dedication: *"System Architecture and Implementation by Minas Dasygenis for my friend Aris Repoulias."*
+  - Displays release date: `2026-10-02` and version string: `Version: 20261002`.
+- **Favicons in Root and Public Directories**:
+  - Generated multi-resolution `favicon.ico` (16x16, 32x32, 48x48), `favicon.png`, `favicon.svg`, and `apple-touch-icon.png` in both `/projects/convota/` and `/projects/convota/public/`.
+  - Added HTML `<link rel="icon">` tags to all view layouts.
+- **Indicative Images for GitHub in `README.md`**:
+  - Generated SVG diagrams in `docs/images/`:
+    - `convota_hero_banner.svg`: Header emblem and system badges.
+    - `convota_architecture.svg`: Complete architectural overview and data flow.
+    - `convota_dashboard_preview.svg`: Assembly dashboard with live dynamic quorum meter.
+    - `convota_secret_ballot.svg`: Privacy-preserving decoupled ballot model with SHA-256 receipts.
+    - `convota_projector_preview.svg`: Big-screen projector display with verified tallies.
+  - Embedded preview images into `README.md`.
+- **Meeting Scheduling Email Notification**:
+  - Added checkbox option (default OFF / unchecked) in `/meetings/create` to notify all registered members of active member organizations by email when an assembly meeting is scheduled.
+  - Dispatches `meeting_scheduled_alert` containing meeting title, UTC time, location, and presence registration link.
+- **Smart CSV Import with Identical Line Detection**:
+  - In `previewImport()`, detects rows matching the database in name, surname, email, and organization.
+  - Summarizes matching rows as *"XX lines were identical with the database"* and omits them from the row-by-row table so only different lines are displayed.
+  - On commit, confirms: *"XX new lines were inserted. YY lines were identical with the database."*
+- **CSV Export with Shared Authorization Hash Option**:
+  - Added option (default OFF / unchecked) in CSV export to append the shared Organization Access Key (`Authorization Hash`) to each row of the members roster CSV.
+  - Allows administrators to export credentials for integration with external batch tools or mailing systems.
+- **Direct Shared Key Login URL**:
+  - Dynamically constructs direct access link: `https://.../convota/member_login.sh&hash=...` in `/organizations/portal`.
+  - Added "Copy URL" button with clipboard feedback.
+  - Router in `App.php` and `AuthController.php` supports `/member_login.sh` and extracts access key.
+  - Updated toggle text to *"Notify all members by email on login via key: ON/OFF"*.
+- **Comprehensive Email Event Logging in Cryptographic Audit Trail**:
+  - All email dispatches (password setup, password reset, key usage alerts, key distribution, vote cast alerts, voting open alerts, meeting scheduled notices) log `email_sent` events into `audit_logs` with SHA-256 hash chaining.
+  - Enhanced `/audit` view with readable event type formatting, recipients, and subjects.
+- **Expanded Test Suite (141 Tests)**:
+  - Added 11 automated test assertions in `tests/test_phase2.php` verifying identical CSV row detection, auth hash CSV export toggles, and email audit logging. All 141 tests pass across 6 phases.
 ### Added
 - **Frontend Nginx Reverse Proxy Configuration (`convota.conf` & `config/convota.conf`)**:
   - Templated from production-tested `rtl2schematic.conf` and `chronos.conf`.

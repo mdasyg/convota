@@ -122,3 +122,28 @@ document.addEventListener('DOMContentLoaded', function () {
         setInterval(pollQuorumStatus, pollInterval);
     }
 });
+
+// 6. Global About Modal Controller
+window.ConvotaAbout = {
+    open: function () {
+        const modal = document.getElementById('convota-about-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    },
+    close: function () {
+        const modal = document.getElementById('convota-about-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+};
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        window.ConvotaAbout.close();
+    }
+});
+

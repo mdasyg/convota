@@ -88,12 +88,13 @@ class CsvController
         try {
             $res = $this->csvService->commitImport($rows, $updateEmails, $adminId, $ip, $ua, $baseUrl);
             $msg = sprintf(
-                "CSV import committed: %d new organizations, %d new members created, %d members updated, %d skipped/conflicts safely bypassed.",
-                $res['created_orgs'],
+                "%d new lines were inserted. %d lines were identical with the database.",
                 $res['created_members'],
-                $res['updated_members'],
-                $res['skipped']
+                $res['identical_lines'] ?? 0
             );
+            if (!empty($res['updated_members']) || !empty($res['skipped'])) {
+                $msg .= sprintf(" (%d updated, %d skipped/conflicts safely bypassed)", $res['updated_members'], $res['skipped']);
+            }
             $this->app->setFlash('success', $msg);
             redirect('/organizations');
         } catch (\Throwable $e) {
@@ -118,7 +119,8 @@ class CsvController
     public function exportMembers(): void
     {
         $orgId = isset($_GET['org_id']) ? (int)$_GET['org_id'] : null;
-        $csv = $this->csvService->exportMembersCsv($orgId);
+        $includeAuthHash = !empty($_GET['include_auth_hash']) && in_array(strtolower((string)$_GET['include_auth_hash']), ['1', 'true', 'on', 'yes'], true);
+        $csv = $this->csvService->exportMembersCsv($orgId, $includeAuthHash);
         $filename = 'convota_members_roster_' . date('Ymd_His') . '.csv';
 
         header('Content-Type: text/csv; charset=UTF-8');

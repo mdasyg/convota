@@ -162,12 +162,40 @@ CSV;
     $tuomasCheck = $db->fetch("SELECT organization_id FROM users WHERE email = 'tuomas@email.vlsi.gr'");
     assertTest("Conflicted member organization remained unchanged", (int)$tuomasCheck['organization_id'] === $createRes['organization_id']);
 
-    // 8. CSV Exports
+    // 8. CSV Exports (Default without Auth Hash & With Auth Hash)
     $orgCsv = $csvService->exportOrganizationsCsv();
     assertTest("Export organizations CSV produces non-empty output", !empty($orgCsv) && str_contains($orgCsv, 'Nordic AI Society'));
 
     $membersCsv = $csvService->exportMembersCsv();
     assertTest("Export members CSV produces valid CSV with headers", !empty($membersCsv) && str_contains($membersCsv, 'tuomas@email.vlsi.gr'));
+    assertTest("Export members CSV defaults to excluding Authorization Hash", !str_contains($membersCsv, 'Authorization Hash'));
+
+    $membersCsvWithHash = $csvService->exportMembersCsv(null, true);
+    assertTest("Export members CSV with includeAuthHash=true includes 'Authorization Hash' column", str_contains($membersCsvWithHash, 'Authorization Hash'));
+    assertTest("Export members CSV with includeAuthHash=true contains shared common_hash", str_contains($membersCsvWithHash, $createRes['common_hash']));
+
+    // 9. Identical CSV Rows Import Test
+    $identicalCsv = <<<CSV
+A/a,name,surname,email,organization,telephone,vote_weight
+1,Frederik,Nielsen,frederik@email.vlsi.gr,Danish Research Consortium,+45 12345678,1.0
+2,Tuomas,Korhonen,tuomas@email.vlsi.gr,Nordic AI Society,+358 9 9876543,1.5
+3,New,Member,newmember@email.vlsi.gr,Nordic AI Society,+358 9 1111111,1.0
+CSV;
+    $identicalPreview = $csvService->previewImport($identicalCsv);
+    assertTest("Identical CSV preview detected 2 identical rows", $identicalPreview['summary']['identical_rows'] === 2);
+    assertTest("Row 1 marked as is_identical = true", $identicalPreview['rows'][0]['is_identical'] === true);
+    assertTest("Row 2 marked as is_identical = true", $identicalPreview['rows'][1]['is_identical'] === true);
+    assertTest("Row 3 marked as new member", $identicalPreview['rows'][2]['status'] === 'new' && $identicalPreview['rows'][2]['is_identical'] === false);
+
+    $commitIdentical = $csvService->commitImport($identicalPreview['rows'], [], 1, '127.0.0.1', 'CLI');
+    assertTest("Commit reports 1 new line inserted", $commitIdentical['new_lines'] === 1 && $commitIdentical['created_members'] === 1);
+    assertTest("Commit reports 2 identical lines matched with database", $commitIdentical['identical_lines'] === 2);
+
+    // 10. Audit Log for Email Sent Events
+    $emailLog = $db->fetch("SELECT * FROM audit_logs WHERE action = 'email_sent'");
+    assertTest("Audit trail recorded email_sent events", $emailLog !== null && !empty($emailLog['details']));
+    $emailDetails = json_decode($emailLog['details'], true);
+    assertTest("Email audit log captures event_type and recipient", is_array($emailDetails) && !empty($emailDetails['event_type']) && !empty($emailDetails['recipient']));
 
 } catch (\Throwable $e) {
     echo "EXCEPTION: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n";

@@ -1,10 +1,38 @@
 # Convota (Voting Together)
 
+<p align="center">
+  <img src="docs/images/convota_hero_banner.svg" alt="Convota — Voting Together" width="100%">
+</p>
+
 **Convota** (*"Voting Together"*, from Latin *con* + *vota*) is an open, secure, and privacy-preserving General Assembly Presence and Voting Information System built with **PHP 8.4** and **SQLite3**.
 
 Designed for international research consortia, academic senates, federations, standards organizations, cooperatives, and NGOs.
 
 > **Core Axiom:** *The vote belongs to the organization; the designated representative is the authenticated person exercising that organization's voting right.*
+
+---
+
+## Visual Overview & Architecture
+
+### System Architecture & Data Flow
+<p align="center">
+  <img src="docs/images/convota_architecture.svg" alt="Convota System Architecture &amp; Data Flow" width="100%">
+</p>
+
+### Live Assembly Dashboard
+<p align="center">
+  <img src="docs/images/convota_dashboard_preview.svg" alt="Convota Assembly Dashboard Preview" width="100%">
+</p>
+
+### Privacy-Preserving Secret Decoupled Ballot
+<p align="center">
+  <img src="docs/images/convota_secret_ballot.svg" alt="Convota Secret Decoupled Ballot Architecture" width="100%">
+</p>
+
+### Assembly Hall Big-Screen Projector Mode
+<p align="center">
+  <img src="docs/images/convota_projector_preview.svg" alt="Convota Assembly Hall Projector Display" width="100%">
+</p>
 
 ---
 

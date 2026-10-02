@@ -8,8 +8,13 @@ use Convota\Security\Csrf;
             Organizations participating in the Collective, voting weights, and delegation members.
         </p>
     </div>
-    <div style="display: flex; gap: 0.5rem;">
-        <a href="<?= url('/csv/export-organizations') ?>" class="btn btn-secondary btn-sm">Export CSV</a>
+    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+        <a href="<?= url('/csv/export-organizations') ?>" class="btn btn-secondary btn-sm" title="Export Organizations CSV">Export Orgs CSV</a>
+        <a href="<?= url('/csv/export-members') ?>" id="btnIndexExportMembers" class="btn btn-secondary btn-sm" title="Export Members Roster CSV">Export Members CSV</a>
+        <label style="font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.25rem; margin-bottom: 0; color: var(--text-muted); cursor: pointer;" title="Append shared Organization Authorization Key to each line">
+            <input type="checkbox" onchange="document.getElementById('btnIndexExportMembers').href = '<?= url('/csv/export-members') ?>' + (this.checked ? '?include_auth_hash=1' : '');">
+            Auth Key
+        </label>
         <?php if (!empty($isAdmin)): ?>
             <a href="<?= url('/organizations/create') ?>" class="btn btn-primary btn-sm">➕ Add Organization</a>
         <?php endif; ?>

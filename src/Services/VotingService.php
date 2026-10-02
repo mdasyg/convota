@@ -29,7 +29,10 @@ class VotingService
     {
         $this->db = $db;
         $this->audit = $audit ?? new AuditService($db);
-        $this->mailer = $mailer ?? new MailerService();
+        $this->mailer = $mailer ?? new MailerService(null, $this->audit);
+        if ($this->audit !== null) {
+            $this->mailer->setAudit($this->audit);
+        }
     }
 
     /**
@@ -224,7 +227,7 @@ class VotingService
         $emails = array_column($members, 'email');
         if (!empty($emails)) {
             $timestamp = gmdate('Y-m-d H:i:s');
-            $this->mailer->sendVoteCastAlert($emails, $orgName, $proposalTitle, $voterName, $timestamp);
+            $this->mailer->sendVoteCastAlert($emails, $orgName, $proposalTitle, $voterName, $timestamp, null, $orgId);
         }
     }
 

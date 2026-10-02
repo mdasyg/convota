@@ -22,7 +22,10 @@ class CsvService
     {
         $this->db = $db;
         $this->audit = $audit ?? new AuditService($db);
-        $this->mailer = $mailer ?? new MailerService();
+        $this->mailer = $mailer ?? new MailerService(null, $this->audit);
+        if ($this->audit !== null) {
+            $this->mailer->setAudit($this->audit);
+        }
     }
 
     /**
@@ -42,6 +45,7 @@ class CsvService
             'new_members' => 0,
             'new_organizations' => 0,
             'existing_same_org' => 0,
+            'identical_rows' => 0,
             'conflicts' => 0
         ];
 
@@ -98,7 +102,8 @@ class CsvService
                 'warning' => null,
                 'existing_org_id' => null,
                 'existing_user_id' => null,
-                'org_is_new' => false
+                'org_is_new' => false,
+                'is_identical' => false
             ];
 
             // 1. Check organization existence
@@ -128,11 +133,24 @@ class CsvService
                 $rowAnalysis['existing_user_id'] = (int)$existingUser['id'];
 
                 if ($rowAnalysis['existing_org_id'] && (int)$existingUser['organization_id'] === $rowAnalysis['existing_org_id']) {
-                    // Existing member under the SAME organization
+                    // Check if member is identical with database (same name, surname, email, organization)
+                    $isIdentical = (
+                        strcasecmp(trim((string)$existingUser['name']), $name) === 0 &&
+                        strcasecmp(trim((string)$existingUser['surname']), $surname) === 0
+                    );
+                    $rowAnalysis['is_identical'] = $isIdentical;
                     $rowAnalysis['status'] = 'existing_same_org';
-                    $rowAnalysis['status_label'] = 'Existing Member (Same Organization)';
-                    $rowAnalysis['warning'] = "Member '{$email}' already exists in this organization. Check box to update details or leave unchecked to skip.";
-                    $summary['existing_same_org']++;
+
+                    if ($isIdentical) {
+                        $rowAnalysis['status_label'] = 'Identical Member (Same Organization)';
+                        $rowAnalysis['warning'] = "Member '{$name} {$surname}' ({$email}) is identical with the database record.";
+                        $summary['identical_rows']++;
+                        $summary['existing_same_org']++;
+                    } else {
+                        $rowAnalysis['status_label'] = 'Existing Member (Same Organization)';
+                        $rowAnalysis['warning'] = "Member '{$email}' already exists in this organization with different details. Check box to update details or leave unchecked to skip.";
+                        $summary['existing_same_org']++;
+                    }
                 } else {
                     // Conflict: Email already belongs to a DIFFERENT organization!
                     $currentOrgName = $existingUser['org_name'] ?? 'Unassigned';
@@ -174,7 +192,9 @@ class CsvService
             'created_orgs' => 0,
             'created_members' => 0,
             'updated_members' => 0,
-            'skipped' => 0
+            'skipped' => 0,
+            'identical_lines' => 0,
+            'new_lines' => 0
         ];
 
         $this->db->beginTransactionImmediate();
@@ -203,6 +223,9 @@ class CsvService
                         ", [$row['name'], $row['surname'], $row['telephone'], $row['existing_user_id']]);
                         $results['updated_members']++;
                     } else {
+                        if (!empty($row['is_identical'])) {
+                            $results['identical_lines']++;
+                        }
                         $results['skipped']++;
                     }
                     continue;
@@ -265,6 +288,8 @@ class CsvService
                 $results['created_members']++;
             }
 
+            $results['new_lines'] = $results['created_members'];
+
             $this->audit->log('csv_import_committed', $adminUserId, null, $results, $ip, $ua);
             $this->db->commit();
 
@@ -316,11 +341,11 @@ class CsvService
     /**
      * Export members to CSV
      */
-    public function exportMembersCsv(?int $orgId = null): string
+    public function exportMembersCsv(?int $orgId = null, bool $includeAuthHash = false): string
     {
         $sql = "
             SELECT u.id, u.name, u.surname, u.email, u.telephone, u.is_primary, u.system_role,
-                   o.name as organization_name, o.voting_weight
+                   o.name as organization_name, o.voting_weight, o.common_hash
             FROM users u
             LEFT JOIN organizations o ON u.organization_id = o.id
             WHERE u.is_active = 1
@@ -335,11 +360,15 @@ class CsvService
         $rows = $this->db->fetchAll($sql, $params);
 
         $f = fopen('php://temp', 'r+');
-        fputcsv($f, ['A/a', 'Name', 'Surname', 'Email', 'Organization', 'Telephone', 'Is Primary Delegate', 'System Role', 'Org Voting Weight']);
+        $headers = ['A/a', 'Name', 'Surname', 'Email', 'Organization', 'Telephone', 'Is Primary Delegate', 'System Role', 'Org Voting Weight'];
+        if ($includeAuthHash) {
+            $headers[] = 'Authorization Hash';
+        }
+        fputcsv($f, $headers);
 
         $i = 1;
         foreach ($rows as $r) {
-            fputcsv($f, [
+            $row = [
                 $i++,
                 $r['name'],
                 $r['surname'],
@@ -349,7 +378,11 @@ class CsvService
                 $r['is_primary'] ? 'YES' : 'NO',
                 $r['system_role'],
                 $r['voting_weight'] ?? '1.0'
-            ]);
+            ];
+            if ($includeAuthHash) {
+                $row[] = $r['common_hash'] ?? '';
+            }
+            fputcsv($f, $row);
         }
 
         rewind($f);
