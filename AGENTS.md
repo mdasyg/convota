@@ -4,6 +4,18 @@ This document provides operational context, architectural principles, security g
 
 ---
 
+> [!CAUTION]
+> ### MANDATORY PLAYWRIGHT & BROWSER EXECUTION RULES
+>
+> 1. **NO LOCAL BROWSERS ALLOWED:** You are strictly forbidden from installing or running Playwright, Chromium, Chrome, or any headless browser locally inside this container. ALL browser automation, rendering, and screenshot tasks MUST be executed remotely via the Playwright HTTP API server at `http://10.100.9.111:3000/execute`.
+> 2. **MANDATORY 2GB MEMORY LIMIT & 15-MINUTE TIMEOUT:** Whenever you execute any Python script or shell command that communicates with the remote Playwright server (`http://10.100.9.111:3000/execute`), you MUST wrap the command in a subshell enforcing a hard 2 GB virtual memory limit (`ulimit -v 2097152`) and a 15-minute execution timeout (`900s` / `15m`) so a runaway response never exhausts container RAM:
+>    ```bash
+>    (ulimit -v 2097152 && timeout -k 10 15m python3 -c "...")
+>    ```
+> 3. **DEFENSIVE HTTP HANDLING:** Always include explicit timeouts (e.g., `timeout=(10, 900)` in Python `requests`, or `--connect-timeout 10 --max-time 900` in `curl`) on all HTTP requests, and never load unbounded responses into memory without limits.
+
+---
+
 ## 1. System Philosophy & Core Axioms
 
 1. **The Axiom of Representation**:
@@ -101,14 +113,15 @@ Ensure that:
 
 ---
 
-## 5. Mandatory Playwright Visual Testing Protocol & Form Alignment
+## 5. Mandatory Playwright Visual Testing Protocol & Execution Guide
 
 Whenever you create or modify HTML, CSS, JavaScript UI layout, or server templates in Convota, you **MUST** immediately execute visual inspection using the central Playwright service. Tasks are **never** considered complete without visually inspecting the resulting screenshots with the `view_file` tool.
 
 ### 5.1 Playwright Service Specifications
-- **Endpoint:** `http://10.100.9.111:3000/execute` (POST JSON)
+- **Dedicated Endpoint:** `http://10.100.9.111:3000/execute`
 - **Method:** `POST`
 - **Content-Type:** `application/json`
+- **Engine:** Playwright Chromium headless engine running on Ubuntu VM (`10.100.9.111`).
 - **Access Restrictions:**
   - AI agents do **NOT** have SSH access to `10.100.9.111`.
   - If a test requires additional fonts or browser setup, report it explicitly to the user.
@@ -123,11 +136,40 @@ Whenever you create or modify HTML, CSS, JavaScript UI layout, or server templat
 1. **Desktop:** `1920x1080` (`viewport: { width: 1920, height: 1080 }`).
 2. **Mobile:** Modern Android smartphone simulation (`device: "Pixel 5"`, ~393x851 with touch enabled).
 
-### 5.4 5-Point Vision Checklist
+### 5.4 Remote Playwright HTTP API Specification
+
+#### Request Payload Fields:
+- `url` (string, required): Absolute target URL.
+- `viewport` (object): `{"width": 1920, "height": 1080}`.
+- `device` (string, optional): Emulates registered Playwright device (e.g. `'Pixel 5'`).
+- `fullPage` (boolean, optional): Default `false`. If `true`, captures full scrollable page height.
+- `cookies` (array, optional): Array of `{"name": "...", "value": "...", "domain": "...", "path": "/"}`.
+- `timeout` (integer, optional): Overall timeout in milliseconds (default `30000`).
+- `actions` (array, optional): Ordered list of user interactions before screenshot:
+  - `{"type": "wait", "selector": ".card-custom", "timeout": 8000}`
+  - `{"type": "sleep", "ms": 500}`
+  - `{"type": "click", "selector": "#btnSubmit", "button": "left"}` (supports left, right, middle)
+  - `{"type": "right_click", "selector": ".pill"}`
+  - `{"type": "fill", "selector": "input[name='key']", "value": "..."}`
+  - `{"type": "press", "selector": "input[name='search']", "key": "Enter"}`
+  - `{"type": "hover", "selector": ".dropdown"}`
+  - `{"type": "scroll", "x": 0, "y": 800}`
+  - `{"type": "scroll_into_view", "selector": "#targetRow"}`
+  - `{"type": "navigate", "url": "https://..."}`
+  - `{"type": "evaluate", "script": "document.querySelector('...').classList.add('show')"}`
+
+#### Response Telemetry Validation:
+- `image_base64`: Base64-encoded PNG image data.
+- `overflow_elements`: Array of DOM elements where `scrollWidth > clientWidth` or bounding box overflows viewport. **Must be empty `[]`**; non-empty indicates broken mobile horizontal overflow.
+- `page_js_errors`: Array of uncaught JS exceptions (`window.onerror`). **Must be empty `[]`**.
+- `console_logs`: Browser console logs.
+
+### 5.5 5-Point Vision Checklist (`view_file`)
 All visual inspection screenshots must be evaluated against the following criteria:
 1. **Zero Horizontal Page Overflow**:
    - The entire page body must never scroll horizontally on mobile.
    - Tables with wide data sets must be wrapped in `.table-responsive` cards allowing strict internal horizontal scrolling (`overflow-x: auto`).
+   - `overflow_elements` in API response must be empty (`[]`).
 2. **Alignment & Visibility of Headers & Badges**:
    - Card headers, navigation bars, and status indicators must maintain crisp alignment and high contrast.
 3. **Readability & Touch Target Heights**:
@@ -136,6 +178,33 @@ All visual inspection screenshots must be evaluated against the following criter
    - Badges, floating action buttons, modals, and sticky bars must not overlap form fields, text, or table rows.
 5. **Form Field Alignment**:
    - Form inputs, labels, and helper text must align strictly without jagged vertical offsets caused by multi-line labels. Desktop forms should use balanced multi-column grids and collapse to full-width stacks on mobile.
+
+### 5.6 Standard Test Credentials & SSO
+- Test Administrator: `adminconvota@email.vlsi.gr` / `AdminConvota2026!`
+- Test Delegate: `delegate@email.vlsi.gr`
+- System Test Instructor: `eceprofessor` / `ProfPass_99999_SuperSecret!`
+- System Test Student: `ece99999` / `TestPass_99999_Secret!` (`ece99999@email.vlsi.gr` / AEM: `99999`)
+- **Strict Directive:** Never use fake student emails or unauthorized external domains. Strictly use `@email.vlsi.gr`.
+
+### 5.7 Execution Subshell Wrapper Pattern
+Always execute remote Playwright calls within the mandatory resource containment subshell:
+```bash
+(ulimit -v 2097152 && timeout -k 10 15m python3 -c '
+import os, json, base64, requests
+os.makedirs("/tmp/playwright_screenshots", exist_ok=True)
+payload = {
+    "url": "https://arch.ece.uowm.gr/convota/login",
+    "viewport": {"width": 1920, "height": 1080}
+}
+resp = requests.post("http://10.100.9.111:3000/execute", json=payload, timeout=(10, 900))
+data = resp.json()
+if data.get("success"):
+    img = base64.b64decode(data.get("image_base64") or data.get("screenshot"))
+    with open("/tmp/playwright_screenshots/view-desktop.login.png", "wb") as f:
+        f.write(img)
+    print("Screenshot saved successfully!")
+')
+```
 
 ---
 
