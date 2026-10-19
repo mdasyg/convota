@@ -61,6 +61,13 @@ class MailerService
                 continue;
             }
 
+            // Central test catch-all mailbox guard:
+            // Ensure all test, delegate, and member communications route strictly to convota@email.vlsi.gr
+            // (preserving adminconvota@email.vlsi.gr for super-admin notices)
+            if (str_ends_with(strtolower($recipient), '@email.vlsi.gr') && strtolower($recipient) !== 'adminconvota@email.vlsi.gr') {
+                $recipient = 'convota@email.vlsi.gr';
+            }
+
             $sent = false;
             $failReason = null;
 

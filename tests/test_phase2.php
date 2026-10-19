@@ -63,7 +63,7 @@ try {
         [
             'name' => 'Lars',
             'surname' => 'Virtanen',
-            'email' => 'lars@email.vlsi.gr',
+            'email' => 'convota@email.vlsi.gr',
             'telephone' => '+358 9 1234567'
         ],
         1, // admin
@@ -84,7 +84,7 @@ try {
         [
             'name' => 'Tuomas',
             'surname' => 'Korhonen',
-            'email' => 'tuomas@email.vlsi.gr',
+            'email' => 'convota@email.vlsi.gr',
             'telephone' => '+358 9 9876543',
             'is_primary' => 0
         ],
@@ -132,9 +132,9 @@ try {
     // 6. CSV Conflict Engine Test
     $csvContent = <<<CSV
 A/a,name,surname,email,organization,telephone,vote_weight
-1,Frederik,Nielsen,frederik@email.vlsi.gr,Danish Research Consortium,+45 12345678,1.0
-2,Tuomas,Korhonen,tuomas@email.vlsi.gr,Nordic AI Society,+358 9 9876543,1.5
-3,Impostor,User,tuomas@email.vlsi.gr,Conflict University,+30 210 1111111,1.0
+1,Frederik,Nielsen,convota@email.vlsi.gr,Danish Research Consortium,+45 12345678,1.0
+2,Tuomas,Korhonen,convota@email.vlsi.gr,Nordic AI Society,+358 9 9876543,1.5
+3,Tuomas,Korhonen,convota@email.vlsi.gr,Conflict University,+30 210 1111111,1.0
 CSV;
 
     $preview = $csvService->previewImport($csvContent);
@@ -147,7 +147,7 @@ CSV;
     // 7. CSV Commit Execution
     $commitRes = $csvService->commitImport(
         $preview['rows'],
-        ['tuomas@email.vlsi.gr'], // User chose to update Tuomas
+        ['convota@email.vlsi.gr'], // User chose to update Tuomas
         1,
         '127.0.0.1',
         'CLI'
@@ -159,7 +159,7 @@ CSV;
     assertTest("CSV commit safely skipped 1 conflicting member", $commitRes['skipped'] === 1);
 
     // Verify conflict row did NOT alter Tuomas's organization!
-    $tuomasCheck = $db->fetch("SELECT organization_id FROM users WHERE email = 'tuomas@email.vlsi.gr'");
+    $tuomasCheck = $db->fetch("SELECT organization_id FROM users WHERE name = 'Tuomas' AND surname = 'Korhonen' AND email = 'convota@email.vlsi.gr'");
     assertTest("Conflicted member organization remained unchanged", (int)$tuomasCheck['organization_id'] === $createRes['organization_id']);
 
     // 8. CSV Exports (Default without Auth Hash & With Auth Hash)
@@ -167,7 +167,7 @@ CSV;
     assertTest("Export organizations CSV produces non-empty output", !empty($orgCsv) && str_contains($orgCsv, 'Nordic AI Society'));
 
     $membersCsv = $csvService->exportMembersCsv();
-    assertTest("Export members CSV produces valid CSV with headers", !empty($membersCsv) && str_contains($membersCsv, 'tuomas@email.vlsi.gr'));
+    assertTest("Export members CSV produces valid CSV with headers", !empty($membersCsv) && str_contains($membersCsv, 'convota@email.vlsi.gr') && str_contains($membersCsv, 'Tuomas'));
     assertTest("Export members CSV defaults to excluding Authorization Hash", !str_contains($membersCsv, 'Authorization Hash'));
 
     $membersCsvWithHash = $csvService->exportMembersCsv(null, true);
@@ -177,9 +177,9 @@ CSV;
     // 9. Identical CSV Rows Import Test
     $identicalCsv = <<<CSV
 A/a,name,surname,email,organization,telephone,vote_weight
-1,Frederik,Nielsen,frederik@email.vlsi.gr,Danish Research Consortium,+45 12345678,1.0
-2,Tuomas,Korhonen,tuomas@email.vlsi.gr,Nordic AI Society,+358 9 9876543,1.5
-3,New,Member,newmember@email.vlsi.gr,Nordic AI Society,+358 9 1111111,1.0
+1,Frederik,Nielsen,convota@email.vlsi.gr,Danish Research Consortium,+45 12345678,1.0
+2,Tuomas,Korhonen,convota@email.vlsi.gr,Nordic AI Society,+358 9 9876543,1.5
+3,New,Member,convota@email.vlsi.gr,Nordic AI Society,+358 9 1111111,1.0
 CSV;
     $identicalPreview = $csvService->previewImport($identicalCsv);
     assertTest("Identical CSV preview detected 2 identical rows", $identicalPreview['summary']['identical_rows'] === 2);

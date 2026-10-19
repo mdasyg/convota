@@ -132,6 +132,16 @@ class CsvService
                         LEFT JOIN organizations o ON u.organization_id = o.id
                         WHERE u.organization_id = ? AND LOWER(u.name) = ? AND LOWER(u.surname) = ?
                     ", [$rowAnalysis['existing_org_id'], strtolower($name), strtolower($surname)]);
+
+                    if (!$existingUser) {
+                        // Check if this delegate belongs to a different organization
+                        $existingUser = $this->db->fetch("
+                            SELECT u.id, u.name, u.surname, u.organization_id, o.name as org_name
+                            FROM users u
+                            LEFT JOIN organizations o ON u.organization_id = o.id
+                            WHERE LOWER(u.name) = ? AND LOWER(u.surname) = ?
+                        ", [strtolower($name), strtolower($surname)]);
+                    }
                 } else {
                     $existingUser = $this->db->fetch("
                         SELECT u.id, u.name, u.surname, u.organization_id, o.name as org_name
@@ -141,7 +151,15 @@ class CsvService
                     ", [$email]);
                 }
             } else {
-                if ($email !== 'convota@email.vlsi.gr') {
+                if ($email === 'convota@email.vlsi.gr') {
+                    // Organization is new. For shared test mailbox, check if this delegate belongs to an existing organization
+                    $existingUser = $this->db->fetch("
+                        SELECT u.id, u.name, u.surname, u.organization_id, o.name as org_name
+                        FROM users u
+                        LEFT JOIN organizations o ON u.organization_id = o.id
+                        WHERE LOWER(u.name) = ? AND LOWER(u.surname) = ?
+                    ", [strtolower($name), strtolower($surname)]);
+                } else {
                     $existingUser = $this->db->fetch("
                         SELECT u.id, u.name, u.surname, u.organization_id, o.name as org_name
                         FROM users u
@@ -178,7 +196,7 @@ class CsvService
                     $currentOrgName = $existingUser['org_name'] ?? 'Unassigned';
                     $rowAnalysis['status'] = 'conflict_different_org';
                     $rowAnalysis['status_label'] = 'CRITICAL CONFLICT (Different Organization)';
-                    $rowAnalysis['warning'] = "Conflict: Member '{$email}' is already registered under '{$currentOrgName}', but CSV specifies '{$orgName}'. This is likely an error and will NOT be modified.";
+                    $rowAnalysis['warning'] = "Conflict: Member '{$name} {$surname}' ({$email}) is already registered under '{$currentOrgName}', but CSV specifies '{$orgName}'. This is likely an error and will NOT be modified.";
                     $summary['conflicts']++;
                 }
             } else {
@@ -237,7 +255,7 @@ class CsvService
 
                 // 2. Existing member in same organization
                 if ($status === 'existing_same_org') {
-                    if (in_array($email, $updateExistingEmails, true)) {
+                    if (in_array($email, $updateExistingEmails, true) || in_array("{$row['name']} {$row['surname']}", $updateExistingEmails, true)) {
                         // User opted to update
                         $this->db->execute("
                             UPDATE users SET name = ?, surname = ?, telephone = ?, updated_at = CURRENT_TIMESTAMP
