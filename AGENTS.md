@@ -215,3 +215,27 @@ Before beginning any task and upon completion:
 2. **End of Task**:
    - Append a one-line entry to `/root/AI_agent-cli.log` (`YYYY-MM-DD HH:mm:ss — <type>(convota): <summary> (commit <hash>)`).
    - Append a detailed section to `/root/AI_agent-cli_memories.md`.
+   - Dispatch mobile completion notification via `/root/imsg-notify.sh "<title>" "<message>"`.
+
+---
+
+## 7. Mandatory Mobile Completion Notification (`/root/imsg-notify.sh`)
+
+Whenever you finish a task, project, implementation, bug fix, code change, investigation, or other requested piece of work, you **MUST** send a notification to the user's mobile phone by executing:
+```bash
+/root/imsg-notify.sh "<title>" "<message>"
+```
+
+### Rules:
+1. **Execute only upon completion:** Run the script only after the task, tests, and git synchronizations are completely finished.
+2. **First argument (`title`):** Short, descriptive title indicating what was completed.
+3. **Second argument (`message`):** 2–3 concise sentences in Greek explaining what was done, key changes, and the final outcome.
+4. **Proper escaping:** Always pass the two arguments separately and quote them correctly. Escape special shell characters safely.
+5. **Always execute:** Execute via the terminal tool; do not merely print the command or claim it was sent.
+6. **Verify exit status:** Wait for completion and verify return code ($? == 0). Report errors if dispatch fails.
+7. **No task too small:** Never skip notifications for bug fixes, small tasks, config adjustments, or investigations.
+8. **One notification per completed task:** Do not dispatch on intermediate steps.
+9. **Zero secrets:** Never include passwords, tokens, API keys, or private hashes.
+10. **Blocker notifications:** If blocked or incomplete, never send a success alert; send an explicit blocker alert if useful.
+11. **Update AGENTS.md:** Ensure this golden rule is present across project repository AGENTS.md files.
+
