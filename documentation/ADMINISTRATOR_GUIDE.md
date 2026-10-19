@@ -106,7 +106,7 @@ Convota's CSV engine features a two-phase verification process (Preview -> Commi
 1. **Prepare CSV File:**
    ```csv
    Organization Name,Short Name,Country,Website,Voting Weight,Is Observer,Member Name,Member Surname,Member Email,Member Telephone,Is Primary
-   University of Western Macedonia,UOWM,Greece,https://www.uowm.gr,1.0,0,Minas,Dasygenis,mdasyg@email.vlsi.gr,+302461056500,1
+   University of Western Macedonia,UOWM,Greece,https://www.uowm.gr,1.0,0,Minas,Dasygenis,convota@email.vlsi.gr,+302461056500,1
    ```
 2. **Phase 1: Preview & Validation:**
    * Convota parses the uploaded CSV and checks every row against existing database records.

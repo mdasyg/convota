@@ -92,7 +92,7 @@ Then navigate to: `http://localhost:8000` (or `https://` if behind a reverse pro
 
 ### 2. Default Seeded Credentials
 
-> **Safety Notice:** All sample delegate and admin email addresses strictly use the domain `@email.vlsi.gr` to ensure no live emails are dispatched to external organizations or unintended recipients.
+> **Safety Notice:** All sample delegate email addresses strictly use the centralized mailbox `convota@email.vlsi.gr` to ensure all test notifications and credentials route safely to a single dedicated mailbox.
 
 #### Super Administrator:
 - **Email:** `adminconvota@email.vlsi.gr`
@@ -100,15 +100,15 @@ Then navigate to: `http://localhost:8000` (or `https://` if behind a reverse pro
 
 #### Sample Member Organizations:
 - **University of Western Macedonia** (President Organization, 1 Vote)
-  - Primary Delegate: `mdasyg@email.vlsi.gr` / `MemberPassword2026!`
-  - Substitute: `kstergiou@email.vlsi.gr`
+  - Primary Delegate: `convota@email.vlsi.gr` (Minas Dasygenis) / `MemberPassword2026!`
+  - Substitute: `convota@email.vlsi.gr` (Konstantinos Stergiou)
 - **European Open Research Network** (1 Vote)
-  - Primary Delegate: `elena.rostova@email.vlsi.gr` / `MemberPassword2026!`
-  - Substitute: `marcus.vogel@email.vlsi.gr`
+  - Primary Delegate: `convota@email.vlsi.gr` (Elena Rostova) / `MemberPassword2026!`
+  - Substitute: `convota@email.vlsi.gr` (Marcus Vogel)
 - **International Standards Collective** (2 Votes)
-  - Primary Delegate: `sophie@email.vlsi.gr` / `MemberPassword2026!`
+  - Primary Delegate: `convota@email.vlsi.gr` (Sophie Dubois) / `MemberPassword2026!`
 - **Global NGO Environmental Council** (Observer, 0 Votes)
-  - Delegate: `astrid@email.vlsi.gr` / `MemberPassword2026!`
+  - Delegate: `convota@email.vlsi.gr` (Astrid Lindqvist) / `MemberPassword2026!`
 
 ---
 

@@ -51,8 +51,8 @@ class Seeder
                     'is_president' => 1,
                     'is_observer' => 0,
                     'members' => [
-                        ['name' => 'Minas', 'surname' => 'Dasygenis', 'email' => 'mdasyg@email.vlsi.gr', 'phone' => '+30 24610 56501', 'is_primary' => 1],
-                        ['name' => 'Konstantinos', 'surname' => 'Stergiou', 'email' => 'kstergiou@email.vlsi.gr', 'phone' => '+30 24610 56502', 'is_primary' => 0]
+                        ['name' => 'Minas', 'surname' => 'Dasygenis', 'email' => 'convota@email.vlsi.gr', 'phone' => '+30 24610 56501', 'is_primary' => 1],
+                        ['name' => 'Konstantinos', 'surname' => 'Stergiou', 'email' => 'convota@email.vlsi.gr', 'phone' => '+30 24610 56502', 'is_primary' => 0]
                     ]
                 ],
                 [
@@ -64,8 +64,8 @@ class Seeder
                     'is_president' => 0,
                     'is_observer' => 0,
                     'members' => [
-                        ['name' => 'Elena', 'surname' => 'Rostova', 'email' => 'elena.rostova@email.vlsi.gr', 'phone' => '+32 2 555 0101', 'is_primary' => 1],
-                        ['name' => 'Marcus', 'surname' => 'Vogel', 'email' => 'marcus.vogel@email.vlsi.gr', 'phone' => '+32 2 555 0102', 'is_primary' => 0]
+                        ['name' => 'Elena', 'surname' => 'Rostova', 'email' => 'convota@email.vlsi.gr', 'phone' => '+32 2 555 0101', 'is_primary' => 1],
+                        ['name' => 'Marcus', 'surname' => 'Vogel', 'email' => 'convota@email.vlsi.gr', 'phone' => '+32 2 555 0102', 'is_primary' => 0]
                     ]
                 ],
                 [
@@ -77,7 +77,7 @@ class Seeder
                     'is_president' => 0,
                     'is_observer' => 0,
                     'members' => [
-                        ['name' => 'Sophie', 'surname' => 'Dubois', 'email' => 'sophie@email.vlsi.gr', 'phone' => '+41 22 700 8800', 'is_primary' => 1]
+                        ['name' => 'Sophie', 'surname' => 'Dubois', 'email' => 'convota@email.vlsi.gr', 'phone' => '+41 22 700 8800', 'is_primary' => 1]
                     ]
                 ],
                 [
@@ -89,7 +89,7 @@ class Seeder
                     'is_president' => 0,
                     'is_observer' => 1, // Observer organization (no voting rights)
                     'members' => [
-                        ['name' => 'Astrid', 'surname' => 'Lindqvist', 'email' => 'astrid@email.vlsi.gr', 'phone' => '+46 8 123 4567', 'is_primary' => 1]
+                        ['name' => 'Astrid', 'surname' => 'Lindqvist', 'email' => 'convota@email.vlsi.gr', 'phone' => '+46 8 123 4567', 'is_primary' => 1]
                     ]
                 ]
             ];

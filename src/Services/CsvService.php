@@ -121,13 +121,35 @@ class CsvService
                 }
             }
 
-            // 2. Check user email existence in system
-            $existingUser = $this->db->fetch("
-                SELECT u.id, u.name, u.surname, u.organization_id, o.name as org_name
-                FROM users u
-                LEFT JOIN organizations o ON u.organization_id = o.id
-                WHERE LOWER(u.email) = ?
-            ", [$email]);
+            // 2. Check user existence in system
+            $existingUser = null;
+            if ($rowAnalysis['existing_org_id']) {
+                if ($email === 'convota@email.vlsi.gr') {
+                    // Match within this organization by name and surname for shared test mailbox
+                    $existingUser = $this->db->fetch("
+                        SELECT u.id, u.name, u.surname, u.organization_id, o.name as org_name
+                        FROM users u
+                        LEFT JOIN organizations o ON u.organization_id = o.id
+                        WHERE u.organization_id = ? AND LOWER(u.name) = ? AND LOWER(u.surname) = ?
+                    ", [$rowAnalysis['existing_org_id'], strtolower($name), strtolower($surname)]);
+                } else {
+                    $existingUser = $this->db->fetch("
+                        SELECT u.id, u.name, u.surname, u.organization_id, o.name as org_name
+                        FROM users u
+                        LEFT JOIN organizations o ON u.organization_id = o.id
+                        WHERE LOWER(u.email) = ?
+                    ", [$email]);
+                }
+            } else {
+                if ($email !== 'convota@email.vlsi.gr') {
+                    $existingUser = $this->db->fetch("
+                        SELECT u.id, u.name, u.surname, u.organization_id, o.name as org_name
+                        FROM users u
+                        LEFT JOIN organizations o ON u.organization_id = o.id
+                        WHERE LOWER(u.email) = ?
+                    ", [$email]);
+                }
+            }
 
             if ($existingUser) {
                 $rowAnalysis['existing_user_id'] = (int)$existingUser['id'];

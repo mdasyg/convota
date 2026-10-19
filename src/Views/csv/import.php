@@ -64,7 +64,7 @@ use Convota\Security\Csrf;
 
                 <div class="form-group">
                     <label class="form-label" for="csv_text">Paste CSV Content</label>
-                    <textarea id="csv_text" name="csv_text" class="form-control" rows="8" placeholder="A/a,name,surname,email,organization,telephone,vote_weight&#10;1,Minas,Dasygenis,mdasyg@email.vlsi.gr,University of Western Macedonia,+30 24610 56501,1.0&#10;2,Elena,Rostova,elena.rostova@email.vlsi.gr,European Open Research Network,+32 2 555 0101,1.0"></textarea>
+                    <textarea id="csv_text" name="csv_text" class="form-control" rows="8" placeholder="A/a,name,surname,email,organization,telephone,vote_weight&#10;1,Minas,Dasygenis,convota@email.vlsi.gr,University of Western Macedonia,+30 24610 56501,1.0&#10;2,Elena,Rostova,convota@email.vlsi.gr,European Open Research Network,+32 2 555 0101,1.0"></textarea>
                 </div>
 
                 <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-top: 1rem;">

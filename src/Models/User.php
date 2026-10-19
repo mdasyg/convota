@@ -54,10 +54,21 @@ class User
             throw new InvalidArgumentException("A valid email address is required.");
         }
 
-        // Ensure email is unique across the entire system
-        $existing = $this->db->fetch("SELECT id FROM users WHERE LOWER(email) = ?", [$email]);
-        if ($existing) {
-            throw new InvalidArgumentException("A user with email '{$email}' already exists.");
+        // Ensure email is unique across the entire system, unless using the shared test mailbox convota@email.vlsi.gr
+        if ($email !== 'convota@email.vlsi.gr') {
+            $existing = $this->db->fetch("SELECT id FROM users WHERE LOWER(email) = ?", [$email]);
+            if ($existing) {
+                throw new InvalidArgumentException("A user with email '{$email}' already exists.");
+            }
+        } else {
+            // Prevent duplicate member with identical name & surname in the same organization
+            $existingMember = $this->db->fetch("
+                SELECT id FROM users 
+                WHERE organization_id = ? AND LOWER(name) = ? AND LOWER(surname) = ?
+            ", [$organizationId, strtolower($name), strtolower($surname)]);
+            if ($existingMember) {
+                throw new InvalidArgumentException("Member '{$name} {$surname}' already exists in this organization.");
+            }
         }
 
         // Verify organization exists
@@ -278,11 +289,13 @@ class User
             throw new InvalidArgumentException("A valid email address is required.");
         }
 
-        // If email was modified, ensure it's not already in use by another user
+        // If email was modified, ensure it's not already in use by another user (unless using shared test mailbox)
         if ($email !== strtolower((string)$existing['email'])) {
-            $duplicate = $this->db->fetch("SELECT id FROM users WHERE LOWER(email) = ? AND id != ?", [$email, $userId]);
-            if ($duplicate) {
-                throw new InvalidArgumentException("Email '{$email}' is already registered to another account.");
+            if ($email !== 'convota@email.vlsi.gr') {
+                $duplicate = $this->db->fetch("SELECT id FROM users WHERE LOWER(email) = ? AND id != ?", [$email, $userId]);
+                if ($duplicate) {
+                    throw new InvalidArgumentException("Email '{$email}' is already registered to another account.");
+                }
             }
         }
 

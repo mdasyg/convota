@@ -60,10 +60,12 @@ class Organization
             throw new InvalidArgumentException("Valid email address is required for the first member.");
         }
 
-        // Check if member email already exists
-        $existingUser = $this->db->fetch("SELECT id FROM users WHERE LOWER(email) = ?", [$memberEmail]);
-        if ($existingUser) {
-            throw new InvalidArgumentException("A user with email '{$memberEmail}' already exists in the system.");
+        // Check if member email already exists (unless using shared test mailbox)
+        if ($memberEmail !== 'convota@email.vlsi.gr') {
+            $existingUser = $this->db->fetch("SELECT id FROM users WHERE LOWER(email) = ?", [$memberEmail]);
+            if ($existingUser) {
+                throw new InvalidArgumentException("A user with email '{$memberEmail}' already exists in the system.");
+            }
         }
 
         $this->db->beginTransactionImmediate();

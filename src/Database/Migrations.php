@@ -81,7 +81,7 @@ class Migrations
                 CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     organization_id INTEGER REFERENCES organizations(id) ON DELETE SET NULL,
-                    email TEXT NOT NULL UNIQUE,
+                    email TEXT NOT NULL,
                     password_hash TEXT,
                     name TEXT NOT NULL,
                     surname TEXT NOT NULL,

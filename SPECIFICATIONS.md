@@ -495,6 +495,6 @@ Convota is engineered for zero-configuration portability across two hosting envi
 - **Client-Side Relative Resolution**: Views inject `<meta name="base-url" content="...">` allowing client JavaScript fetch requests to automatically resolve backend REST API endpoints regardless of deployment path.
 
 ### 11.2 Safe Email Domain Standard
-- All default, demonstration, and seeded email addresses are restricted to the test domain `@email.vlsi.gr` (e.g. `adminconvota@email.vlsi.gr`, `mdasyg@email.vlsi.gr`).
-- Real-world institutional or corporate email addresses are forbidden in default seeds and demonstration data to eliminate the risk of accidental spam or inadvertent outbound notification delivery during testing, auditing, and demonstrations.
+- All default, demonstration, and seeded member email addresses are restricted to the centralized test mailbox `convota@email.vlsi.gr` (and `adminconvota@email.vlsi.gr` for administrator).
+- Real-world institutional or corporate email addresses are forbidden in default seeds and demonstration data to eliminate the risk of accidental spam or inadvertent outbound notification delivery during testing, auditing, and demonstrations. All test emails route safely to a single dedicated mailbox.
 

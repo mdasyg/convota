@@ -38,8 +38,8 @@ This document provides operational context, architectural principles, security g
    - Email deliveries must log their status: `email send : SUCCESS` or `email send : FAILED` with detailed failure diagnostics.
 
 5. **Data Privacy & Domain Isolation**:
-   - Default administrative and test emails must strictly use `@email.vlsi.gr` (e.g., `adminconvota@email.vlsi.gr`, `delegate@email.vlsi.gr`).
-   - Never use real third-party domains in automated tests, seed data, or mock delegations to avoid accidental email dispatch to external entities.
+   - Default administrative and test emails must strictly use `@email.vlsi.gr` (`adminconvota@email.vlsi.gr` for administrator, and `convota@email.vlsi.gr` for all test member delegates).
+   - Never use real personal or third-party domains in automated tests, seed data, or mock delegations to avoid accidental email dispatch to external or personal inboxes. All test notifications route safely to the dedicated `convota@email.vlsi.gr` mailbox.
 
 ---
 
@@ -181,7 +181,7 @@ All visual inspection screenshots must be evaluated against the following criter
 
 ### 5.6 Standard Test Credentials & SSO
 - Test Administrator: `adminconvota@email.vlsi.gr` / `AdminConvota2026!`
-- Test Delegate: `delegate@email.vlsi.gr`
+- Test Delegates / Members: `convota@email.vlsi.gr` / `MemberPassword2026!` (Minas Dasygenis, Konstantinos Stergiou, Elena Rostova, Marcus Vogel, Sophie Dubois, Astrid Lindqvist)
 - System Test Instructor: `eceprofessor` / `ProfPass_99999_SuperSecret!`
 - System Test Student: `ece99999` / `TestPass_99999_Secret!` (`ece99999@email.vlsi.gr` / AEM: `99999`)
 - **Strict Directive:** Never use fake student emails or unauthorized external domains. Strictly use `@email.vlsi.gr`.
