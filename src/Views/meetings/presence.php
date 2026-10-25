@@ -107,7 +107,7 @@ use Convota\Security\Csrf;
         </div>
     </div>
 
-    <script>
+    <script nonce="<?= \Convota\Security\SecurityHeaders::getNonce() ?>">
         const orgMembersData = <?= json_encode(array_column($allOrgs, 'members', 'id')) ?>;
         function updateMemberOptions(orgId) {
             const userSelect = document.getElementById('rollcall_user_select');

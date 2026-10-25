@@ -149,7 +149,7 @@ use Convota\Security\Csrf;
     </form>
 </div>
 
-<script>
+<script nonce="<?= \Convota\Security\SecurityHeaders::getNonce() ?>">
     function toggleOptionsBox(type) {
         document.getElementById('custom-options-box').style.display = (type === 'multiple_choice') ? 'block' : 'none';
     }

@@ -22,6 +22,7 @@ class ApiController
     public function __construct(App $app)
     {
         $this->app = $app;
+        \Convota\Security\SecurityHeaders::applyCors();
         $db = $app->getDb();
         $audit = $app->getAudit();
         $mailer = $app->getMailer();

@@ -125,7 +125,7 @@ use Convota\Security\Csrf;
         </div>
     </div>
 
-    <script src="<?= url('/assets/js/app.js') ?>"></script>
+    <script nonce="<?= \Convota\Security\SecurityHeaders::getNonce() ?>" src="<?= url('/assets/js/app.js') ?>"></script>
 </body>
 
 </html>

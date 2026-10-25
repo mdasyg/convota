@@ -46,9 +46,9 @@ class MeetingController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $data = [
-                    'title' => $_POST['title'] ?? '',
-                    'description' => $_POST['description'] ?? null,
-                    'location' => $_POST['location'] ?? null,
+                    'title' => \Convota\Security\Validator::sanitizeText($_POST['title'] ?? '', 255),
+                    'description' => !empty($_POST['description']) ? \Convota\Security\Validator::sanitizeText($_POST['description'], 5000) : null,
+                    'location' => !empty($_POST['location']) ? \Convota\Security\Validator::sanitizeText($_POST['location'], 255) : null,
                     'scheduled_at' => $_POST['scheduled_at'] ?? gmdate('Y-m-d H:i:s'),
                     'require_quorum' => !empty($_POST['require_quorum']) ? 1 : 0,
                     'quorum_percentage' => $_POST['quorum_percentage'] ?? 50.0

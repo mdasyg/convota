@@ -40,6 +40,26 @@ class Validator
     }
 
     /**
+     * Check if a string length is within a maximum bound
+     */
+    public static function isMaxLength(?string $value, int $maxLength): bool
+    {
+        if ($value === null) {
+            return true;
+        }
+        return mb_strlen($value, 'UTF-8') <= $maxLength;
+    }
+
+    /**
+     * Sanitize and enforce maximum length on string input
+     */
+    public static function sanitizeText(?string $value, int $maxLength = 255): string
+    {
+        $clean = self::cleanString($value);
+        return mb_substr($clean, 0, $maxLength, 'UTF-8');
+    }
+
+    /**
      * Validate positive float (voting weight)
      */
     public static function isValidWeight(mixed $weight): bool

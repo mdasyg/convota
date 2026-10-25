@@ -32,8 +32,9 @@ class Seeder
         $this->db->beginTransactionImmediate();
 
         try {
-            // 1. Create Super Admin
-            $adminPass = AuthService::hashPassword('AdminConvota2026!');
+            // 1. Create Super Admin (supporting custom environment override)
+            $rawAdminPass = getenv('CONVOTA_ADMIN_PASSWORD') ?: 'AdminConvota2026!';
+            $adminPass = AuthService::hashPassword($rawAdminPass);
             $this->db->execute("
                 INSERT INTO users (email, password_hash, name, surname, telephone, system_role, is_active)
                 VALUES (?, ?, ?, ?, ?, 'admin', 1)
@@ -94,7 +95,8 @@ class Seeder
                 ]
             ];
 
-            $defaultPass = AuthService::hashPassword('MemberPassword2026!');
+            $rawMemberPass = getenv('CONVOTA_MEMBER_PASSWORD') ?: 'MemberPassword2026!';
+            $defaultPass = AuthService::hashPassword($rawMemberPass);
 
             foreach ($orgs as $orgData) {
                 $hash = HashAuth::generateUniqueHash($this->db);

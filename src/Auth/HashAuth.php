@@ -27,14 +27,60 @@ class HashAuth
     }
 
     /**
+     * Check if client IP is currently rate-limited
+     */
+    public function isRateLimited(string $key, int $maxAttempts = 5, int $decay = 900): bool
+    {
+        $now = time();
+        $row = $this->db->fetch("SELECT attempts, last_attempt_at FROM rate_limits WHERE key = ?", [$key]);
+        if (!$row) {
+            return false;
+        }
+
+        if ($now - (int)$row['last_attempt_at'] > $decay) {
+            $this->db->execute("DELETE FROM rate_limits WHERE key = ?", [$key]);
+            return false;
+        }
+
+        return (int)$row['attempts'] >= $maxAttempts;
+    }
+
+    public function recordFailedAttempt(string $key): void
+    {
+        $now = time();
+        $this->db->execute("
+            INSERT INTO rate_limits (key, attempts, last_attempt_at)
+            VALUES (?, 1, ?)
+            ON CONFLICT(key) DO UPDATE SET
+                attempts = attempts + 1,
+                last_attempt_at = excluded.last_attempt_at
+        ", [$key, $now]);
+    }
+
+    public function clearRateLimit(string $key): void
+    {
+        $this->db->execute("DELETE FROM rate_limits WHERE key = ?", [$key]);
+    }
+
+    /**
      * Authenticate and start an organization session using the shared Common Access Hash
      */
     public function loginWithHash(string $hash, ?string $ip = null, ?string $ua = null): array
     {
         $ip = $ip ?? ($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1');
+        $rateLimitKey = 'hash_login:' . md5($ip);
+
+        if ($this->isRateLimited($rateLimitKey)) {
+            return [
+                'success' => false,
+                'error' => 'Too many failed login attempts. Please wait 15 minutes before trying again.'
+            ];
+        }
+
         $hash = trim($hash);
 
         if (empty($hash) || strlen($hash) < 16) {
+            $this->recordFailedAttempt($rateLimitKey);
             return ['success' => false, 'error' => 'Invalid or malformed access key.'];
         }
 
@@ -46,16 +92,22 @@ class HashAuth
         ", [$hash]);
 
         if (!$org) {
+            $this->recordFailedAttempt($rateLimitKey);
             return ['success' => false, 'error' => 'Invalid Organization Access Key.'];
         }
 
         if ($org['status'] !== 'active') {
+            $this->recordFailedAttempt($rateLimitKey);
             return ['success' => false, 'error' => 'This organization is currently inactive or suspended.'];
         }
 
         if (!(int)$org['hash_auth_enabled']) {
+            $this->recordFailedAttempt($rateLimitKey);
             return ['success' => false, 'error' => 'Shared key authorization has been disabled for this organization.'];
         }
+
+        // Authentication succeeded: reset failed attempt counter
+        $this->clearRateLimit($rateLimitKey);
 
         // Establish session
         if (session_status() !== PHP_SESSION_ACTIVE) {

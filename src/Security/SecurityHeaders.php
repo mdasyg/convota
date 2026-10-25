@@ -8,6 +8,19 @@ namespace Convota\Security;
  */
 class SecurityHeaders
 {
+    private static ?string $nonce = null;
+
+    /**
+     * Retrieve or generate the cryptographically random CSP nonce for the current request
+     */
+    public static function getNonce(): string
+    {
+        if (self::$nonce === null) {
+            self::$nonce = base64_encode(random_bytes(16));
+        }
+        return self::$nonce;
+    }
+
     /**
      * Enforce HTTPS and send hardened security headers
      */
@@ -16,6 +29,9 @@ class SecurityHeaders
         if (php_sapi_name() === 'cli') {
             return;
         }
+
+        // Apply whitelisted CORS policy
+        self::applyCors();
 
         // 1. Automatic HTTPS Redirection
         if ($forceHttps && !self::isHttps()) {
@@ -32,13 +48,50 @@ class SecurityHeaders
             header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
         }
 
+        $nonce = self::getNonce();
+
         // 3. Defense-in-depth security headers
         header('X-Frame-Options: DENY');
         header('X-Content-Type-Options: nosniff');
         header('Referrer-Policy: strict-origin-when-cross-origin');
         header('Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=()');
-        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';");
+        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{$nonce}' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';");
         header('X-XSS-Protection: 0'); // Rely on CSP
+    }
+
+    /**
+     * Apply strict origin CORS headers
+     */
+    public static function applyCors(): void
+    {
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        if (empty($origin)) {
+            return;
+        }
+
+        $allowedOrigins = [
+            'https://arch.ece.uowm.gr',
+            'https://uowm.gr',
+            'http://localhost',
+            'http://127.0.0.1'
+        ];
+
+        $parsed = parse_url($origin);
+        $host = strtolower($parsed['host'] ?? '');
+        $currentHostHeader = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? '');
+        $currentHost = strtolower(explode(':', explode(',', $currentHostHeader)[0])[0]);
+
+        if (in_array($origin, $allowedOrigins, true) || (!empty($host) && !empty($currentHost) && $host === $currentHost)) {
+            header("Access-Control-Allow-Origin: {$origin}");
+            header('Access-Control-Allow-Credentials: true');
+            header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+            header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-CSRF-Token, X-Organization-Key, Idempotency-Key');
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(204);
+            exit;
+        }
     }
 
     /**

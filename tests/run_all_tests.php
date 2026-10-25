@@ -16,7 +16,8 @@ $testFiles = [
     'Phase 3 (Assembly Meetings, Presence, Dynamic Quorum)' => __DIR__ . '/test_phase3.php',
     'Phase 4 (Voting Engine, Decoupled Ballots, Idempotency)' => __DIR__ . '/test_phase4.php',
     'Phase 5 (REST APIs, Web Dispatcher, CSRF & Headers)' => __DIR__ . '/test_phase5.php',
-    'Phase 6 (Nginx Subpath & URL Helper Routing)' => __DIR__ . '/test_nginx_routing.php'
+    'Phase 6 (Nginx Subpath & URL Helper Routing)' => __DIR__ . '/test_nginx_routing.php',
+    'Phase 7 (Security Audit & OWASP Top 10 Hardening)' => __DIR__ . '/test_security_fixes.php'
 ];
 
 

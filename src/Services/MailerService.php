@@ -109,6 +109,12 @@ class MailerService
             if (!is_dir($dir)) {
                 @mkdir($dir, 0750, true);
             }
+
+            // Security hardening: redact secrets (tokens, auth hashes, passwords) before writing to log
+            $sanitizedBody = preg_replace('/(token=)([a-zA-Z0-9_\-]+)/i', '$1[REDACTED]', $bodyText);
+            $sanitizedBody = preg_replace('/(hash=)([a-zA-Z0-9_\-]+)/i', '$1[REDACTED]', $sanitizedBody);
+            $sanitizedBody = preg_replace('/(key=)([a-zA-Z0-9_\-]+)/i', '$1[REDACTED]', $sanitizedBody);
+
             $statusLabel = $sent ? 'SUCCESS' : 'FAILED';
             $logEntry = sprintf(
                 "[%s] STATUS: %s (driver: %s%s) | TO: %s | SUBJECT: %s\n%s\n%s\n\n",
@@ -119,9 +125,10 @@ class MailerService
                 $recipient,
                 $subject,
                 str_repeat('-', 40),
-                $bodyText
+                $sanitizedBody
             );
             @file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX);
+            @chmod($logFile, 0600);
 
             if (!$sent) {
                 $overallSuccess = false;

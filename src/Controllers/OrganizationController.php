@@ -60,11 +60,11 @@ class OrganizationController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $orgData = [
-                    'name' => $_POST['name'] ?? '',
-                    'short_name' => $_POST['short_name'] ?? null,
-                    'description' => $_POST['description'] ?? null,
-                    'country' => $_POST['country'] ?? null,
-                    'website' => $_POST['website'] ?? null,
+                    'name' => \Convota\Security\Validator::sanitizeText($_POST['name'] ?? '', 255),
+                    'short_name' => !empty($_POST['short_name']) ? \Convota\Security\Validator::sanitizeText($_POST['short_name'], 50) : null,
+                    'description' => !empty($_POST['description']) ? \Convota\Security\Validator::sanitizeText($_POST['description'], 5000) : null,
+                    'country' => !empty($_POST['country']) ? \Convota\Security\Validator::sanitizeText($_POST['country'], 100) : null,
+                    'website' => !empty($_POST['website']) ? \Convota\Security\Validator::sanitizeText($_POST['website'], 255) : null,
                     'status' => $_POST['status'] ?? 'active',
                     'voting_weight' => $_POST['voting_weight'] ?? 1.0,
                     'is_observer' => !empty($_POST['is_observer']) ? 1 : 0,
@@ -72,10 +72,10 @@ class OrganizationController
                 ];
 
                 $memberData = [
-                    'name' => $_POST['first_member_name'] ?? '',
-                    'surname' => $_POST['first_member_surname'] ?? '',
-                    'email' => $_POST['first_member_email'] ?? '',
-                    'telephone' => $_POST['first_member_telephone'] ?? null
+                    'name' => \Convota\Security\Validator::sanitizeText($_POST['first_member_name'] ?? '', 100),
+                    'surname' => \Convota\Security\Validator::sanitizeText($_POST['first_member_surname'] ?? '', 100),
+                    'email' => \Convota\Security\Validator::cleanString($_POST['first_member_email'] ?? ''),
+                    'telephone' => !empty($_POST['first_member_telephone']) ? \Convota\Security\Validator::sanitizeText($_POST['first_member_telephone'], 50) : null
                 ];
 
                 $adminId = $this->app->getAuth()->user()['id'] ?? 1;

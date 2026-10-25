@@ -65,8 +65,8 @@ class ProposalController
 
                 $data = [
                     'meeting_id' => !empty($_POST['meeting_id']) ? (int)$_POST['meeting_id'] : null,
-                    'title' => $_POST['title'] ?? '',
-                    'description' => $_POST['description'] ?? null,
+                    'title' => \Convota\Security\Validator::sanitizeText($_POST['title'] ?? '', 255),
+                    'description' => !empty($_POST['description']) ? \Convota\Security\Validator::sanitizeText($_POST['description'], 5000) : null,
                     'voting_type' => $_POST['voting_type'] ?? 'yes_no_abstain',
                     'is_secret' => !empty($_POST['is_secret']) ? 1 : 0,
                     'timing_mode' => $_POST['timing_mode'] ?? 'manual',

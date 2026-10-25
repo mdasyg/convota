@@ -130,19 +130,28 @@ class AuthService
             ];
         }
 
-        $user = $this->db->fetch("
+        // Query all matching active users to resolve password authentication unambiguously even on shared institutional mailboxes
+        $candidates = $this->db->fetchAll("
             SELECT u.*, o.name as organization_name, o.is_observer, o.voting_weight, o.is_president
             FROM users u
             LEFT JOIN organizations o ON u.organization_id = o.id
-            WHERE LOWER(u.email) = ?
+            WHERE LOWER(u.email) = ? AND u.is_active = 1
         ", [$email]);
 
-        if (!$user || !(int)$user['is_active']) {
+        if (empty($candidates)) {
             $this->recordFailedAttempt($rateLimitKey);
             return ['success' => false, 'error' => 'Invalid email or password.'];
         }
 
-        if (empty($user['password_hash']) || !password_verify($password, $user['password_hash'])) {
+        $user = null;
+        foreach ($candidates as $candidate) {
+            if (!empty($candidate['password_hash']) && password_verify($password, $candidate['password_hash'])) {
+                $user = $candidate;
+                break;
+            }
+        }
+
+        if (!$user) {
             $this->recordFailedAttempt($rateLimitKey);
             return ['success' => false, 'error' => 'Invalid email or password.'];
         }

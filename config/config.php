@@ -14,6 +14,7 @@ return [
         'debug' => (bool)(getenv('APP_DEBUG') ?: false),
         'base_url' => getenv('APP_BASE_URL') ?: '',
         'force_https' => (bool)(getenv('APP_FORCE_HTTPS') ?: false),
+        'app_key' => getenv('APP_KEY') ?: 'convota_secret_staging_key_2026_secure',
     ],
 
     'security' => [

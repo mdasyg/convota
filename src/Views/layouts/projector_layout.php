@@ -12,7 +12,7 @@
 </head>
 <body class="projector-body">
     <?= $content ?>
-    <script src="<?= url('/assets/js/projector.js') ?>"></script>
+    <script nonce="<?= \Convota\Security\SecurityHeaders::getNonce() ?>" src="<?= url('/assets/js/projector.js') ?>"></script>
 </body>
 
 </html>

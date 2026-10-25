@@ -57,6 +57,7 @@ $identicalCount = (int)($summary['identical_rows'] ?? 0);
     <?= Csrf::field() ?>
 
     <input type="hidden" name="rows_json" value="<?= htmlspecialchars(json_encode($rows), ENT_QUOTES, 'UTF-8') ?>">
+    <input type="hidden" name="rows_hash" value="<?= htmlspecialchars($rowsHash ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
     <div class="card">
         <div class="card-header">

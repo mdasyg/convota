@@ -88,7 +88,7 @@ use Convota\Security\Csrf;
     </form>
 </div>
 
-<script>
+<script nonce="<?= \Convota\Security\SecurityHeaders::getNonce() ?>">
 function updateCsvExportLinks(includeHash) {
     const baseMembersUrl = '<?= url('/csv/export-members') ?>';
     const btn = document.getElementById('btnExportMembers');

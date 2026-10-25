@@ -1,6 +1,16 @@
 <?php
 use Convota\Security\Validator;
 ?>
+<?php if (!empty($defaultPasswordWarning)): ?>
+    <div style="background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+            <strong>⚠️ Security Notice:</strong> You are currently logged in using the default administrative password. Please update your password immediately to protect your deployment.
+        </div>
+        <div>
+            <a href="<?= url('/auth/reset-password') ?>" class="btn btn-warning btn-sm" style="font-weight: bold;">Change Password</a>
+        </div>
+    </div>
+<?php endif; ?>
 <div style="margin-bottom: 2rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>

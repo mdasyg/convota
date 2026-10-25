@@ -98,14 +98,53 @@ class VoteController
 
     /**
      * Process vote casting submission
+     * Enforces strict session identity resolution to eliminate IDOR and ballot hijacking.
      */
     public function castVote(): void
     {
         $proposalId = (int)($_POST['proposal_id'] ?? 0);
-        $orgId = (int)($_POST['organization_id'] ?? 0);
-        $userId = (int)($_POST['user_id'] ?? 0);
         $optionId = (int)($_POST['option_id'] ?? 0);
         $idempotencyKey = $_POST['idempotency_key'] ?? null;
+
+        $proposal = $this->proposalModel->getById($proposalId);
+        if (!$proposal) {
+            $this->app->renderError(404, 'Proposal not found.');
+            return;
+        }
+
+        // Strict server-side voter identity resolution: ignore any client-supplied org_id/user_id
+        $user = $this->app->getAuth()->user();
+        $orgAuth = $_SESSION['convota_org_auth'] ?? null;
+
+        $orgId = null;
+        $userId = null;
+
+        if ($user) {
+            $orgId = $user['organization_id'] ? (int)$user['organization_id'] : null;
+            $userId = (int)$user['id'];
+        } elseif ($orgAuth) {
+            $orgId = (int)$orgAuth['organization_id'];
+            $rep = $this->resolveDesignatedUserForOrg($orgId, $proposal['meeting_id'] ?? null);
+            if ($rep) {
+                $userId = (int)$rep['id'];
+            }
+        }
+
+        if (!$orgId || !$userId) {
+            $this->app->renderError(403, 'Unauthorized voter identity. You must be authenticated as an active member organization to cast a ballot.');
+            return;
+        }
+
+        // Verify organization active status and non-observer voting rights
+        $org = $this->app->getDb()->fetch("SELECT * FROM organizations WHERE id = ?", [$orgId]);
+        if (!$org || $org['status'] !== 'active') {
+            $this->app->renderError(403, 'Your organization is not active or suspended.');
+            return;
+        }
+        if ((int)$org['is_observer']) {
+            $this->app->renderError(403, 'Observer organizations do not have voting rights.');
+            return;
+        }
 
         $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
         $ua = $_SERVER['HTTP_USER_AGENT'] ?? 'Web';
@@ -122,7 +161,6 @@ class VoteController
             );
 
             // Render confirmation screen
-            $proposal = $this->proposalModel->getById($proposalId);
             $this->app->render('proposals/vote_confirmation', [
                 'result' => $res,
                 'proposal' => $proposal

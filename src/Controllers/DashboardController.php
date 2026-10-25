@@ -100,9 +100,19 @@ class DashboardController
         // 5. Recent Proposals
         $recentProposals = $proposalModel->getAll();
 
+        // 6. Security Audit: Check for active default admin password
+        $defaultPasswordWarning = false;
+        if ($isAdmin && $user) {
+            $userRow = $db->fetch("SELECT password_hash FROM users WHERE id = ?", [(int)$user['id']]);
+            if ($userRow && !empty($userRow['password_hash']) && password_verify('AdminConvota2026!', $userRow['password_hash'])) {
+                $defaultPasswordWarning = true;
+            }
+        }
+
         $this->app->render('dashboard/index', [
             'isAdmin' => $isAdmin,
             'isPresident' => $isPresident,
+            'defaultPasswordWarning' => $defaultPasswordWarning,
             'activeMeeting' => $activeMeeting,
             'quorumData' => $quorumData,
             'openProposals' => $openProposals,

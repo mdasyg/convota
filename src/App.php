@@ -221,13 +221,54 @@ class App
         return $base . $path;
     }
 
-    public static function redirectUrl(string $path): void
+    /**
+     * Sanitize and validate internal redirect target to prevent open redirect vulnerabilities
+     */
+    public static function sanitizeRedirectUrl(string $path, string $fallback = '/'): string
     {
-        if (preg_match('#^https?://#i', $path)) {
-            header('Location: ' . $path);
-        } else {
-            header('Location: ' . self::baseUrl($path));
+        $path = trim($path);
+        // Prevent HTTP header injection via CRLF
+        $path = str_replace(["\r", "\n"], '', $path);
+
+        if ($path === '' || str_starts_with($path, '//') || str_starts_with($path, '\\\\')) {
+            return self::baseUrl($fallback);
         }
+
+        // If an absolute URL is supplied, verify it matches our current host
+        if (preg_match('#^https?://#i', $path)) {
+            $parsed = parse_url($path);
+            $targetHost = strtolower($parsed['host'] ?? '');
+
+            $currentHostHeader = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? '');
+            $currentHost = strtolower(explode(':', explode(',', $currentHostHeader)[0])[0]);
+
+            if (!empty($targetHost) && !empty($currentHost) && $targetHost === $currentHost) {
+                // Same host: extract the internal path and query
+                $localPath = ($parsed['path'] ?? '/') . (!empty($parsed['query']) ? '?' . $parsed['query'] : '');
+                return self::baseUrl($localPath);
+            }
+
+            // Untrusted external host: redirect to safe fallback
+            return self::baseUrl($fallback);
+        }
+
+        // Reject dangerous pseudo-protocols
+        if (preg_match('#^[a-zA-Z0-9_\-]+:#', $path)) {
+            return self::baseUrl($fallback);
+        }
+
+        // Relative internal path
+        if (str_starts_with($path, '/')) {
+            return self::baseUrl($path);
+        }
+
+        return self::baseUrl('/' . ltrim($path, '/'));
+    }
+
+    public static function redirectUrl(string $path, string $fallback = '/'): void
+    {
+        $target = self::sanitizeRedirectUrl($path, $fallback);
+        header('Location: ' . $target);
         exit;
     }
 

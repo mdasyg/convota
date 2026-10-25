@@ -54,10 +54,18 @@ class AuthController
 
     /**
      * Process organization login via Common Access Hash
+     * Hardened against URL credential leakage and session fixation
      */
     public function processHashLogin(): void
     {
-        $hash = $_GET['hash'] ?? ($_POST['hash'] ?? '');
+        // Enforce strict anti-caching & zero-referrer leakage headers
+        if (!headers_sent()) {
+            header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+            header('Pragma: no-cache');
+            header('Referrer-Policy: no-referrer');
+        }
+
+        $hash = $_POST['hash'] ?? ($_GET['hash'] ?? '');
         if (empty($hash) && !empty($_SERVER['REQUEST_URI'])) {
             if (preg_match('#[?&]hash=([a-zA-Z0-9_-]+)#i', $_SERVER['REQUEST_URI'], $m)) {
                 $hash = $m[1];
@@ -66,11 +74,17 @@ class AuthController
             }
         }
 
-        $res = $this->app->getHashAuth()->loginWithHash($hash);
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ua = $_SERVER['HTTP_USER_AGENT'] ?? 'Web';
+        $res = $this->app->getHashAuth()->loginWithHash($hash, $ip, $ua);
 
         if (!$res['success']) {
             $this->app->setFlash('danger', $res['error']);
             redirect('/login?tab=hash');
+        }
+
+        if (session_status() === PHP_SESSION_ACTIVE && !headers_sent()) {
+            @session_regenerate_id(true);
         }
 
         $orgName = $res['organization']['organization_name'];
