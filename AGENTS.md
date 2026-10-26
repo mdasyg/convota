@@ -37,9 +37,12 @@ This document provides operational context, architectural principles, security g
    - All administrative actions, roster mutations, presence check-ins, proposal status changes, and email deliveries are cryptographically chained in `audit_log` using SHA-256 entry hashes referencing the previous block hash.
    - Email deliveries must log their status: `email send : SUCCESS` or `email send : FAILED` with detailed failure diagnostics.
 
-5. **Data Privacy & Domain Isolation**:
-   - Default administrative and test emails must strictly use `@email.vlsi.gr` (`adminconvota@email.vlsi.gr` for administrator, and `convota@email.vlsi.gr` for all test member delegates).
-   - Never use real personal or third-party domains in automated tests, seed data, or mock delegations to avoid accidental email dispatch to external or personal inboxes. All test notifications route safely to the dedicated `convota@email.vlsi.gr` mailbox.
+5. **Data Privacy & Domain Isolation (STRICT TEST MAILBOX INVARIANT)**:
+   - Default administrative and test emails must strictly use `@email.vlsi.gr`:
+     - `adminconvota@email.vlsi.gr` for super-administrator.
+     - `convota@email.vlsi.gr` for all test member delegates, organizations, substitute members, and mock data.
+   - **ZERO BOGUS DOMAINS ALLOWED:** NEVER use dummy domains like `@example.com`, `@test.com`, or any unapproved third-party addresses in automated tests, seed data, or mock delegations. Using unauthorized or bogus addresses causes the upstream MTA to reject deliveries with `554 5.7.1 Lazy spammer sending to obviously bogus addresses` and generates bounce notices to postmaster.
+   - `MailerService` enforces an immutable catch-all safety guard routing all non-admin outbound mail strictly to `convota@email.vlsi.gr`.
 
 ---
 

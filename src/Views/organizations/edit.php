@@ -239,7 +239,7 @@ use Convota\Security\Csrf;
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="add_email">Email Address <span style="color: var(--danger);">*</span></label>
-                        <input type="email" id="add_email" name="email" class="form-control" placeholder="delegate@email.vlsi.gr" required>
+                        <input type="email" id="add_email" name="email" class="form-control" placeholder="convota@email.vlsi.gr" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="add_phone">Telephone (Optional)</label>

@@ -145,7 +145,7 @@ try {
 
     $escaped = Validator::escape("<script>alert('xss')</script>&");
     assertTest("XSS filter escapes HTML characters", $escaped === "&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;&amp;");
-    assertTest("Validator validates valid email", Validator::isValidEmail('test@email.vlsi.gr') === true);
+    assertTest("Validator validates valid email", Validator::isValidEmail('convota@email.vlsi.gr') === true);
     assertTest("Validator rejects invalid email", Validator::isValidEmail('not-an-email') === false);
 
 } catch (\Throwable $e) {

@@ -61,47 +61,50 @@ class MailerService
                 continue;
             }
 
-            // Central test catch-all mailbox guard:
-            // Ensure all test, delegate, and member communications route strictly to convota@email.vlsi.gr
-            // (preserving adminconvota@email.vlsi.gr for super-admin notices)
-            if (str_ends_with(strtolower($recipient), '@email.vlsi.gr') && strtolower($recipient) !== 'adminconvota@email.vlsi.gr') {
-                $recipient = 'convota@email.vlsi.gr';
-            }
-
             $sent = false;
             $failReason = null;
 
             if (!filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
                 $sent = false;
                 $failReason = "Invalid recipient email address format: '{$recipient}'";
-            } elseif ($driver === 'mail') {
-                if (!function_exists('mail')) {
-                    $sent = false;
-                    $failReason = "PHP mail() function is not available or disabled in php.ini";
-                } else {
-                    $headerStr = '';
-                    foreach ($headers as $k => $v) {
-                        $headerStr .= "{$k}: {$v}\r\n";
-                    }
+            } else {
+                // Central test catch-all mailbox guard:
+                // Ensure all test, delegate, and member communications route strictly to convota@email.vlsi.gr
+                // (preserving adminconvota@email.vlsi.gr for super-admin notices).
+                // Under NO circumstances should any email be delivered to external domains or dummy addresses (e.g. example.com).
+                if (strtolower($recipient) !== 'adminconvota@email.vlsi.gr') {
+                    $recipient = 'convota@email.vlsi.gr';
+                }
 
-                    error_clear_last();
-                    // Attempt mail delivery with envelope sender (-f)
-                    $sent = @mail($recipient, $subject, $bodyText, $headerStr, "-f " . escapeshellarg($from));
-                    if (!$sent) {
-                        $lastErr = error_get_last();
-                        // Fallback attempt without additional parameters in case MTA restricts -f
-                        $sent = @mail($recipient, $subject, $bodyText, $headerStr);
+                if ($driver === 'mail') {
+                    if (!function_exists('mail')) {
+                        $sent = false;
+                        $failReason = "PHP mail() function is not available or disabled in php.ini";
+                    } else {
+                        $headerStr = '';
+                        foreach ($headers as $k => $v) {
+                            $headerStr .= "{$k}: {$v}\r\n";
+                        }
+
+                        error_clear_last();
+                        // Attempt mail delivery with envelope sender (-f)
+                        $sent = @mail($recipient, $subject, $bodyText, $headerStr, "-f " . escapeshellarg($from));
                         if (!$sent) {
-                            $err = error_get_last() ?? $lastErr;
-                            $failReason = !empty($err['message']) 
-                                ? $err['message'] 
-                                : 'PHP mail() returned false (MTA delivery rejected or sendmail error)';
+                            $lastErr = error_get_last();
+                            // Fallback attempt without additional parameters in case MTA restricts -f
+                            $sent = @mail($recipient, $subject, $bodyText, $headerStr);
+                            if (!$sent) {
+                                $err = error_get_last() ?? $lastErr;
+                                $failReason = !empty($err['message']) 
+                                    ? $err['message'] 
+                                    : 'PHP mail() returned false (MTA delivery rejected or sendmail error)';
+                            }
                         }
                     }
+                } else {
+                    // Driver is 'log'
+                    $sent = true;
                 }
-            } else {
-                // Driver is 'log'
-                $sent = true;
             }
 
             // Always record in data/mail.log for traceability and debugging

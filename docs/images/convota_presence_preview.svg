@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" width="100%" height="100%">
+  <defs>
+    <filter id="winShadow" x="-2%" y="-2%" width="104%" height="106%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Browser Window Frame -->
+  <g filter="url(#winShadow)">
+    <rect width="1000" height="640" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <rect width="1000" height="42" rx="12" fill="#0f172a"/>
+    <rect y="30" width="1000" height="12" fill="#0f172a"/>
+
+    <circle cx="24" cy="21" r="6" fill="#ef4444"/>
+    <circle cx="44" cy="21" r="6" fill="#f59e0b"/>
+    <circle cx="64" cy="21" r="6" fill="#10b981"/>
+
+    <rect x="250" y="8" width="500" height="26" rx="6" fill="#1e293b"/>
+    <text x="500" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">
+      🔒 https://arch.ece.uowm.gr/convota/meetings/presence?id=1
+    </text>
+  </g>
+
+  <!-- Top App Navigation -->
+  <g transform="translate(0, 42)">
+    <rect width="1000" height="56" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="30" y="36" font-family="sans-serif" font-size="19" font-weight="900" fill="#2563eb">🗳️ Convota</text>
+    
+    <g transform="translate(160, 34)" font-family="sans-serif" font-size="13.5" font-weight="600">
+      <text x="0" y="0" fill="#64748b">Dashboard</text>
+      <text x="100" y="0" fill="#64748b">Organizations</text>
+      <text x="220" y="0" fill="#2563eb">Meetings</text>
+      <line x1="216" y1="8" x2="288" y2="8" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+      <text x="310" y="0" fill="#64748b">Proposals</text>
+      <text x="400" y="0" fill="#64748b">CSV</text>
+      <text x="450" y="0" fill="#64748b">Audit Log</text>
+    </g>
+
+    <g transform="translate(780, 14)">
+      <rect width="190" height="30" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="95" y="19" font-family="sans-serif" font-size="11" font-weight="600" fill="#334155" text-anchor="middle">
+        🏛️ UOWM (President)
+      </text>
+    </g>
+  </g>
+
+  <!-- Main Content Area -->
+  <g transform="translate(30, 115)">
+    <!-- Header Row -->
+    <text x="0" y="24" font-family="sans-serif" font-size="20" font-weight="800" fill="#0f172a">
+      General Assembly Presence &amp; Quorum Registry
+    </text>
+    <text x="0" y="44" font-family="sans-serif" font-size="12" fill="#64748b">
+      Meeting: 2026 Annual General Assembly (Hybrid Session) • Scheduled: 2026-10-26 10:00:00
+    </text>
+
+    <!-- President Quick Action Buttons -->
+    <g transform="translate(620, 5)">
+      <rect width="180" height="34" rx="6" fill="#2563eb"/>
+      <text x="90" y="21" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#ffffff" text-anchor="middle">
+        ✉️ Send Reminder Links
+      </text>
+      
+      <rect x="190" y="0" width="130" height="34" rx="6" fill="#10b981"/>
+      <text x="255" y="21" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#ffffff" text-anchor="middle">
+        📊 Export CSV
+      </text>
+    </g>
+
+    <!-- Live Dynamic Quorum Banner -->
+    <g transform="translate(0, 65)">
+      <rect width="940" height="85" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+      
+      <rect x="20" y="18" width="130" height="24" rx="4" fill="#059669"/>
+      <text x="85" y="34" font-family="sans-serif" font-size="10.5" font-weight="800" fill="#ffffff" text-anchor="middle">
+        QUORUM MET
+      </text>
+
+      <text x="165" y="35" font-family="sans-serif" font-size="16" font-weight="800" fill="#065f46">
+        2 of 3 Voting Organizations Checked-In (66.7% Attendance)
+      </text>
+      <text x="165" y="55" font-family="sans-serif" font-size="12" fill="#047857">
+        Required threshold: 50.0% of voting weight. Current registered presence satisfies democratic quorum rules.
+      </text>
+
+      <g transform="translate(740, 22)">
+        <rect width="180" height="42" rx="6" fill="#ffffff" stroke="#a7f3d0" stroke-width="1.5"/>
+        <text x="90" y="18" font-family="sans-serif" font-size="10" font-weight="600" fill="#64748b" text-anchor="middle">VOTING POWER PRESENT</text>
+        <text x="90" y="35" font-family="sans-serif" font-size="14" font-weight="900" fill="#059669" text-anchor="middle">2.0 / 3.0 Votes</text>
+      </g>
+    </g>
+
+    <!-- Table Card -->
+    <g transform="translate(0, 168)">
+      <rect width="940" height="325" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+      
+      <!-- Table Header -->
+      <rect width="940" height="38" rx="8" fill="#f1f5f9"/>
+      <rect y="30" width="940" height="8" fill="#f1f5f9"/>
+      <text x="20" y="24" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#475569">ORGANIZATION</text>
+      <text x="320" y="24" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#475569">STATUS</text>
+      <text x="440" y="24" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#475569">DESIGNATED REPRESENTATIVE</text>
+      <text x="750" y="24" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#475569">CHECK-IN METHOD</text>
+
+      <!-- Row 1: UOWM -->
+      <line x1="0" y1="92" x2="940" y2="92" stroke="#f1f5f9" stroke-width="1"/>
+      <text x="20" y="65" font-family="sans-serif" font-size="13" font-weight="700" fill="#0f172a">Univ. of Western Macedonia</text>
+      <text x="20" y="80" font-family="sans-serif" font-size="11" fill="#64748b">President • 1.0 Vote</text>
+      
+      <rect x="320" y="55" width="80" height="22" rx="4" fill="#dcfce7"/>
+      <text x="360" y="70" font-family="sans-serif" font-size="11" font-weight="700" fill="#166534" text-anchor="middle">PRESENT</text>
+      
+      <text x="440" y="65" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#1e293b">Minas Dasygenis</text>
+      <text x="440" y="80" font-family="sans-serif" font-size="10.5" fill="#64748b">Primary Delegate (convota@email.vlsi.gr)</text>
+      <text x="750" y="70" font-family="sans-serif" font-size="11.5" fill="#334155">Direct Key Link</text>
+
+      <!-- Row 2: EORN -->
+      <line x1="0" y1="146" x2="940" y2="146" stroke="#f1f5f9" stroke-width="1"/>
+      <text x="20" y="119" font-family="sans-serif" font-size="13" font-weight="700" fill="#0f172a">European Open Research Network</text>
+      <text x="20" y="134" font-family="sans-serif" font-size="11" fill="#64748b">Member • 1.0 Vote</text>
+      
+      <rect x="320" y="109" width="80" height="22" rx="4" fill="#dcfce7"/>
+      <text x="360" y="124" font-family="sans-serif" font-size="11" font-weight="700" fill="#166534" text-anchor="middle">PRESENT</text>
+      
+      <text x="440" y="119" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#1e293b">Marcus Vogel</text>
+      <text x="440" y="134" font-family="sans-serif" font-size="10.5" fill="#2563eb">Designated Substitute (convota@email.vlsi.gr)</text>
+      <text x="750" y="124" font-family="sans-serif" font-size="11.5" fill="#334155">Presidium Roll-Call</text>
+
+      <!-- Row 3: ISC (Unconfigured / Absent) -->
+      <line x1="0" y1="200" x2="940" y2="200" stroke="#f1f5f9" stroke-width="1"/>
+      <text x="20" y="173" font-family="sans-serif" font-size="13" font-weight="700" fill="#0f172a">International Standards Collective</text>
+      <text x="20" y="188" font-family="sans-serif" font-size="11" fill="#64748b">Member • 2.0 Votes</text>
+      
+      <rect x="320" y="163" width="80" height="22" rx="4" fill="#fee2e2"/>
+      <text x="360" y="178" font-family="sans-serif" font-size="11" font-weight="700" fill="#991b1b" text-anchor="middle">ABSENT</text>
+      
+      <text x="440" y="173" font-family="sans-serif" font-size="12" fill="#94a3b8">No representative configured</text>
+      <text x="440" y="188" font-family="sans-serif" font-size="10" fill="#dc2626">⚠️ Reminder link dispatched via email</text>
+      <text x="750" y="178" font-family="sans-serif" font-size="11.5" fill="#94a3b8">— Pending —</text>
+
+      <!-- Row 4: GEC (Observer) -->
+      <line x1="0" y1="254" x2="940" y2="254" stroke="#f1f5f9" stroke-width="1"/>
+      <text x="20" y="227" font-family="sans-serif" font-size="13" font-weight="700" fill="#0f172a">Global Environmental Council</text>
+      <text x="20" y="242" font-family="sans-serif" font-size="11" fill="#f59e0b">Observer • 0.0 Votes (Non-voting)</text>
+      
+      <rect x="320" y="217" width="80" height="22" rx="4" fill="#e0e7ff"/>
+      <text x="360" y="232" font-family="sans-serif" font-size="11" font-weight="700" fill="#3730a3" text-anchor="middle">OBSERVER</text>
+      
+      <text x="440" y="227" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#1e293b">Astrid Lindqvist</text>
+      <text x="440" y="242" font-family="sans-serif" font-size="10.5" fill="#64748b">Delegate (convota@email.vlsi.gr)</text>
+      <text x="750" y="232" font-family="sans-serif" font-size="11.5" fill="#334155">Observer Portal</text>
+    </g>
+  </g>
+</svg>

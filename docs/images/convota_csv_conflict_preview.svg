@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" width="100%" height="100%">
+  <defs>
+    <filter id="winShadow" x="-2%" y="-2%" width="104%" height="106%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Browser Window Frame -->
+  <g filter="url(#winShadow)">
+    <rect width="1000" height="640" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <rect width="1000" height="42" rx="12" fill="#0f172a"/>
+    <rect y="30" width="1000" height="12" fill="#0f172a"/>
+
+    <circle cx="24" cy="21" r="6" fill="#ef4444"/>
+    <circle cx="44" cy="21" r="6" fill="#f59e0b"/>
+    <circle cx="64" cy="21" r="6" fill="#10b981"/>
+
+    <rect x="250" y="8" width="500" height="26" rx="6" fill="#1e293b"/>
+    <text x="500" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">
+      🔒 https://arch.ece.uowm.gr/convota/csv/preview
+    </text>
+  </g>
+
+  <!-- Top App Navigation -->
+  <g transform="translate(0, 42)">
+    <rect width="1000" height="56" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="30" y="36" font-family="sans-serif" font-size="19" font-weight="900" fill="#2563eb">🗳️ Convota</text>
+    
+    <g transform="translate(160, 34)" font-family="sans-serif" font-size="13.5" font-weight="600">
+      <text x="0" y="0" fill="#64748b">Dashboard</text>
+      <text x="100" y="0" fill="#64748b">Organizations</text>
+      <text x="220" y="0" fill="#64748b">Meetings</text>
+      <text x="310" y="0" fill="#64748b">Proposals</text>
+      <text x="400" y="0" fill="#2563eb">CSV</text>
+      <line x1="396" y1="8" x2="432" y2="8" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+      <text x="450" y="0" fill="#64748b">Audit Log</text>
+    </g>
+
+    <g transform="translate(780, 14)">
+      <rect width="190" height="30" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="95" y="19" font-family="sans-serif" font-size="11" font-weight="600" fill="#334155" text-anchor="middle">
+        🛡️ Administrator
+      </text>
+    </g>
+  </g>
+
+  <!-- Main Content Area -->
+  <g transform="translate(30, 115)">
+    <!-- Header Row -->
+    <text x="0" y="24" font-family="sans-serif" font-size="20" font-weight="800" fill="#0f172a">
+      Smart CSV Import &amp; Three-Way Conflict Analysis
+    </text>
+    <text x="0" y="44" font-family="sans-serif" font-size="12" fill="#64748b">
+      Integrity Verified: HMAC-SHA256 • Pre-commit Validation: 1 New, 1 Update, 1 Conflict Bypassed
+    </text>
+
+    <!-- Prominent Conflict Warning Banner -->
+    <g transform="translate(0, 65)">
+      <rect width="940" height="76" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+      
+      <text x="20" y="28" font-family="sans-serif" font-size="14" font-weight="800" fill="#991b1b">
+        ⚠️ CRITICAL CONFLICT DETECTED (Different Organization)
+      </text>
+      <text x="20" y="48" font-family="sans-serif" font-size="11.5" fill="#b91c1c">
+        Member 'Tuomas Korhonen' is already active in 'Nordic AI Society', but uploaded CSV assigns them to 'Conflict University'.
+      </text>
+      <text x="20" y="64" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#7f1d1d">
+        Security Guard: To preserve organizational integrity and voting rights, this line will be automatically SKIPPED.
+      </text>
+
+      <g transform="translate(760, 20)">
+        <rect width="160" height="36" rx="6" fill="#dc2626"/>
+        <text x="80" y="22" font-family="sans-serif" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">
+          AUTO-BYPASS ON
+        </text>
+      </g>
+    </g>
+
+    <!-- Conflict Analysis Table Card -->
+    <g transform="translate(0, 155)">
+      <rect width="940" height="340" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+      
+      <!-- Table Header -->
+      <rect width="940" height="38" rx="8" fill="#f1f5f9"/>
+      <rect y="30" width="940" height="8" fill="#f1f5f9"/>
+      <text x="20" y="24" font-family="sans-serif" font-size="11" font-weight="700" fill="#475569">STATUS / ACTION</text>
+      <text x="220" y="24" font-family="sans-serif" font-size="11" font-weight="700" fill="#475569">MEMBER NAME</text>
+      <text x="380" y="24" font-family="sans-serif" font-size="11" font-weight="700" fill="#475569">EMAIL (CENTRAL MAILBOX)</text>
+      <text x="600" y="24" font-family="sans-serif" font-size="11" font-weight="700" fill="#475569">TARGET ORGANIZATION</text>
+      <text x="820" y="24" font-family="sans-serif" font-size="11" font-weight="700" fill="#475569">DECISION</text>
+
+      <!-- Row 1: New Member -->
+      <line x1="0" y1="92" x2="940" y2="92" stroke="#f1f5f9" stroke-width="1"/>
+      <rect x="20" y="55" width="150" height="24" rx="4" fill="#dcfce7"/>
+      <text x="95" y="71" font-family="sans-serif" font-size="10.5" font-weight="800" fill="#15803d" text-anchor="middle">➕ NEW MEMBER</text>
+      
+      <text x="220" y="71" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Frederik Nielsen</text>
+      <text x="380" y="71" font-family="sans-serif" font-size="12" fill="#2563eb">convota@email.vlsi.gr</text>
+      <text x="600" y="71" font-family="sans-serif" font-size="12" fill="#334155">Danish Research Consortium</text>
+      <text x="820" y="71" font-family="sans-serif" font-size="11" font-weight="700" fill="#059669">Create Member</text>
+
+      <!-- Row 2: Same Org Existing (Update Opt-in) -->
+      <line x1="0" y1="146" x2="940" y2="146" stroke="#f1f5f9" stroke-width="1"/>
+      <rect x="20" y="109" width="150" height="24" rx="4" fill="#e0f2fe"/>
+      <text x="95" y="125" font-family="sans-serif" font-size="10.5" font-weight="800" fill="#0369a1" text-anchor="middle">🔄 SAME ORG (UPDATE)</text>
+      
+      <text x="220" y="125" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">Tuomas Korhonen</text>
+      <text x="380" y="125" font-family="sans-serif" font-size="12" fill="#2563eb">convota@email.vlsi.gr</text>
+      <text x="600" y="125" font-family="sans-serif" font-size="12" fill="#334155">Nordic AI Society</text>
+      
+      <rect x="820" y="112" width="16" height="16" rx="3" fill="#2563eb"/>
+      <text x="828" y="124" font-family="sans-serif" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">✓</text>
+      <text x="845" y="125" font-family="sans-serif" font-size="11" font-weight="600" fill="#0284c7">Update Roster</text>
+
+      <!-- Row 3: Critical Conflict -->
+      <line x1="0" y1="200" x2="940" y2="200" stroke="#f1f5f9" stroke-width="1"/>
+      <rect x="20" y="163" width="150" height="24" rx="4" fill="#fee2e2"/>
+      <text x="95" y="179" font-family="sans-serif" font-size="10" font-weight="800" fill="#b91c1c" text-anchor="middle">⛔ ORG CONFLICT</text>
+      
+      <text x="220" y="179" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#991b1b">Tuomas Korhonen</text>
+      <text x="380" y="179" font-family="sans-serif" font-size="12" fill="#dc2626">convota@email.vlsi.gr</text>
+      <text x="600" y="179" font-family="sans-serif" font-size="12" font-weight="600" fill="#b91c1c">Conflict University (Invalid)</text>
+      <text x="820" y="179" font-family="sans-serif" font-size="11" font-weight="800" fill="#dc2626">SKIPPED</text>
+
+      <!-- Commit Controls Bar -->
+      <g transform="translate(20, 240)">
+        <rect width="900" height="70" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="20" y="28" font-family="sans-serif" font-size="12" font-weight="700" fill="#334155">
+          Ready to Commit Roster Batch?
+        </text>
+        <text x="20" y="48" font-family="sans-serif" font-size="11" fill="#64748b">
+          HMAC Payload Hash: sha256(7f8e...4b12) • Client-side parameter tampering strictly blocked.
+        </text>
+
+        <rect x="680" y="18" width="200" height="36" rx="6" fill="#2563eb"/>
+        <text x="780" y="40" font-family="sans-serif" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">
+          Commit Verified Roster →
+        </text>
+      </g>
+    </g>
+  </g>
+</svg>

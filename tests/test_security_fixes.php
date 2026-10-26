@@ -160,7 +160,7 @@ try {
     ], $audit);
 
     $mailerCustom->send(
-        'test@example.com',
+        'convota@email.vlsi.gr',
         'Password Reset & Access Key',
         "Hello,\nHere is your reset link: https://arch.ece.uowm.gr/convota/auth/reset-password?token=secret_token_12345\nDirect key: https://arch.ece.uowm.gr/convota/member_login.sh&hash=secret_org_hash_99999\n",
         'test_event'
@@ -181,11 +181,11 @@ try {
     // -------------------------------------------------------------
     // 9. [MED-4] HMAC Verification for CSV Preview Rows
     // -------------------------------------------------------------
-    $sampleRows = [['name' => 'Alice', 'email' => 'alice@example.com']];
+    $sampleRows = [['name' => 'Alice', 'email' => 'convota@email.vlsi.gr']];
     $appSecret = 'test_secret_key_123';
     $validJson = json_encode($sampleRows);
     $validHmac = hash_hmac('sha256', $validJson, $appSecret);
-    $tamperedJson = json_encode([['name' => 'Alice', 'email' => 'alice@example.com', 'voting_weight' => 999.0]]);
+    $tamperedJson = json_encode([['name' => 'Alice', 'email' => 'convota@email.vlsi.gr', 'voting_weight' => 999.0]]);
 
     assertSec("[MED-4] Valid preview HMAC matches signature", hash_equals($validHmac, hash_hmac('sha256', $validJson, $appSecret)));
     assertSec("[MED-4] Tampered rows JSON rejected by HMAC verification", !hash_equals($validHmac, hash_hmac('sha256', $tamperedJson, $appSecret)));
@@ -201,8 +201,8 @@ try {
     // -------------------------------------------------------------
     // 11. [LOW-2] Shared Mailbox Multi-Account Password Matching
     // -------------------------------------------------------------
-    // Create second active user with same email 'shared@email.vlsi.gr' but different password
-    $sharedEmail = 'shared@email.vlsi.gr';
+    // Create second active user with same email 'convota@email.vlsi.gr' but different password
+    $sharedEmail = 'convota@email.vlsi.gr';
     $pass1 = AuthService::hashPassword('PassUserOne123!');
     $pass2 = AuthService::hashPassword('PassUserTwo456!');
 

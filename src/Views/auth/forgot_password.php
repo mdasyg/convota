@@ -11,7 +11,7 @@ use Convota\Security\Csrf;
 
     <div class="form-group">
         <label class="form-label" for="email">Account Email</label>
-        <input type="email" id="email" name="email" class="form-control" placeholder="delegate@email.vlsi.gr" required autofocus>
+        <input type="email" id="email" name="email" class="form-control" placeholder="convota@email.vlsi.gr" required autofocus>
     </div>
 
     <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">

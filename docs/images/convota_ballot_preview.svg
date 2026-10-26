@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" width="100%" height="100%">
+  <defs>
+    <filter id="winShadow" x="-2%" y="-2%" width="104%" height="106%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Browser Window Frame -->
+  <g filter="url(#winShadow)">
+    <rect width="1000" height="640" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <rect width="1000" height="42" rx="12" fill="#0f172a"/>
+    <rect y="30" width="1000" height="12" fill="#0f172a"/>
+
+    <circle cx="24" cy="21" r="6" fill="#ef4444"/>
+    <circle cx="44" cy="21" r="6" fill="#f59e0b"/>
+    <circle cx="64" cy="21" r="6" fill="#10b981"/>
+
+    <rect x="250" y="8" width="500" height="26" rx="6" fill="#1e293b"/>
+    <text x="500" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">
+      🔒 https://arch.ece.uowm.gr/convota/proposals/vote?id=1
+    </text>
+  </g>
+
+  <!-- Top App Navigation -->
+  <g transform="translate(0, 42)">
+    <rect width="1000" height="56" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="30" y="36" font-family="sans-serif" font-size="19" font-weight="900" fill="#2563eb">🗳️ Convota</text>
+    
+    <g transform="translate(160, 34)" font-family="sans-serif" font-size="13.5" font-weight="600">
+      <text x="0" y="0" fill="#64748b">Dashboard</text>
+      <text x="100" y="0" fill="#64748b">Organizations</text>
+      <text x="220" y="0" fill="#64748b">Meetings</text>
+      <text x="310" y="0" fill="#2563eb">Proposals &amp; Voting</text>
+      <line x1="306" y1="8" x2="435" y2="8" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+      <text x="460" y="0" fill="#64748b">Receipts</text>
+    </g>
+
+    <g transform="translate(760, 14)">
+      <rect width="210" height="30" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="105" y="19" font-family="sans-serif" font-size="11" font-weight="600" fill="#334155" text-anchor="middle">
+        👤 Minas Dasygenis (UOWM)
+      </text>
+    </g>
+  </g>
+
+  <!-- Main Content Area -->
+  <g transform="translate(30, 115)">
+    <!-- Header Row -->
+    <text x="0" y="24" font-family="sans-serif" font-size="20" font-weight="800" fill="#0f172a">
+      Ballot Casting: Adoption of 2027 Research Infrastructure Budget
+    </text>
+    <text x="0" y="44" font-family="sans-serif" font-size="12" fill="#64748b">
+      Type: Secret Decoupled Ballot • Meeting: 2026 Annual General Assembly • Status: OPEN
+    </text>
+
+    <!-- Ballot Box & Options Card -->
+    <g transform="translate(0, 65)">
+      <g transform="translate(0, 0)">
+        <rect width="600" height="420" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        
+        <text x="20" y="32" font-family="sans-serif" font-size="14" font-weight="800" fill="#0f172a">
+          Select Your Organization's Official Decision
+        </text>
+        <text x="20" y="52" font-family="sans-serif" font-size="11.5" fill="#64748b">
+          Your vote carries a weight of 1.0 vote. Once submitted, your selection is decoupled from your identity.
+        </text>
+
+        <!-- Option 1: YES -->
+        <g transform="translate(20, 75)">
+          <rect width="560" height="58" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+          <circle cx="30" cy="29" r="9" fill="#16a34a"/>
+          <circle cx="30" cy="29" r="4" fill="#ffffff"/>
+          <text x="55" y="34" font-family="sans-serif" font-size="15" font-weight="800" fill="#15803d">YES / IN FAVOR (Ναι)</text>
+          <text x="540" y="34" font-family="sans-serif" font-size="13" font-weight="700" fill="#16a34a" text-anchor="end">SELECTED</text>
+        </g>
+
+        <!-- Option 2: NO -->
+        <g transform="translate(20, 145)">
+          <rect width="560" height="58" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+          <circle cx="30" cy="29" r="9" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+          <text x="55" y="34" font-family="sans-serif" font-size="15" font-weight="700" fill="#334155">NO / AGAINST (Όχι)</text>
+        </g>
+
+        <!-- Option 3: ABSTAIN -->
+        <g transform="translate(20, 215)">
+          <rect width="560" height="58" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+          <circle cx="30" cy="29" r="9" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+          <text x="55" y="34" font-family="sans-serif" font-size="15" font-weight="700" fill="#64748b">ABSTAIN (Λευκό / Αποχή)</text>
+        </g>
+
+        <!-- Security Proof Note -->
+        <g transform="translate(20, 290)">
+          <rect width="560" height="48" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+          <text x="15" y="20" font-family="sans-serif" font-size="10.5" font-weight="700" fill="#1e40af">
+            🔒 Cryptographic Privacy Guarantee:
+          </text>
+          <text x="15" y="36" font-family="sans-serif" font-size="10" fill="#3b82f6">
+            Stored in anonymous_ballots with zero organization or user relational links. Receipt issued upon confirmation.
+          </text>
+        </g>
+
+        <!-- Submit Button -->
+        <rect x="20" y="355" width="560" height="44" rx="6" fill="#2563eb"/>
+        <text x="300" y="382" font-family="sans-serif" font-size="13.5" font-weight="800" fill="#ffffff" text-anchor="middle">
+          Cast Official Ballot (Submit Decision) →
+        </text>
+      </g>
+
+      <!-- Right Column: Live Turnout & Receipt Verification Tool -->
+      <g transform="translate(620, 0)">
+        <!-- Live Participation Card -->
+        <rect width="320" height="180" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+        <text x="15" y="28" font-family="sans-serif" font-size="12" font-weight="800" fill="#334155">
+          LIVE ASSEMBLY PARTICIPATION
+        </text>
+        
+        <text x="15" y="65" font-family="sans-serif" font-size="28" font-weight="900" fill="#2563eb">
+          66.7%
+        </text>
+        <text x="15" y="85" font-family="sans-serif" font-size="11.5" fill="#64748b">
+          2 of 3 eligible voting organizations have cast ballots.
+        </text>
+
+        <!-- Progress bar -->
+        <rect x="15" y="105" width="290" height="14" rx="7" fill="#e2e8f0"/>
+        <rect x="15" y="105" width="193" height="14" rx="7" fill="#2563eb"/>
+
+        <text x="15" y="145" font-family="sans-serif" font-size="10.5" fill="#059669">
+          ● Voting Active: Real-time sealed integrity mode
+        </text>
+        <text x="15" y="162" font-family="sans-serif" font-size="10" fill="#94a3b8">
+          Results sealed until meeting presidium concludes voting.
+        </text>
+
+        <!-- Voter Receipt Lookup Card -->
+        <g transform="translate(0, 195)">
+          <rect width="320" height="225" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+          <text x="15" y="28" font-family="sans-serif" font-size="12" font-weight="800" fill="#0f172a">
+            INDEPENDENT RECEIPT AUDIT
+          </text>
+          <text x="15" y="48" font-family="sans-serif" font-size="10.5" fill="#64748b">
+            Verify your cryptographic receipt hash in the public ledger without revealing your ballot choice:
+          </text>
+
+          <rect x="15" y="70" width="290" height="50" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+          <text x="25" y="90" font-family="monospace" font-size="9" fill="#0f172a">
+            9e8b4f1c7d2a...8c3f
+          </text>
+          <text x="25" y="108" font-family="sans-serif" font-size="9.5" font-weight="700" fill="#059669">
+            ✓ Verified Recorded in Ledger
+          </text>
+
+          <g transform="translate(15, 135)">
+            <rect width="290" height="75" rx="6" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1"/>
+            <text x="10" y="20" font-family="sans-serif" font-size="10" font-weight="700" fill="#065f46">Ledger Verification Status:</text>
+            <text x="10" y="38" font-family="sans-serif" font-size="9.5" fill="#047857">• Ballot Hash Matched in SQLite</text>
+            <text x="10" y="52" font-family="sans-serif" font-size="9.5" fill="#047857">• Timestamp: 2026-10-26 10:14:02</text>
+            <text x="10" y="66" font-family="sans-serif" font-size="9.5" fill="#047857">• Cryptographic Chain Intact: Intact</text>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -4,32 +4,52 @@
   <img src="docs/images/convota_hero_banner.svg" alt="Convota — Voting Together" width="100%">
 </p>
 
-**Convota** (*"Voting Together"*, from Latin *con* + *vota*) is an open, secure, and privacy-preserving General Assembly Presence and Voting Information System built with **PHP 8.4** and **SQLite3**.
+**Convota** (*"Voting Together"*, from Latin *con* + *vota*) is an open, secure, and privacy-preserving General Assembly Presence and Voting Information System built with **native PHP 8.4** and **SQLite3 (WAL mode)** with zero third-party framework dependencies.
 
-Designed for international research consortia, academic senates, federations, standards organizations, cooperatives, and NGOs.
+Designed for international research consortia, academic senates, university general assemblies, federations, standards organizations, cooperatives, and NGOs.
 
 > **Core Axiom:** *The vote belongs to the organization; the designated representative is the authenticated person exercising that organization's voting right.*
 
 ---
 
-## Visual Overview & Architecture
+## Visual Showcase Gallery & Architecture
 
-### System Architecture & Data Flow
+### 1. System Architecture & Data Flow
 <p align="center">
   <img src="docs/images/convota_architecture.svg" alt="Convota System Architecture &amp; Data Flow" width="100%">
 </p>
 
-### Live Assembly Dashboard
+### 2. Live Assembly Dashboard
 <p align="center">
   <img src="docs/images/convota_dashboard_preview.svg" alt="Convota Assembly Dashboard Preview" width="100%">
 </p>
 
-### Privacy-Preserving Secret Decoupled Ballot
+### 3. General Assembly Presence & Roll-Call Registry
+<p align="center">
+  <img src="docs/images/convota_presence_preview.svg" alt="Convota General Assembly Presence and Quorum Registry" width="100%">
+</p>
+
+### 4. Delegation Portal & Shared Access Key Management
+<p align="center">
+  <img src="docs/images/convota_portal_preview.svg" alt="Convota Delegation Portal &amp; Shared Access Key Security" width="100%">
+</p>
+
+### 5. Smart CSV Import & Three-Way Conflict Analysis
+<p align="center">
+  <img src="docs/images/convota_csv_conflict_preview.svg" alt="Convota Smart CSV Conflict Detection &amp; Auto-Bypass" width="100%">
+</p>
+
+### 6. Live Voting Ballot & Cryptographic Receipt Verification
+<p align="center">
+  <img src="docs/images/convota_ballot_preview.svg" alt="Convota Live Voting Ballot &amp; Receipt Verification Tool" width="100%">
+</p>
+
+### 7. Privacy-Preserving Secret Decoupled Ballot Architecture
 <p align="center">
   <img src="docs/images/convota_secret_ballot.svg" alt="Convota Secret Decoupled Ballot Architecture" width="100%">
 </p>
 
-### Assembly Hall Big-Screen Projector Mode
+### 8. Assembly Hall Big-Screen Projector Mode
 <p align="center">
   <img src="docs/images/convota_projector_preview.svg" alt="Convota Assembly Hall Projector Display" width="100%">
 </p>
@@ -70,14 +90,20 @@ Designed for international research consortia, academic senates, federations, st
    - Format: `A/a, name, surname, email, organization, [telephone], [vote_weight]`
    - Visual conflict engine: Flags existing emails registered under a *different organization* with a **prominent red warning** and skips them automatically.
    - Allows checkbox resolution to update existing members in the *same organization*.
+   - Cryptographic pre-commit integrity: Form state signed via HMAC-SHA256 to prevent client-side parameter tampering.
 
-6. **Defense-in-Depth Security:**
+6. **Defense-in-Depth Security & OWASP Top 10 Hardening:**
    - SQLite WAL mode (`PRAGMA journal_mode = WAL;`, `foreign_keys = ON;`, `busy_timeout = 5000;`).
    - Canonical HTTPS redirection and HSTS.
+   - Strict server-side session identity resolution in voting controllers (eliminating IDOR).
+   - Nonce-based Content Security Policy (`script-src 'self' 'nonce-...'`).
+   - Whitelist-restricted CORS policy on API routes (`arch.ece.uowm.gr`, `uowm.gr`, `localhost`).
+   - Automatic redaction of security tokens and hashes from application logs.
+   - Open redirect sanitization for internal application routing.
+   - SQLite-backed rate limiting on user password login and shared organization hash endpoints.
    - Argon2id password hashing, secure session management (`HttpOnly`, `SameSite=Strict`, `Secure`).
    - CSRF protection on all mutating requests (form token and `X-CSRF-Token` header).
    - Tamper-evident audit trail with SHA-256 hash chaining.
-   - Protected database and logs via `.htaccess` (`Require all denied`).
 
 ---
 
@@ -92,11 +118,14 @@ Then navigate to: `http://localhost:8000` (or `https://` if behind a reverse pro
 
 ### 2. Default Seeded Credentials
 
-> **Safety Notice:** All sample delegate email addresses strictly use the centralized mailbox `convota@email.vlsi.gr` to ensure all test notifications and credentials route safely to a single dedicated mailbox.
+> [!IMPORTANT]
+> **Centralized Testing Mailbox Invariant:**
+> The ONLY email authorized for testing, automated test suites, dummy delegates, test organizations, and mock data is **`convota@email.vlsi.gr`** (with **`adminconvota@email.vlsi.gr`** strictly reserved for super-admin).
+> Fake external domains (such as `@example.com` or dummy addresses) are strictly forbidden as they trigger upstream MTA delivery rejections (`554 5.7.1 Lazy spammer sending to obviously bogus addresses`).
 
 #### Super Administrator:
 - **Email:** `adminconvota@email.vlsi.gr`
-- **Password:** `AdminConvota2026!`
+- **Password:** `AdminConvota2026!` (configurable via `CONVOTA_ADMIN_PASSWORD` environment variable)
 
 #### Sample Member Organizations:
 - **University of Western Macedonia** (President Organization, 1 Vote)
@@ -107,7 +136,7 @@ Then navigate to: `http://localhost:8000` (or `https://` if behind a reverse pro
   - Substitute: `convota@email.vlsi.gr` (Marcus Vogel)
 - **International Standards Collective** (2 Votes)
   - Primary Delegate: `convota@email.vlsi.gr` (Sophie Dubois) / `MemberPassword2026!`
-- **Global NGO Environmental Council** (Observer, 0 Votes)
+- **Global Environmental Council** (Observer, 0 Votes)
   - Delegate: `convota@email.vlsi.gr` (Astrid Lindqvist) / `MemberPassword2026!`
 
 ---
@@ -150,19 +179,22 @@ nginx -t && nginx -s reload
 
 ## Automated Test Suite
 
-Convota includes an automated test suite covering all 6 phases (130 automated tests):
+Convota includes a comprehensive automated test runner covering all 7 test phases (175 automated tests):
 
 ```bash
 php /projects/convota/tests/run_all_tests.php
 ```
 
-You can also run individual test suites:
+Individual test suites:
 - `php tests/test_phase1.php` — Database WAL mode, Migrations, Seeder, Audit hash-chaining, Auth, CSRF (31 tests)
-- `php tests/test_phase2.php` — Organizations, Member Roster, CSV Conflict Engine, CSV Exports (26 tests)
-- `php tests/test_phase3.php` — Meetings, Presence Tracking, Designated Representative, Dynamic Quorum (24 tests)
+- `php tests/test_phase2.php` — Organizations, Member Roster, CSV Conflict Engine, CSV Exports (39 tests)
+- `php tests/test_phase3.php` — Meetings, Presence Tracking, Designated Representative, Dynamic Quorum (27 tests)
 - `php tests/test_phase4.php` — Voting Engine, Secret Decoupled Ballots, Idempotency, Anti-Replay, Notifications (27 tests)
 - `php tests/test_phase5.php` — REST APIs (`/api/quorum`, `/api/voting-status`, `/api/vote`), Web Dispatcher, Security Headers (12 tests)
-- `php tests/test_phase6.php` — Subpath & Subdomain Portability, Base Path Auto-Detection, URL Helpers (10 tests)
+- `php tests/test_nginx_routing.php` — Subpath & Subdomain Portability, Base Path Auto-Detection, URL Helpers (16 tests)
+- `php tests/test_security_fixes.php` — OWASP Top 10 Hardening, IDOR Ballot Defense, Open Redirect, HMAC, Rate Limiting, Redaction (23 tests)
+
+---
 
 ## Documentation & User Guides
 
@@ -170,6 +202,7 @@ Detailed documentation and operational manuals are available in the [`documentat
 
 * 📘 **[Administrator & Presidium Guide](file:///projects/convota/documentation/ADMINISTRATOR_GUIDE.md):** Complete manual for administrators and assembly presidium officers covering collective configuration, delegation roster management, shared access key rotation, smart CSV imports/exports, dynamic quorum calculation, presidium attendance reminders, secret/open voting sessions, and cryptographic audit log verification.
 * 📗 **[Member & Delegate User Guide](file:///projects/convota/documentation/MEMBER_GUIDE.md):** Step-by-step instructions for organization delegates covering personal login, shared access key one-click URLs, delegation roster management, meeting presence registration, designating active voters, secret balloting, saving cryptographic voter receipts, and public receipt verification.
+* 🛡️ **[Security Audit & OWASP Assessment](file:///root/SECURITY_AUDIT_convota.md):** Complete vulnerability audit and remediation report detailing all 13 security fixes.
 
 ---
 
@@ -179,19 +212,22 @@ Detailed documentation and operational manuals are available in the [`documentat
 /projects/convota/
 ├── .gitignore
 ├── CHANGELOG.md               <-- Detailed version and phase changelog
-├── README.md                  <-- Project overview and quickstart guide
+├── README.md                  <-- Project overview and quickstart guide (English)
+├── README-GR.md               <-- Project overview and quickstart guide (Greek)
 ├── SPECIFICATIONS.md          <-- Complete technical and security specifications
+├── AGENTS.md                  <-- Autonomous agent rules & testing protocols
 ├── convota.conf               <-- Frontend Nginx reverse proxy configuration
+├── docs/                      <-- Indicative architecture diagrams and UI vector assets
+│   └── images/                <-- Scalable vector showcase gallery
 ├── documentation/             <-- Comprehensive user and administration guides
 │   ├── ADMINISTRATOR_GUIDE.md <-- Detailed guide for system administrators & presidium
 │   └── MEMBER_GUIDE.md        <-- Step-by-step guide for delegates and voting members
 ├── config/
-│   ├── config.php             <-- Application constants, mail, and security settings
-│   └── convota.conf           <-- Modular frontend Nginx reverse proxy template
+│   └── config.php             <-- Application constants, mail, and security settings
 ├── data/
 │   ├── .htaccess              <-- Deny all direct web access
 │   ├── convota.sqlite         <-- SQLite production database (WAL mode)
-│   └── mail.log               <-- Notification log for member alerts
+│   └── mail.log               <-- Notification log with token redaction
 ├── public/
 │   ├── .htaccess              <-- Security headers, clean URL rewrites, HTTPS redirect
 │   ├── index.php              <-- Front controller entry point
@@ -207,7 +243,7 @@ Detailed documentation and operational manuals are available in the [`documentat
 │   ├── Autoload.php           <-- PSR-4 autoloader
 │   ├── Auth/
 │   │   ├── AuthService.php    <-- Argon2id passwords, sessions, lockout, reset tokens
-│   │   └── HashAuth.php       <-- Shared organization access key manager & security
+│   │   └── HashAuth.php       <-- Shared organization access key manager & rate limiting
 │   ├── Controllers/
 │   │   ├── AuthController.php
 │   │   ├── DashboardController.php
@@ -239,10 +275,12 @@ Detailed documentation and operational manuals are available in the [`documentat
 │   │   └── VotingService.php  <-- Idempotent, anti-replay dual-mode voting engine
 │   └── Views/                 <-- Semantic, UTF-8 escaped HTML views
 └── tests/
-    ├── run_all_tests.php      <-- Master runner (all 120 tests)
+    ├── run_all_tests.php      <-- Master runner (all 175 tests across 7 phases)
     ├── test_phase1.php
     ├── test_phase2.php
     ├── test_phase3.php
     ├── test_phase4.php
-    └── test_phase5.php
+    ├── test_phase5.php
+    ├── test_nginx_routing.php
+    └── test_security_fixes.php
 ```
