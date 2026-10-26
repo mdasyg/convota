@@ -1,0 +1,51 @@
+PolyForm Noncommercial License 1.0.0
+
+<https://polyformproject.org/licenses/noncommercial/1.0.0>
+
+Copyright (c) 2026 Minas Dasygenis <mdasyg@vlsi.gr>
+
+## Purpose
+
+This license allows you to use this software for noncommercial purposes, free of charge.
+
+## Agreement
+
+In order to receive this license, you have to agree to its rules. The rules of this license are both obligations under that agreement and conditions to your license. You must not do anything with this software that triggers a rule that you cannot or will not follow.
+
+## Notices
+
+You must ensure that everyone who gets a copy of any part of this software from you, with or without changes, also gets the text of this license and the contributor notices.
+
+## Noncommercial Purposes
+
+Any noncommercial purpose is permitted. A "noncommercial purpose" is a purpose that does not involve commercial advantage or monetary compensation, whether direct or indirect.
+
+Conduct is not for a noncommercial purpose if:
+
+* you charge for access to or use of the software, or services based on the software (such as Software-as-a-Service, hosted instances, consulting, or managed deployments);
+* you sell or lease copies of the software or modified versions of the software;
+* you use the software to run a commercial enterprise, business, or service for which paying customers are charged.
+
+Educational institutions (such as universities, schools, academic senates, and research consortia), non-profit organizations, NGOs, cooperatives, charities, and individuals using the software for personal, academic, or non-commercial community governance are explicitly authorized and encouraged to use this software free of charge.
+
+## Commercial Licensing
+
+Any use of the software for commercial purposes (including any use that generates revenue or involves monetary transactions from end users, customers, or client organizations) is strictly prohibited under this public license.
+
+To request permission for commercial use, commercial deployment, or to obtain a commercial license, you must contact the copyright holder in writing and obtain an explicit, written commercial licensing agreement after payment of an agreed commission/royalty fee:
+
+    Minas Dasygenis
+    Email: mdasyg@vlsi.gr
+    GitHub: https://github.com/mdasyg
+
+## Fair Use
+
+You may have rights under the law, including fair use, that this license cannot modify. This license does not minimize, restrict, or limit those rights.
+
+## No Other Rights
+
+These terms do not give you any right to use any contributor's name, trademark, or logo.
+
+## Defense In Depth
+
+As far as the law allows, use of this software is provided "as is", without any warranty of any kind, and no contributor will be liable to anyone for damages of any kind resulting from use or failure of the software.

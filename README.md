@@ -275,7 +275,7 @@ Detailed documentation and operational manuals are available in the [`documentat
 │   │   └── VotingService.php  <-- Idempotent, anti-replay dual-mode voting engine
 │   └── Views/                 <-- Semantic, UTF-8 escaped HTML views
 └── tests/
-    ├── run_all_tests.php      <-- Master runner (all 175 tests across 7 phases)
+    ├── run_all_tests.php      <-- Master runner (all 177 tests across 7 phases)
     ├── test_phase1.php
     ├── test_phase2.php
     ├── test_phase3.php
@@ -284,3 +284,15 @@ Detailed documentation and operational manuals are available in the [`documentat
     ├── test_nginx_routing.php
     └── test_security_fixes.php
 ```
+
+---
+
+## License & Commercial Usage
+
+This project is licensed under the **[PolyForm Noncommercial License 1.0.0](LICENSE)** (SPDX: `PolyForm-Noncommercial-1.0.0`).
+
+- **Non-Commercial Use (Free of Charge):** Educational institutions, universities, research consortia, NGOs, non-profit federations, student unions, and open-source contributors are explicitly authorized and encouraged to run, self-host, audit, and modify Convota completely free of charge.
+- **Commercial Use (Requires Written Permission & Commission):** Any commercial exploitation—including selling the software or derivative works, offering managed or hosted instances for a fee (Software-as-a-Service / Cloud Hosting), charging third parties or organizations for access or usage, or integrating it into commercial proprietary products—requires prior written authorization and an explicit commercial licensing agreement from the author:
+  - **Author & Copyright Holder:** Minas Dasygenis
+  - **Email:** `mdasyg@vlsi.gr`
+  - **GitHub:** [https://github.com/mdasyg](https://github.com/mdasyg)
