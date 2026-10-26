@@ -53,7 +53,7 @@ class Seeder
                     'is_observer' => 0,
                     'members' => [
                         ['name' => 'Minas', 'surname' => 'Dasygenis', 'email' => 'convota@email.vlsi.gr', 'phone' => '+30 24610 56501', 'is_primary' => 1],
-                        ['name' => 'Konstantinos', 'surname' => 'Stergiou', 'email' => 'convota@email.vlsi.gr', 'phone' => '+30 24610 56502', 'is_primary' => 0]
+                        ['name' => 'Konstantinos', 'surname' => 'Mpakoulas', 'email' => 'convota@email.vlsi.gr', 'phone' => '+30 24610 56502', 'is_primary' => 0]
                     ]
                 ],
                 [

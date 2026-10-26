@@ -130,7 +130,7 @@ php -S 0.0.0.0:8000 -t public/
 #### Ενδεικτικοί Οργανισμοί-Μέλη:
 - **Πανεπιστήμιο Δυτικής Μακεδονίας (UOWM)** (Προεδρεύων Οργανισμός, 1 Ψήφος)
   - Τακτικός Εκπρόσωπος: `convota@email.vlsi.gr` (Μηνάς Δασυγένης) / `MemberPassword2026!`
-  - Αναπληρωτής: `convota@email.vlsi.gr` (Κωνσταντίνος Στεργίου)
+  - Αναπληρωτής: `convota@email.vlsi.gr` (Κωνσταντίνος Μπακούλας)
 - **European Open Research Network (EORN)** (1 Ψήφος)
   - Τακτικός Εκπρόσωπος: `convota@email.vlsi.gr` (Elena Rostova) / `MemberPassword2026!`
   - Αναπληρωτής: `convota@email.vlsi.gr` (Marcus Vogel)

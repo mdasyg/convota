@@ -184,7 +184,7 @@ All visual inspection screenshots must be evaluated against the following criter
 
 ### 5.6 Standard Test Credentials & SSO
 - Test Administrator: `adminconvota@email.vlsi.gr` / `AdminConvota2026!`
-- Test Delegates / Members: `convota@email.vlsi.gr` / `MemberPassword2026!` (Minas Dasygenis, Konstantinos Stergiou, Elena Rostova, Marcus Vogel, Sophie Dubois, Astrid Lindqvist)
+- Test Delegates / Members: `convota@email.vlsi.gr` / `MemberPassword2026!` (Minas Dasygenis, Konstantinos Mpakoulas, Elena Rostova, Marcus Vogel, Sophie Dubois, Astrid Lindqvist)
 - System Test Instructor: `eceprofessor` / `ProfPass_99999_SuperSecret!`
 - System Test Student: `ece99999` / `TestPass_99999_Secret!` (`ece99999@email.vlsi.gr` / AEM: `99999`)
 - **Strict Directive:** Never use fake student emails or unauthorized external domains. Strictly use `@email.vlsi.gr`.

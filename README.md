@@ -130,7 +130,7 @@ Then navigate to: `http://localhost:8000` (or `https://` if behind a reverse pro
 #### Sample Member Organizations:
 - **University of Western Macedonia** (President Organization, 1 Vote)
   - Primary Delegate: `convota@email.vlsi.gr` (Minas Dasygenis) / `MemberPassword2026!`
-  - Substitute: `convota@email.vlsi.gr` (Konstantinos Stergiou)
+  - Substitute: `convota@email.vlsi.gr` (Konstantinos Mpakoulas)
 - **European Open Research Network** (1 Vote)
   - Primary Delegate: `convota@email.vlsi.gr` (Elena Rostova) / `MemberPassword2026!`
   - Substitute: `convota@email.vlsi.gr` (Marcus Vogel)
